@@ -71,7 +71,7 @@
 			////////////////////////////////////////////////////////////// 
 
 			var color = d3.scale.ordinal()
-				.range(["#EDC951","#CC333F","#00A0B0",]);
+				.range(["#EDC951","#CC333F","#00A0B0","#1D1F6D"]);
 				
 			var radarChartOptions = {
 			  w: width,
@@ -97,17 +97,17 @@ $(document).ready(function () {
   audioSrc.connect(audioCtx.destination);
 
   //var frequencyData = new Uint8Array(analyser.frequencyBinCount);
-  var data = new Uint8Array(6);
+  var data = new Uint8Array(512);
  console.log("I am in radaChart.js ++++++++++++++++++++")
   
   // Create our initial D3 chart.
   
   // Continuously loop and update chart with frequency data.
-  var fps = 30
+ 
 	function renderChart() {
-  	setTimeout(function() {
+  	
     requestAnimationFrame(renderChart);
-  }, 1000 / fps);
+  
 
   
      
@@ -117,34 +117,36 @@ $(document).ready(function () {
      
      
      
-     //data2=[[],[]];
-		var data2 = new Array();
+     //data2=[[],[],[],[]];
 
-		for (var i=0; i<data.length; i=i+3) {
-    	data2.push(data.slice(i,i+3));
+		var data2 = new Array();
+		
+		for (var i=0; i<data.length; i=i+128) {
+    	data2.push(data.slice(i,i+128));
 		}
 
 		//create data1=[[{axis:"t"+i,value:data2[i]}]
+
+		var data1 = [];
+for (let i = 0; i < data2.length; i++) {
+   let row = data2[i];
+   let rowRet = [];
+   for (let j = 0; j < row.length; j++) {
+       let value = row[j];
+       let obj = {"axis": "t"+j, "value": value};
+       rowRet.push(obj);
+   }
+   data1.push(rowRet);
 }
-		var data1=data2.map((d,i)=>{
-    		return d.map((d1,i)=>{
-        	return {"axis": "t"+i, "value": d1};
-    		});
-			});
 
-
-
-
-			
-			
-
-			
-     RadarChart(".radarChart", data1, radarChartOptions);
+		 RadarChart(".radarChart", data1, radarChartOptions);
 
   }
 
+
   // Run the loop
   renderChart();
+
 
 });
 
