@@ -17,20 +17,9 @@ function setup() {
     // initialisations
     window.AudioContext = window.AudioContext || window.webkitAudioContext
     var context = new AudioContext()
-    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  var audioElement = document.getElementById('audioElement');
-  var audioSrc = audioCtx.createMediaElementSource(audioElement);
-  var analyser = audioCtx.createAnalyser();
-  audioSrc.connect(analyser);
-  audioSrc.connect(audioCtx.destination);
-  source = new Uint8Array(200);
-analyser.getByteFrequencyData(source);
-     console.log(source)
     var source = null
     var startButton = null
     var stopButton = null
-     source = new Uint8Array(200);
-analyser.getByteFrequencyData(source);
 
     // canvas setup
     createCanvas(1000, 500)
@@ -39,9 +28,9 @@ analyser.getByteFrequencyData(source);
 
 
     // get microphone
-    //navigator.getUserMedia({audio:true, video:false},function(stream){
+    navigator.getUserMedia({audio:true, video:false},function(stream){
         // get audio stream data
-      //  source = context.createMediaStreamSource(stream)
+        source = context.createMediaStreamSource(stream)
 
         // analyser setup
         meydaAnalyzer = Meyda.createMeydaAnalyzer({
