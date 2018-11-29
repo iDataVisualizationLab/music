@@ -4,22 +4,24 @@
     <link rel="stylesheet" href="assets/css/style.css">
 
     <!-- scripts -->
+    <script src="assets/js/bundle.js"></script>
+    <script src="assets/js/sketch.js"></script>
     <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/js/meyda/meyda.min.js"></script>
     <script src="assets/js/p5/p5.min.js"></script>
     <script src="assets/js/p5/addons/p5.dom.min.js"></script>
-    <script src="assets/js/sketch.js"></script>
     <script src="assets/js/math.min.js"></script>
-
+    <script src="assets/js/hex-to-rgb.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+	<script src="https://d3js.org/d3-color.v1.min.js"></script>
+	<script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
+    <script src="https://d3js.org/d3-scale.v2.min.js"></script>
 
 </head>
 <body>
-	<canvas id="myCanvas" width="1000" height="1000" style="border:1px solid #d3d3d3;">
-	Your browser does not support the HTML5 canvas tag.</canvas>
-	<audio crossorigin="anonymous" id="audio" src="./assets/2.mp3"></audio>
-    <div>
-      <button onclick="document.getElementById('audio').play()">Play the Audio</button>
-      <button onclick="document.getElementById('audio').pause()">Pause the Audio</button>
-    </div>
+	<canvas id="myCanvas" width="2500" height="2500" style="border:1px solid #d3d3d3;">
+
+<div class="results"></div>
 </body>
 </html>

@@ -1,8 +1,13 @@
+var similarity = require('compute-cosine-similarity')
+var Meyda = require('meyda')
 var express = require('express')
 var app = express()
 
+
+
 // assets folder
 app.use('/assets', express.static('assets'))
+
 
 // requests handling
 app.get('/',function(req, res){
