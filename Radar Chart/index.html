@@ -97,8 +97,8 @@ $(document).ready(function () {
   audioSrc.connect(audioCtx.destination);
 
   //var frequencyData = new Uint8Array(analyser.frequencyBinCount);
-  var data = new Uint8Array(512);
- console.log("I am in radaChart.js ++++++++++++++++++++")
+  var data = new Uint8Array(1024);
+
   
   // Create our initial D3 chart.
   
@@ -121,8 +121,8 @@ $(document).ready(function () {
 
 		var data2 = new Array();
 		
-		for (var i=0; i<data.length; i=i+128) {
-    	data2.push(data.slice(i,i+128));
+		for (var i=0; i<data.length; i=i+64) {
+    	data2.push(data.slice(i,i+64));
 		}
 
 		//create data1=[[{axis:"t"+i,value:data2[i]}]
@@ -133,7 +133,7 @@ for (let i = 0; i < data2.length; i++) {
    let rowRet = [];
    for (let j = 0; j < row.length; j++) {
        let value = row[j];
-       let obj = {"axis": "t"+j, "value": value};
+       let obj = {"axis": "o"+j, "value": value};
        rowRet.push(obj);
    }
    data1.push(rowRet);
