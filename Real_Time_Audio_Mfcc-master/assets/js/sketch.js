@@ -21,69 +21,38 @@ var matrix1 = [];
 var matrix2 = [];
 var matrix11 = [];
 var matrix22 = [];
-var matrixx1= [];
+var matrixx1 = [];
 var origin_data1 = [];
 var origin_data2 = [];
-var comparescore=0;
-var finalscore=0
-
-
+var comparescore = 0;
+var finalscore = 0
 var url1 = './assets/risu.wav';
 var url2 = './assets/koto.wav';
+var audioCtx = new AudioContext();
+
 
 function setup() {
-
-
     createCanvas(rectWidth * maxDataLength, rectHeight * defaultMfcc.length)
     background(255, 230, 150)
-    // startButton = createButton('Start')
-    // startButton.mousePressed(function () {
-    //
-    //     if (Listening == false) {
-    //         getData(url1)
-    //         // matrix1=origin_data1
-    //
-    //         Listening = true
-    //         console.log(Listening)
-    //         console.log(count)
-    //
-    //
-    //     } else {
-    //         // origin_data1=[];
-    //         getData2(url2)
-    //         // matrix2=origin_data2;
-    //         ++count
-    //     }
-    // })
     getData(url1)
 
 }
 
-var audioCtx = new AudioContext();
-
-// getData(url1)
-// getData2(url2)
 function getData(a) {
 
-    var audioCtx = new AudioContext();
+    // var audioCtx = new AudioContext();
     var offlineCtx = new OfflineAudioContext(2, 44100 * 10, 44100);
     var source = offlineCtx.createBufferSource()
-    // origin_data=[]
-    // source = offlineCtx.createBufferSource();
-
     //use XMLHttpRequest to load audio tract
     var request = new XMLHttpRequest();
-
     request.open('GET', a, true);
-
-
     request.responseType = 'arraybuffer';
     //return the audio data to audioData variable type arraybuffer
     request.onload = function () {
 
         audioData = request.response;
         //decode the audio data from array buffer and stored to AudioBufferSourceNode
-        audioCtx.decodeAudioData(audioData, function (buffer) {
+        offlineCtx.decodeAudioData(audioData, function (buffer) {
             // myBuffer = buffer;
             source.buffer = buffer;
             source.connect(offlineCtx.destination);
@@ -128,22 +97,8 @@ function getData(a) {
     console.log('2')
 }
 
-function playsound1(buffer) {
-    var song = audioCtx.createBufferSource();
-    song.buffer = buffer;
-    song.connect(audioCtx.destination);
-    song.start(0)
-}
-function playsound2(buffer) {
-    var song2 = audioCtx.createBufferSource();
-    song2.buffer = buffer;
-    song2.connect(audioCtx.destination);
-    song2.start(0)
-}
 
 function getData2(a) {
-
-    // var audioCtx = new AudioContext();
     var offlineCtx2 = new OfflineAudioContext(2, 44100 * 10, 44100);
     var source2 = offlineCtx2.createBufferSource()
     // origin_data=[]
@@ -151,10 +106,7 @@ function getData2(a) {
 
     //use XMLHttpRequest to load audio tract
     var request2 = new XMLHttpRequest();
-
     request2.open('GET', a, true);
-
-
     request2.responseType = 'arraybuffer';
     //return the audio data to audioData variable type arraybuffer
     request2.onload = function () {
@@ -186,11 +138,11 @@ function getData2(a) {
                 matrix2 = origin_data2
                 matrix22 = predata(matrix2)
                 drawmatrix(matrix22)
-                comparescore=dataprocess(matrix11,matrix11);
+                comparescore = dataprocess(matrix11, matrix11);
                 console.log(comparescore)
-                finalscore=dataprocess(matrix11,matrix22);
+                finalscore = dataprocess(matrix11, matrix22);
                 console.log(finalscore)
-                document.getElementById("smith").innerHTML = "SmithWaterman Score: " + 100*finalscore/comparescore;
+                document.getElementById("smith").innerHTML = "SmithWaterman Score: " + 100 * finalscore / comparescore;
 
                 console.log(e.renderedBuffer)
                 source2.stop()
@@ -212,6 +164,20 @@ function getData2(a) {
     console.log('2')
 }
 
+function playsound1(buffer) {
+    var song = audioCtx.createBufferSource();
+    song.buffer = buffer;
+    song.connect(audioCtx.destination);
+    song.start(0)
+}
+
+function playsound2(buffer) {
+    var song2 = audioCtx.createBufferSource();
+    song2.buffer = buffer;
+    song2.connect(audioCtx.destination);
+    song2.start(0)
+}
+
 function show1(features) {
     // update spectral data size
 
@@ -222,31 +188,16 @@ function show1(features) {
         origin_data1.push(mfcc)
         console.log(origin_data1)
     }
-    // if (count==0){
-    //     matrix11=predata(matrix1)
-    //
-    //
-    //
-    // }
-
 }
 
 function show2(features) {
     // update spectral data size
-
-    // var origin_data2 = [];
     mfcc = features[featureType] //features["mfcc"]
     rms = features[featureType2]
     if (rms > threshold) {
         origin_data2.push(mfcc)
         console.log(origin_data2)
     }
-    // if (count == 1) {
-    //     matrix22 = predata(matrix2)
-    //     // drawmatrix(matrix22)
-    //     //meydaAnalyzer2.stop()
-    // }
-
 }
 
 function drawmatrix(a) {
@@ -307,7 +258,7 @@ function predata(a) {
 }
 
 
-function dataprocess(a,b) {
+function dataprocess(a, b) {
     crossscore = [];
     crossimilarity = [];
     for (var i = 0; i < a.length; i++) {
@@ -335,14 +286,14 @@ function dataprocess(a,b) {
                 sum += math.pow(a[i] - b[i], 2)
             }
         } else if (a.length < b.length) {
-            a = a.concat(Array(b.length-a.length).fill(0))
+            a = a.concat(Array(b.length - a.length).fill(0))
             for (var i = 0; i < b.length; i++) {
 
                 sum += math.pow(a[i] - b[i], 2)
 
             }
         } else {
-            b = b.concat(Array(a.length-b.length).fill(0))
+            b = b.concat(Array(a.length - b.length).fill(0))
             for (var i = 0; i < a.length; i++) {
 
                 sum += math.pow(a[i] - b[i], 2)
