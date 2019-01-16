@@ -24,24 +24,24 @@ var matrix22 = [];
 var matrixx1 = [];
 var origin_data1 = [];
 var origin_data2 = [];
+var origin_data3 = [];
 var comparescore = 0;
 var finalscore = 0
-var url1 = './assets/risu.wav';
-var url2 = './assets/koto.wav';
+var url1 = './assets/fuu.wav';
+var url2 = './assets/fu.wav';
 var audioCtx = new AudioContext();
-
 
 function setup() {
     createCanvas(rectWidth * maxDataLength, rectHeight * defaultMfcc.length)
     background(255, 230, 150)
     getData(url1)
-
 }
+
 
 function getData(a) {
 
     // var audioCtx = new AudioContext();
-    var offlineCtx = new OfflineAudioContext(2, 44100 * 10, 44100);
+    var offlineCtx = new OfflineAudioContext(1, 44100 * 10, 44100);
     var source = offlineCtx.createBufferSource()
     //use XMLHttpRequest to load audio tract
     var request = new XMLHttpRequest();
@@ -78,7 +78,8 @@ function getData(a) {
                 matrix11 = predata(matrix1)
                 drawmatrix(matrix11)
                 ++count
-                getData2(url2)
+                // getData2(url2)
+                getData3()
                 console.log(e.renderedBuffer)
                 //source.stop()
                 console.log(audioData)
@@ -164,6 +165,33 @@ function getData2(a) {
     console.log('2')
 }
 
+function getData3() {
+
+    navigator.mediaDevices.getUserMedia({audio: true, video: false})
+        .then(function (stream) {
+
+
+            // Create a MediaStreamAudioSourceNode
+            // Feed the HTMLMediaElement into it
+            var source3 = audioCtx.createMediaStreamSource(stream);
+
+            meydaAnalyzer3 = Meyda.createMeydaAnalyzer({
+                'audioContext': audioCtx,
+                'source': source3,
+                'melBands': 26,
+                'sampleRate': 44100,
+                'bufferSize': 2048,
+                'featureExtractors': [featureType, featureType2],
+                'callback': show3
+            })
+            meydaAnalyzer3.start()
+        })
+        .catch(function (err) {
+            console.log('The following gUM error occured: ' + err);
+        });
+
+}
+
 function playsound1(buffer) {
     var song = audioCtx.createBufferSource();
     song.buffer = buffer;
@@ -188,6 +216,7 @@ function show1(features) {
         origin_data1.push(mfcc)
         console.log(origin_data1)
     }
+
 }
 
 function show2(features) {
@@ -199,6 +228,29 @@ function show2(features) {
         console.log(origin_data2)
     }
 }
+
+function show3(features) {
+    // update spectral data size
+    mfcc = features[featureType] //features["mfcc"]
+    rms = features[featureType2]
+    if (rms > threshold) {
+        origin_data3.push(mfcc)
+        console.log(origin_data3)
+    }
+    if (origin_data3.length == origin_data1.length) {
+        matrix2 = origin_data3
+        meydaAnalyzer3.stop()
+        matrix22 = predata(matrix2)
+        drawmatrix(matrix22)
+        comparescore = dataprocess(matrix11, matrix11);
+        console.log(comparescore)
+        finalscore = dataprocess(matrix11, matrix22);
+        console.log(finalscore)
+        document.getElementById("smith").innerHTML = "SmithWaterman Score: " + 100 * finalscore / comparescore;
+
+    }
+}
+
 
 function drawmatrix(a) {
 
@@ -372,7 +424,7 @@ function dataprocess(a, b) {
         }
         console.log(imgData.data);
         //where to draw the whole image
-        ctx.putImageData(imgData, count * (math.max(matrix2.length, matrix1.length) + 20), 300);
+        ctx.putImageData(imgData, count * (math.max(matrix2.length, matrix1.length) + 20), 400);
 
     }
 
