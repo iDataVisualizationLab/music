@@ -467,11 +467,9 @@ function dataprocess(selfmatrix1, selfmatrix2) {
 
 //Calculate SmithWaterman Score
     function score(similar) {
-//math.zeros(math.size(A))
         //Create a matrix D full of zeros value with size (cross_similarity_matrix length+1,cross_similarity_matrix length+1)
         var arr = Array(similar.length + 1).fill(Array(similar[0].length + 1));
         var D = math.zeros(math.size(arr))
-
         var maxD = 0;
         for (i = 3; i < D.length; i++) {
             for (j = 3; j < D[0].length; j++) {
