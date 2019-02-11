@@ -1,4 +1,3 @@
-var similarity = require('compute-cosine-similarity')
 var Meyda = require('meyda')
 var express = require('express')
 var app = express()
