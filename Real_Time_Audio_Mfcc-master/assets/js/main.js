@@ -7,7 +7,7 @@ var featureType2 = 'rms'
 var count = 0;
 var origin_data1 = [];
 var origin_data2 = [];
-var url1 = './assets/sound/violina31.mp3'
+var url1 = './assets/sound/violind41.mp3'
 var url2 = './assets/sound/guitara31.mp3'
 
 function setup() {
@@ -64,13 +64,14 @@ function setup() {
                     'sampleRate': 44100,
                     'bufferSize': 256,
                     'hopSize': 256,
+                    'numberOfMFCCCoefficients': 20,
                     'featureExtractors': [featureType, featureType2],
                     'callback': show1
 
                 })
                 //start Meyda Analyzer
                 meydaAnalyzer1.start();
-
+                console.log(Meyda.sampleRate)
                 //display information of Audio 1 including duration (sec), buffersize, hopsize
                 addText("Audio 1 duration (sec): " + math.round(duration1[0] * 10) / 10, 0, 160)
                 addText("Audio 1 self_compare_score", 0, 130)
@@ -142,14 +143,15 @@ function setup() {
                     'source': source22,
                     'melBands': 26,
                     'sampleRate': 44100,
-                    'bufferSize': 1024,
-                    'hopSize': 800,
+                    'bufferSize': 16384,
+                    'hopSize': 256,
+                    'numberOfMFCCCoefficients': 20,
                     'featureExtractors': [featureType, featureType2],
                     'callback': show2
 
                 })
                 meydaAnalyzer2.start()
-
+                console.log(Meyda.sampleRate)
                 //Start render audio data 2
                 offlineCtx2.startRendering()
 
@@ -166,7 +168,7 @@ function setup() {
 
                     //function preprocess() in function dataprocess() takes much time to complete
                     console.log("before dataprocess:...")
-                    dataprocess(matrix11, matrix22)
+                    // dataprocess(matrix11, matrix22)
                     console.log("after dataprocess:... ")
 
                     //Display information of audio 2 including duration, buffersize, hopsize
