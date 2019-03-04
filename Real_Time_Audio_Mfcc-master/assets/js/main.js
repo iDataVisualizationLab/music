@@ -1,27 +1,41 @@
 // setup init variables
-var defaultMfcc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-var mfcc = defaultMfcc;
+var mfcc = [];
 var rms = 0;
 var featureType = 'mfcc'
 var featureType2 = 'rms'
 var count = 0;
 var origin_data1 = [];
-var origin_data2 = [];
-var url1 = './assets/sound/violind41.mp3'
-var url2 = './assets/sound/guitara31.mp3'
+var marginleft = 50;
+var matrixgap = 400;
+var durations = 8;
+var windowsize = 2048;
+var totaldata = [];
+column = ["banja31", "banja32", "bass1", "bass2", "cym1", "contra11", "contra12", "contra13", "contra31", "contra32", "contrd41", "contrd42", "horn", "guia31", "guia32",
+    "guid41", "guid42", "mandoa31", "mandoa32", "snare1", "snare2", "tenor", "olaa31", "olaa32", "olad41", "olad42", "olina31", "olina32", "olind41", "olind42"];
+
+
+var url = ['./assets/sound/banjoa31.mp3', './assets/sound/banjoa32.mp3', './assets/sound/bassdrum1.mp3', './assets/sound/bassdrum2.mp3', './assets/sound/chinesecymball.mp3', './assets/sound/contrabassa11.mp3',
+    './assets/sound/contrabassa12.mp3', './assets/sound/contrabassa13.mp3', './assets/sound/contrabassa31.mp3', './assets/sound/contrabassa32.mp3',
+    './assets/sound/contrabassd41.mp3', './assets/sound/contrabassd42.mp3', './assets/sound/frenchhorna2.mp3', './assets/sound/guitara31.mp3', './assets/sound/guitara32.mp3',
+    './assets/sound/guitard41.mp3', './assets/sound/guitard42.mp3', './assets/sound/mandolina31.mp3', './assets/sound/mandolina32.mp3',
+    './assets/sound/snaredrum1.mp3', './assets/sound/snaredrum2.mp3', './assets/sound/tenordrum.mp3', './assets/sound/violaa31.mp3', './assets/sound/violaa32.mp3',
+    './assets/sound/violad41.mp3', './assets/sound/violad42.mp3', './assets/sound/violina31.mp3', './assets/sound/violina32.mp3',
+    './assets/sound/violind41.mp3', './assets/sound/violind42.mp3']
 
 function setup() {
 
-    getData(url1)
 
-    function getData(a) {
+    getData(url[0], 0);
+
+    function getData(a, index) {
+
         //Create audioContext to decode the audio data later
         var audioCtx = new AudioContext();
 
         //Create source as a buffer source node which contains the audio data after decoding
         var source = audioCtx.createBufferSource()
 
-        //use XMLHttpRequest to load audio tract
+        //use XMLHttpRequest to load audio track
         var request = new XMLHttpRequest();
 
         //Open audio file
@@ -31,19 +45,19 @@ function setup() {
         request.responseType = 'arraybuffer';
 
         //return the audio data to audioData variable type arraybuffer
+
         request.onload = function () {
             audioData = request.response;
-
             //decode the audio data from array buffer and stored to AudioBufferSourceNode
             audioCtx.decodeAudioData(audioData, function (buffer) {
                 //store data to buffer source node
                 source.buffer = buffer;
                 //find the duration of the audio in second after decoding
-                var duration1 = [];
-                duration1.push(source.buffer.duration)
+                var duration1 = 0;
+                duration1 = source.buffer.duration;
 
                 //create offline audio context to render the decoding audio data then use the offline audio context and another audio buffer source node as inputs to Meyda Analyzer
-                var offlineCtx = new OfflineAudioContext(1, 44100 * duration1[0], 44100);
+                var offlineCtx = new OfflineAudioContext(1, 44100 * duration1, 44100);
 
                 //create buffer source node which is used in Meyda Analyzer
                 var source11 = offlineCtx.createBufferSource()
@@ -62,8 +76,8 @@ function setup() {
                     'source': source11,
                     'melBands': 26,
                     'sampleRate': 44100,
-                    'bufferSize': 256,
-                    'hopSize': 256,
+                    'bufferSize': windowsize,
+                    'hopSize': windowsize / (durations / duration1),
                     'numberOfMFCCCoefficients': 20,
                     'featureExtractors': [featureType, featureType2],
                     'callback': show1
@@ -71,139 +85,41 @@ function setup() {
                 })
                 //start Meyda Analyzer
                 meydaAnalyzer1.start();
-                console.log(Meyda.sampleRate)
-                //display information of Audio 1 including duration (sec), buffersize, hopsize
-                addText("Audio 1 duration (sec): " + math.round(duration1[0] * 10) / 10, 0, 160)
-                addText("Audio 1 self_compare_score", 0, 130)
-                addText(url1, 0, 100)
-                addText("bufferSize: " + Meyda.bufferSize, 0, 70)
-                addText("hopSize: " + Meyda.hopSize, 0, 40)
+                var hop = Meyda.hopSize;
+                var buf = Meyda.bufferSize;
+                var dur = duration1;
 
                 //Using offline audio context to render audio data
                 offlineCtx.startRendering()
 
                 //After complete rendering, performing the following steps
                 offlineCtx.oncomplete = function (e) {
-
                     //copy the data generated from Meyda Analyzer 1
                     var matrix1 = [];
-
                     //origin_data1 is generated from function show1 of Meyda Analyzer 1
                     var matrix1 = origin_data1;
                     var matrix11 = [];
-
                     //Create self_similarity data based on origin_data by calculate Euclidean distance between each pair of data point of origin_data
                     var matrix11 = predata(matrix1)
-
                     //draw self_similarity matrix1
-                    drawmatrix(matrix11)
-
-                    //Start processing the next audio file
-                    getData2(url2, matrix11)
+                    drawmatrix(matrix11, index, hop, buf, dur, url[index]);
+                    ++index;
+                    if (index < 30) {
+                        getData(url[index], index)
+                    }
+                    ;
                 }
-
-
+            }).catch(function (err) {
+                console.log('Rendering failed: ' + err);
+                // Note: The promise should reject when startRendering is called a second time on an OfflineAudioContext
             });
         }
 
         request.send();
+        return 0;
     }
-
-
-    function getData2(audiofile2, matrix11) {
-        //do the same thing as processing the audio 1, get the duration of audio first then render the audio data to offline audio context, and take it as input to Meyda Analyzer 2
-        var audioCtx2 = new AudioContext();
-        var source2 = audioCtx2.createBufferSource()
-
-        //use XMLHttpRequest to load audio tract
-        var request2 = new XMLHttpRequest();
-        request2.open('GET', audiofile2, true);
-
-        //return the audio data to audioData variable type arraybuffer
-        request2.responseType = 'arraybuffer';
-
-        request2.onload = function () {
-            audioData2 = request2.response;
-
-            //decode the audio data from array buffer and stored to AudioBufferSourceNode
-            audioCtx2.decodeAudioData(audioData2, function (buffer) {
-
-                source2.buffer = buffer;
-                var duration2 = [];
-                duration2.push(source2.buffer.duration)
-
-                var offlineCtx2 = new OfflineAudioContext(1, 44100 * duration2[0], 44100);
-                var source22 = offlineCtx2.createBufferSource()
-                source22.buffer = buffer;
-                source22.connect(offlineCtx2.destination);
-                source22.start();
-
-                meydaAnalyzer2 = Meyda.createMeydaAnalyzer({
-                    'audioContext': offlineCtx2,
-                    'source': source22,
-                    'melBands': 26,
-                    'sampleRate': 44100,
-                    'bufferSize': 16384,
-                    'hopSize': 256,
-                    'numberOfMFCCCoefficients': 20,
-                    'featureExtractors': [featureType, featureType2],
-                    'callback': show2
-
-                })
-                meydaAnalyzer2.start()
-                console.log(Meyda.sampleRate)
-                //Start render audio data 2
-                offlineCtx2.startRendering()
-
-                //When render completed do the following steps
-                offlineCtx2.oncomplete = function (k) {
-                    //copy data generated from Meyda Analyzer
-                    var matrix2 = origin_data2
-
-                    //process self_similarity data from origin_data2
-                    var matrix22 = predata(matrix2)
-
-                    //draw self_similarity matrix of audio 2
-                    drawmatrix(matrix22)
-
-                    //function preprocess() in function dataprocess() takes much time to complete
-                    console.log("before dataprocess:...")
-                    // dataprocess(matrix11, matrix22)
-                    console.log("after dataprocess:... ")
-
-                    //Display information of audio 2 including duration, buffersize, hopsize
-                    addText("Audio 2 duration (sec): " + math.round(duration2[0] * 10) / 10, matrix11.length + matrix2.length, 160)
-                    addText("Audio 2 self_compare_score", matrix11.length + matrix2.length, 130)
-                    addText(url2, matrix11.length + matrix2.length, 100)
-                    addText("bufferSize:" + Meyda.bufferSize, matrix11.length + matrix2.length, 70)
-                    addText("hopSize:" + Meyda.hopSize, matrix11.length + matrix2.length, 40)
-                }
-
-
-            });
-        }
-
-        request2.send();
-    }
-
-
 }
 
-//function to play audio file 1
-function playsound1(buffer) {
-    var song = audioCtx.createBufferSource();
-    song.buffer = buffer;
-    song.connect(audioCtx.destination);
-    song.start(0)
-}
-
-//function to play auido file 2
-function playsound2(buffer) {
-    var song2 = audioCtx.createBufferSource();
-    song2.buffer = buffer;
-    song2.connect(audioCtx.destination);
-    song2.start(0)
-}
 
 //function callback of Meyda Analyzer 1 which calculate mfcc coefficient
 function show1(features) {
@@ -215,18 +131,8 @@ function show1(features) {
     }
 }
 
-//function callback of Meyda Analyzer 2 which calculate mfcc coefficient
-function show2(features) {
-
-    mfcc = features[featureType]
-    rms = features[featureType2]
-    if (rms != 0) {
-        origin_data2.push(mfcc)
-    }
-}
-
 //the function take self_similarity data as an input and then draw the self_similarity matrix
-function drawmatrix(self_similarity_data) {
+function drawmatrix(self_similarity_data, index, hop, buffer, duration, songname) {
     //scale the self_similarity data value to draw
     var CSM22 = d3.scaleLinear()
         .domain([math.min(self_similarity_data), math.max(self_similarity_data)])
@@ -258,8 +164,6 @@ function drawmatrix(self_similarity_data) {
     var ctx = c.getContext("2d");
     // define the size of image
     var imgData = ctx.createImageData(color_data[0].length, color_data.length);
-    console.log(imgData);
-
     //draw each pixel, one pixel contain 4 values (R G B A),
     for (var i = 0; i < color_data.length; i++) {
         for (var j = 0; j < color_data[0].length; j++) {
@@ -272,11 +176,39 @@ function drawmatrix(self_similarity_data) {
             imgData.data[pos + 3] = 255;
         }
     }
-    console.log(imgData.data);
+    console.log("I am calculating the distance")
+    if (index == 29) {
+        var totalscore = [];
+        for (i = 0; i < totaldata.length - 1; i++) {
+            var scorefinal = [];
+            for (j = i + 1; j < totaldata.length; j++) {
+                scorefinal.push(comparescore(totaldata[i], totaldata[j]))
+            }
+            totalscore.push(scorefinal)
+        }
+        chart_display(totalscore);
+        network_diagram(totalscore)
+    }
 
-    //where to draw the whole image
-    ctx.putImageData(imgData, count * (origin_data1.length + origin_data2.length), 0);
-    ++count
+    //Define the position to draw self_similarity matrix on canvas
+    var position = 1;
+    if (index < 15) {
+        ctx.putImageData(imgData, index * (matrixgap) + marginleft, 150);
+    } else {
+        position = position * 8;
+        index = index - 15;
+        ctx.putImageData(imgData, (index) * (matrixgap) + marginleft, 500)
+    }
+
+    //label the matrix by name, hopsize, buffersize, duration
+    ctx.font = "20px Arial";
+    ctx.fillText("Audio: " + songname, index * (matrixgap) + marginleft, 50 * position);
+    ctx.fillText("Hopsize: " + hop.toFixed(0), index * (matrixgap) + marginleft, 50 * position + 30);
+    ctx.fillText("Buffersize: " + buffer, index * (matrixgap) + marginleft, 50 * position + 60);
+    ctx.fillText("Duration: " + duration.toFixed(2), index * (matrixgap) + marginleft, 50 * position + 90);
+    console.log("I am drawing")
+    //reset the origin_data from Meyda Analyzer for next use
+    origin_data1 = [];
 }
 
 //function to process the origin_data to self_similarity data by comparing euclidean distance of every pair of data point
@@ -303,10 +235,9 @@ function predata(origin_data) {
         }
         self_similarity_data.push(data2);
     }
-
+    totaldata.push(self_similarity_data)
     return self_similarity_data;
 }
-
 
 function euclideanDistance(a, b) {
     var sum = 0;
@@ -336,200 +267,349 @@ function euclideanDistance(a, b) {
     return Math.sqrt(sum)
 }
 
-//function to display svg text
-function addText(value, x, y) {
-    let svg = d3.select("#svg1");
-    svg.append("text").text(value).attr("x", x).attr("y", y).attr("font-size", "30px");
+//Create Cross similarity Matrix from 2 SSM data
+function comparescore(selfmatrix1, selfmatrix2) {
+
+    var crossscore = [];
+    //get distance of all pair between each datapoint of matrix1 and matrix2
+    for (var i = 0; i < selfmatrix1.length; i++) {
+        var crossimilarity_matrix = [];
+        for (var j = 0; j < selfmatrix2.length; j++) {
+            crossimilarity_matrix.push(euclideanDistance(selfmatrix1[i], selfmatrix2[j]))
+        }
+        crossscore.push(crossimilarity_matrix)
+    }
+
+    //get the min distance of each pair of datapoint of matrix 1 to all datapoint of matrix 2
+    var ssmcompare = [];
+    for (var i = 0; i < crossscore.length; i++) {
+        ssmcompare.push(math.min(crossscore[i]))
+
+    }
+
+    //define the distance between two matrix by get the median distance of all pair
+    return math.median(ssmcompare);
 }
 
-//process the data by comparing Euclidean distance between two self_similarity data, create binary matrix, and perform calculating SmithWaterman score for 2 audio files
-function dataprocess(selfmatrix1, selfmatrix2) {
+//display matrix of distance in svg rect with bipolar color
+function chart_display(datat) {
+    var margin = {top: 50, right: 0, bottom: 100, left: 50}
+    var width = 1000 - margin.left - margin.right;
+    var height = 1000 - margin.top - margin.bottom;
+    var gridSize = 20;
+    var colors = colorbrewer.RdBu[9];
+    var cellSize = 10
+    var legendElementWidth=20
 
-    //Create Cross similarity Matrix from 2 SSM data
-    function preprocess() {
-        var crossscore = [];
-        for (var i = 0; i < selfmatrix1.length; i++) {
-            var crossimilarity_matrix = [];
-            for (var j = 0; j < selfmatrix2.length; j++) {
-                crossimilarity_matrix.push(euclideanDistance(selfmatrix1[i], selfmatrix2[j]))
-            }
-            crossscore.push(crossimilarity_matrix)
+    var row = ["banja31", "banja32", "bass1", "bass2", "cym1", "contra11", "contra12", "contra13", "contra31", "contra32", "contrd41", "contrd42", "horn", "guia31", "guia32",
+        "guid41", "guid42", "mandoa31", "mandoa32", "snare1", "snare2", "tenor", "olaa31", "olaa32", "olad41", "olad42", "olina31", "olina32", "olind41"];
+
+    var label = [];
+    for (i = 0; i < column.length - 1; i++) {
+        var label1 = [];
+        for (j = i + 1; j < column.length; j++) {
+            label1.push(column[i] + ":" + column[j])
         }
-        return crossscore
-    }
-
-//Calculate the median of Euclidean distance of two self_similarity matrix-> Euclidean Score between two audio files
-    function displayssm(cross_similarity_data) {
-        var ssmcompare = [];
-        for (var i = 0; i < cross_similarity_data.length; i++) {
-            ssmcompare.push(math.min(cross_similarity_data[i]))
-
-        }
-        return math.round(math.median(ssmcompare))
+        label.push(label1)
     }
 
 
-//This part is following the SmithWaterman Algorithm
-    function sortrow(cross_similaritydata) {
+    var tooltip = d3.select("#chart")
+        .append("div")
+        .style("position", "absolute")
+        .style("visibility", "hidden");
+    var svg = d3.select("#chart").append("svg")
+        .attr("width", width + 800 + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-//sort the row of cross similarity matrix then take the k*row.length point
-        var rowsort = [];
-        for (var i = 0; i < cross_similaritydata.length; i++) {
-            rowsort.push(cross_similaritydata[i].sort(function (a, b) {
-                return a - b;
-            }))
-        }
-        var rowsortmin = [];
+    dataset = datat;
 
-        var number = math.round(cross_similaritydata.length * 0.1)
+    var scale = d3.scale.linear().domain([math.min(dataset), math.max(dataset)]).range([0, 1])
+    const maxLength = d3.max(dataset.map(d => d.length));
+    var colorScale = d3.scale.quantize()
+        .domain([0, 1])
+        .range(colors)
+    var rownumber = 0;
+    var draw = svg.selectAll("g")
+        .data(dataset)
+        .enter()
+        .append("g")
+        .attr("transform", (d, i) => `translate(${i * gridSize}, ${i * (gridSize)})`)
+        .selectAll("rect")
+        .data(function (d) {
+            return d
+        })
+        .enter()
+        .append("rect")
+        .attr("x", function (d, i) {
+            return i * gridSize;
+        })
+        .attr("y", 0)
+        .attr("height", 10)
+        .attr("width", 10)
+        .attr("transform", "translate(55,20)")
+        .attr("class", ".tooltip")
+        .style("fill", "green")
+        .on('mouseover', function (d, i) {
+            if (d != null) {
+                tooltip.html('<div class="heatmap_tooltip">' + label[i][i] + ":" + d.toFixed(2) + '</div>');
+                tooltip.style("visibility", "visible");
+            } else
+                tooltip.style("visibility", "hidden");
+        })
+        .on('mouseout', function () {
+            tooltip.style("visibility", "hidden");
+        })
+        .on("mousemove", function (d, i) {
+            tooltip.style("top", (d3.event.pageY - 55) + "px").style("left", (d3.event.pageX - 60) + "px");
+        })
+        .transition().duration(500)
+        .style("fill", function (d) {
+            return colorScale(scale(d));
+        });
 
-        for (var i = 0; i < rowsort.length; i++) {
-            rowsortmin.push(rowsort[i][number])
-        }
-        return rowsortmin;
-    }
+    //create legend bar to show the level of each chroma feature in color. Domain of chroma  [0,1]
+    var legend = svg.append("g")
+        .attr("class", "legend")
+        .attr("transform",
+            "translate(" + -10 + " ," +
+            (-20) + ")")
+        .selectAll(".legendElement")
+        .data([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])
+        .enter().append("g")
+        .attr("class", "legendElement");
 
-//sort the column
-    function sortcol(crosssimilarity_data) {
-        //transform all the column of the matrix to row, then sort the row
-        var column = _.unzip(crosssimilarity_data)
-        var sortcolumn = [];
-        for (var i = 0; i < column.length; i++) {
-            //sort function
-            sortcolumn.push(column[i].sort(function (aa, bb) {
-                return aa - bb;
-            }))
-        }
-        var number = math.round(sortcolumn[0].length * 0.1)
+    legend.append("rect")
+        .attr("x", function(d, i) {
+            return legendElementWidth * i;
+        })
+        .attr("y", 20)
+        .attr("class", "cellLegend bordered")
+        .attr("width", legendElementWidth)
+        .attr("height", cellSize / 2)
+        .style("fill", function(d, i) {
+            return colors[i];
 
-        var sortcolumnmin = [];
-        for (var i = 0; i < sortcolumn.length; i++) {
-            sortcolumnmin.push(sortcolumn[i][number]);
+        });
 
-        }
-        return sortcolumnmin;
+    legend.append("text")
+        .attr("class", "mono legendElement")
+        .text(function(d) {
+            return "≥" + Math.round(d * 100) / 100;
+        })
+        .attr("x", function(d, i) {
+            return legendElementWidth * i;
+        })
+        .attr("y", 20 + cellSize)
+        .attr("font-size","5px");
 
-    }
-
-
-//draw binary matrix
-    function drawbinarymatrix(crosssimilaritydata, sortrowdata, sortcolumdata) {
-        for (var i = 0; i < crosssimilaritydata.length; i++) {
-            for (var j = 0; j < crosssimilaritydata[0].length; j++) {
-
-                //Generate binary matrix which 1 and 0 value
-                if (crosssimilaritydata[i][j] < math.min(sortrowdata[i], sortcolumdata[j])) {
-                    crosssimilaritydata[i][j] = 1;
-                } else {
-                    crosssimilaritydata[i][j] = 0;
-                }
-            }
-        }
-
-        var c = document.getElementById("myCanvas");
-        var ctx = c.getContext("2d");
-        var imgData = ctx.createImageData(crosssimilaritydata[0].length, crosssimilaritydata.length);
-
-        for (var i = 0; i < crosssimilaritydata.length; i++) {
-            for (var j = 0; j < crosssimilaritydata[0].length; j++) {
-                var pos = (i * crosssimilaritydata[0].length + j) * 4;
-                imgData.data[pos + 0] = 0;
-                imgData.data[pos + 1] = 0;
-                imgData.data[pos + 2] = 0;
-                imgData.data[pos + 3] = crosssimilaritydata[i][j] * 255;
-            }
-        }
-        console.log(imgData.data);
-        //where to draw the whole image
-        ctx.putImageData(imgData, (count - 1) * (crosssimilaritydata.length + crosssimilaritydata[0].length), math.max(crosssimilaritydata.length, crosssimilaritydata[0].length));
-    }
-
-    function Delta(binaryvalue1, binaryvalue2) {
-        var gapOpening = -0.5;
-        var gapExtension = -0.7;
-        if (binaryvalue2 > 0) {
-            return 0;
-        } else if (binaryvalue2 == 0 && binaryvalue1 > 0) {
-            return gapOpening;
-        } else {
-            return gapExtension;
-        }
-    }
-
-    function Match(i) {
-        var matchScore = 1;
-        var mismatchScore = -1;
-//if value = 0 , mismatch, 1 -> match
-        if (i == 0) {
-            return mismatchScore
-        } else {
-            return matchScore
-        }
-    }
-
-//Calculate SmithWaterman Score
-    function score(similar) {
-        //Create a matrix D full of zeros value with size (cross_similarity_matrix length+1,cross_similarity_matrix length+1)
-        var arr = Array(similar.length + 1).fill(Array(similar[0].length + 1));
-        var D = math.zeros(math.size(arr))
-        var maxD = 0;
-        for (i = 3; i < D.length; i++) {
-            for (j = 3; j < D[0].length; j++) {
-                var MS = Match(similar[i - 1][j - 1])
-//H_(i-1, j-1) + S_(i-1, j-1) + delta(S_(i-2,j-2), S_(i-1, j-1))
-                var d11 = D[i - 1][j - 1] + MS + Delta(similar[i - 2][j - 2], similar[i - 1][j - 1])
-//H_(i-2, j-1) + S_(i-1, j-1) + delta(S_(i-3, j-2), S_(i-1, j-1))
-                var d22 = D[i - 2][j - 1] + MS + Delta(similar[i - 3][j - 2], similar[i - 1][j - 1])
-//H_(i-1, j-2) + S_(i-1, j-1) + delta(S_(i-2, j-3), S_(i-1, j-1))
-                var d33 = D[i - 1][j - 2] + MS + Delta(similar[i - 2][j - 3], similar[i - 1][j - 1])
-                D[i][j] = math.max(d11, d22, d33, 0)
-                if (D[i][j] > maxD) {
-                    maxD = D[i][j];
-                }
-            }
-
-        }
-
-        return maxD;
-
-    }
-
-//copy value of cross similarity data after processing to use for each function
-    var matt1 = [];
-    var matt2 = [];
-    var matt3 = [];
-    var sortrow1 = [];
-    var sortcol1 = [];
-    var scoreee = 0;
-    var euclideanscore = 0;
-//get cross similarity data
-    matt1 = preprocess()
-    // copy the data to 2 other variable matt2 and matt3
-    matt2 = matt1.map(a => a.slice())
-    matt3 = matt1.map(a => a.slice())
-
-    //sort row of cross similarity data
-    sortrow1 = sortrow(matt2);
-
-    //sort column of cross similarity data
-    sortcol1 = sortcol(matt3);
-
-    //calculate euclidean distance by get median of cross similarity distance
-    euclideanscore = displayssm(matt1)
-
-    //draw cross similarity matrix
-    drawmatrix(matt1)
-
-    //draw binary matrix
-    drawbinarymatrix(matt1, sortrow1, sortcol1);
-
-    //get SmithWaterman Score
-    scoreee = score(matt1)
-
-    //Display information of dissimilarity Matrix, Euclidean score, SmithWaterman Score
-    addText("Euclidean score: " + euclideanscore, (count - 1) * (selfmatrix1.length + selfmatrix2.length), 160)
-    addText("SmithWaterman: " + scoreee, (count - 1) * (selfmatrix1.length + selfmatrix2.length), 130)
-    addText("Audio 1 and Audio 2 dissimilarity score", (count - 1) * (selfmatrix1.length + selfmatrix2.length), 100)
 }
 
 
+function network_diagram(data) {
+    var width = 560,
+        height = 500;
+
+    var color = d3.scale.category20();
+
+    var force = d3.layout.force()
+        .charge(-120)
+        .linkDistance(40)
+        .size([width, height]);
+
+    var x = d3.scale.linear()
+        .domain([math.min(data), math.max(data)])
+        .range([80, 250])
+        .clamp(true);
+
+    var brush = d3.svg.brush()
+        .y(x)
+        .extent([0, 0]);
+
+    var svg = d3.select("#network").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    var links_g = svg.append("g");
+
+    var nodes_g = svg.append("g");
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(" + (width - 20) + ",0)")
+        .call(d3.svg.axis()
+            .scale(x)
+            .orient("left")
+            .tickFormat(function (d) {
+                return d;
+            })
+            .tickSize(0)
+            .tickPadding(12))
+        .select(".domain")
+        .select(function () {
+            return this.parentNode.appendChild(this.cloneNode(true));
+        })
+        .attr("class", "halo");
+
+    var slider = svg.append("g")
+        .attr("class", "slider")
+        .call(brush);
+
+    slider.selectAll(".extent,.resize")
+        .remove();
+
+    var handle = slider.append("circle")
+        .attr("class", "handle")
+        .attr("transform", "translate(" + (width - 20) + ",0)")
+        .attr("r", 5);
+
+
+    svg.append("text")
+        .attr("x", width - 15)
+        .attr("y", 60)
+        .attr("text-anchor", "end")
+        .attr("font-size", "12px")
+        .style("opacity", 0.5)
+        .text("Euclidean Distance Threshold")
+
+
+    var nodes = [];
+    for (i = 0; i < column.length; i++) {
+        nodes.push({"name": column[i]})
+    }
+    var links = [];
+    var link2 = [];
+    for (i = 0; i < column.length - 1; i++) {
+        var link1 = [];
+        for (j = i + 1; j < column.length; j++) {
+            link1.push({"source": i, "target": j})
+        }
+        link2.push(link1)
+    }
+    data1 = d3.merge(data);
+    links = d3.merge(link2);
+    links.forEach(function (d, i) {
+        d.value = data1[i];
+    });
+    links.forEach(function (d, i) {
+        d.i = i;
+    });
+
+    function brushed() {
+        var value = brush.extent()[0];
+
+        if (d3.event.sourceEvent) {
+            value = x.invert(d3.mouse(this)[1]);
+            console.log(value)
+            brush.extent([value, value]);
+        }
+        handle.attr("cy", x(value));
+        var threshold = value;
+
+        var thresholded_links = links.filter(function (d) {
+            return (d.value <= threshold);
+        });
+
+        force
+            .links(thresholded_links);
+
+        var link = links_g.selectAll(".link")
+            .data(thresholded_links, function (d) {
+                return d.i;
+            });
+
+        link.enter().append("line")
+            .attr("class", "link")
+            .style("stroke-width", function (d) {
+                return Math.sqrt(d.value);
+            });
+
+        link.exit().remove();
+
+        force.on("tick", function () {
+            link.attr("x1", function (d) {
+                return d.source.x;
+            })
+                .attr("y1", function (d) {
+                    return d.source.y;
+                })
+                .attr("x2", function (d) {
+                    return d.target.x;
+                })
+                .attr("y2", function (d) {
+                    return d.target.y;
+                });
+
+            node.attr("cx", function (d) {
+                return d.x;
+            })
+                .attr("cy", function (d) {
+                    return d.y;
+                });
+
+            text.attr("x", function (d) {
+                return d.x;
+            })
+                .attr("y", function (d) {
+                    return d.y;
+                });
+        });
+
+        force.start();
+
+    }
+
+    force
+        .nodes(nodes);
+
+    var node = nodes_g.selectAll(".node")
+        .data(nodes)
+        .enter().append("circle")
+        .attr("class", "node")
+        .attr("r", 5)
+        .style("fill", function (d) {
+            return color(d.group);
+        })
+        .call(force.drag)
+
+    node.append("title")
+        .text(function (d) {
+            return d.name;
+        });
+
+    var text = svg.append("g")
+        .attr("class", "labels")
+        .selectAll("text")
+        .data(nodes)
+        .enter().append("text")
+        .attr("dx", 12)
+        .attr("dy", ".35em")
+        .attr("font-size", "10px")
+        .text(function (d) {
+            return d.name
+        });
+
+
+    brush.on("brush", brushed);
+
+    slider
+        .call(brush.extent([5, 5]))
+        .call(brush.event);
+
+
+}
+
+
+//get file directory
+// document.getElementById("filepicker").addEventListener("change", function(event) {
+//     let output = document.getElementById("listing");
+//     let files = event.target.files;
+//
+//     for (let i=0; i<files.length; i++) {
+//         let item = document.createElement("li");
+//         item.innerHTML = files[i].webkitRelativePath;
+//         output.appendChild(item);
+//     };
+// }, false);
