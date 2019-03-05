@@ -11,8 +11,8 @@
 * Then either run the app using 'node server.js'.
 * Connect to `localhost:3000` in your favorite browser. 
 * I also use Browserify to create a bundle.js files which support loading node module ("require" method) using in client side. 
-* There will be a bug when you first run the application (please resume the debug to continue running the application)
-* It takes about 4 minutes to run the application since computational cost of 435 distances of 30 sound samples.
+* There will be a bug when you first run the application (please resume the debug to continue running the application).
+
 
 ## Data
 * Collect 30 sample sounds from http://www.philharmonia.co.uk/explore/sound_samples/
