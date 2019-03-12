@@ -1,39 +1,52 @@
 // setup init variables
 var mfcc = [];
 var rms = 0;
-var featureType = 'mfcc'
-var featureType2 = 'rms'
+var featureType = 'mfcc';
+var featureType2 = 'rms';
 var count = 0;
 var origin_data1 = [];
 var marginleft = 50;
 var matrixgap = 400;
 var durations = 8;
-var windowsize = 2048;
+var windowsize = 8192;
 var totaldata = [];
-column = ["banja31", "banja32", "bass1", "bass2", "cym1", "contra11", "contra12", "contra13", "contra31", "contra32", "contrd41", "contrd42", "horn", "guia31", "guia32",
-    "guid41", "guid42", "mandoa31", "mandoa32", "snare1", "snare2", "tenor", "olaa31", "olaa32", "olad41", "olad42", "olina31", "olina32", "olind41", "olind42"];
+var url=[];
 
+//get file directory
+window.onload=function(){
+    document.getElementById("filepicker").addEventListener("change", function(event) {
+    let output = document.getElementById("listing");
+    let files = event.target.files;
+    for (i=0;i<files.length;i++){
+        url.push("./assets/"+files[i].webkitRelativePath)
+    }
+        setTimeout(function() {
+            getData(url[0], 0)
+        }, 3000);
+    for (let i=0; i<files.length; i++) {
+        let item = document.createElement("li");
+        item.innerHTML = files[i].webkitRelativePath;
+        output.appendChild(item);
+    };
+}, false);
+}
 
-var url = ['./assets/sound/banjoa31.mp3', './assets/sound/banjoa32.mp3', './assets/sound/bassdrum1.mp3', './assets/sound/bassdrum2.mp3', './assets/sound/chinesecymball.mp3', './assets/sound/contrabassa11.mp3',
-    './assets/sound/contrabassa12.mp3', './assets/sound/contrabassa13.mp3', './assets/sound/contrabassa31.mp3', './assets/sound/contrabassa32.mp3',
-    './assets/sound/contrabassd41.mp3', './assets/sound/contrabassd42.mp3', './assets/sound/frenchhorna2.mp3', './assets/sound/guitara31.mp3', './assets/sound/guitara32.mp3',
-    './assets/sound/guitard41.mp3', './assets/sound/guitard42.mp3', './assets/sound/mandolina31.mp3', './assets/sound/mandolina32.mp3',
-    './assets/sound/snaredrum1.mp3', './assets/sound/snaredrum2.mp3', './assets/sound/tenordrum.mp3', './assets/sound/violaa31.mp3', './assets/sound/violaa32.mp3',
-    './assets/sound/violad41.mp3', './assets/sound/violad42.mp3', './assets/sound/violina31.mp3', './assets/sound/violina32.mp3',
-    './assets/sound/violind41.mp3', './assets/sound/violind42.mp3']
-
-function setup() {
-
-
-    getData(url[0], 0);
 
     function getData(a, index) {
+        var labelholder1=[];
+        var labelholder2=[];
+        audio_label=[];
+        for (i=0;i<url.length;i++){
+            labelholder1.push(url[i].split("/"))
+            labelholder2.push(labelholder1[i][3].split("."))
+            audio_label.push(labelholder2[i][0])
+        }
 
         //Create audioContext to decode the audio data later
         var audioCtx = new AudioContext();
 
         //Create source as a buffer source node which contains the audio data after decoding
-        var source = audioCtx.createBufferSource()
+        var source = audioCtx.createBufferSource();
 
         //use XMLHttpRequest to load audio track
         var request = new XMLHttpRequest();
@@ -60,7 +73,7 @@ function setup() {
                 var offlineCtx = new OfflineAudioContext(1, 44100 * duration1, 44100);
 
                 //create buffer source node which is used in Meyda Analyzer
-                var source11 = offlineCtx.createBufferSource()
+                var source11 = offlineCtx.createBufferSource();
                 //store the audio data to the buffer source node again
                 source11.buffer = buffer;
 
@@ -82,7 +95,7 @@ function setup() {
                     'featureExtractors': [featureType, featureType2],
                     'callback': show1
 
-                })
+                });
                 //start Meyda Analyzer
                 meydaAnalyzer1.start();
                 var hop = Meyda.hopSize;
@@ -90,7 +103,7 @@ function setup() {
                 var dur = duration1;
 
                 //Using offline audio context to render audio data
-                offlineCtx.startRendering()
+                offlineCtx.startRendering();
 
                 //After complete rendering, performing the following steps
                 offlineCtx.oncomplete = function (e) {
@@ -100,32 +113,31 @@ function setup() {
                     var matrix1 = origin_data1;
                     var matrix11 = [];
                     //Create self_similarity data based on origin_data by calculate Euclidean distance between each pair of data point of origin_data
-                    var matrix11 = predata(matrix1)
+                    var matrix11 = predata(matrix1);
                     //draw self_similarity matrix1
                     drawmatrix(matrix11, index, hop, buf, dur, url[index]);
                     ++index;
-                    if (index < 30) {
+                    if (index < url.length) {
                         getData(url[index], index)
                     }
-                    ;
                 }
             }).catch(function (err) {
                 console.log('Rendering failed: ' + err);
                 // Note: The promise should reject when startRendering is called a second time on an OfflineAudioContext
             });
-        }
+        };
 
         request.send();
         return 0;
     }
-}
+
 
 
 //function callback of Meyda Analyzer 1 which calculate mfcc coefficient
 function show1(features) {
 
-    mfcc = features[featureType]
-    rms = features[featureType2]
+    mfcc = features[featureType];
+    rms = features[featureType2];
     if (rms != 0) {
         origin_data1.push(mfcc)
     }
@@ -144,8 +156,10 @@ function drawmatrix(self_similarity_data, index, hop, buffer, duration, songname
         var CSM44 = [];
         for (var j = 0; j < self_similarity_data[0].length; j++) {
             CSM44.push(CSM22(self_similarity_data[i][j]))
+
         }
-        scaled_self_similarity_data.push(CSM44)
+        scaled_self_similarity_data.push(CSM44);
+
     }
 
     //Create color data from scaled_self_similarity_data
@@ -156,6 +170,7 @@ function drawmatrix(self_similarity_data, index, hop, buffer, duration, songname
 
             //get R G B value after convert scaled self similarity data to HSL color scale
             data3.push(d3.rgb(d3.hsl(scaled_self_similarity_data[i][j] * 257, 1, 0.5)));
+
         }
         color_data.push(data3);
     }
@@ -176,8 +191,8 @@ function drawmatrix(self_similarity_data, index, hop, buffer, duration, songname
             imgData.data[pos + 3] = 255;
         }
     }
-    console.log("I am calculating the distance")
-    if (index == 29) {
+    console.log("I am calculating the distance");
+    if (index == (url.length-1)) {
         var totalscore = [];
         for (i = 0; i < totaldata.length - 1; i++) {
             var scorefinal = [];
@@ -187,7 +202,7 @@ function drawmatrix(self_similarity_data, index, hop, buffer, duration, songname
             totalscore.push(scorefinal)
         }
         chart_display(totalscore);
-        network_diagram(totalscore)
+        network_diagram(totalscore,totaldata)
     }
 
     //Define the position to draw self_similarity matrix on canvas
@@ -239,32 +254,24 @@ function predata(origin_data) {
     return self_similarity_data;
 }
 
+
 function euclideanDistance(a, b) {
     var sum = 0;
     if (a.length == b.length) {
-        for (var i = 0; i < a.length; i++) {
-            sum += math.pow(a[i] - b[i], 2)
-            // sum=math.norm([a[i],b[i]],'fro')
-        }
+
+       sum = distance(a,b);
         //if 2 vector does not have the same data lenthg, fill 0 to the rest of smaller dimension vector
     } else if (a.length < b.length) {
         a = a.concat(Array(b.length - a.length).fill(0))
-        for (var i = 0; i < b.length; i++) {
-
-            sum += math.pow(a[i] - b[i], 2)
-            // sum=math.norm([a[i],b[i]],'fro')
-        }
+       sum = distance(a,b);
 
     } else {
         b = b.concat(Array(a.length - b.length).fill(0))
-        for (var i = 0; i < a.length; i++) {
 
-            sum += math.pow(a[i] - b[i], 2)
-            // sum=math.norm([a[i],b[i]],'fro')
-        }
+        sum = distance(a,b)
 
     }
-    return Math.sqrt(sum)
+    return sum
 }
 
 //Create Cross similarity Matrix from 2 SSM data
@@ -301,8 +308,6 @@ function chart_display(datat) {
     var cellSize = 10
     var legendElementWidth=20
 
-    var row = ["banja31", "banja32", "bass1", "bass2", "cym1", "contra11", "contra12", "contra13", "contra31", "contra32", "contrd41", "contrd42", "horn", "guia31", "guia32",
-        "guid41", "guid42", "mandoa31", "mandoa32", "snare1", "snare2", "tenor", "olaa31", "olaa32", "olad41", "olad42", "olina31", "olina32", "olind41"];
 
     var label = [];
     for (i = 0; i < column.length - 1; i++) {
@@ -408,20 +413,29 @@ function chart_display(datat) {
 }
 
 
-function network_diagram(data) {
-    var width = 560,
-        height = 500;
+function network_diagram(data, datat) {
+    var width = 800,
+        height = 800;
+    var colors = colorbrewer.Spectral[9];
+    var dataset = datat;
+
+    var scale = d3.scale.linear().domain([math.min(dataset), math.max(dataset)]).range([0, 1]);
+
+
+    var colorScale = d3.scale.quantize()
+        .domain([1, 0])
+        .range(colors);
 
     var color = d3.scale.category20();
 
     var force = d3.layout.force()
         .charge(-120)
-        .linkDistance(40)
+        .linkDistance(80)
         .size([width, height]);
 
     var x = d3.scale.linear()
         .domain([math.min(data), math.max(data)])
-        .range([80, 250])
+        .range([250, 80])
         .clamp(true);
 
     var brush = d3.svg.brush()
@@ -432,13 +446,48 @@ function network_diagram(data) {
         .attr("width", width)
         .attr("height", height);
 
+        // .append("g");
+
+    var maing = svg.selectAll('g').data(totaldata).enter()
+        .append("g")
+        .attr("transform", function (song,i){ if (i<5) {return `translate(${i*200},${0})`}
+        else return `translate(${(i-5)*200},${200})` })
+        // .attr("id", function (d,i){return "song"+ i})
+        .attr("class","song")
+
+    var draw = maing.selectAll("g")
+        .data(data=>data)
+        .enter()
+        .append("g")
+        .attr("transform", (d, i) => `translate(${ 0}, ${i/2 })`)
+        .selectAll("rect")
+        .data(function (d) {
+            return d
+        })
+        .enter()
+        .append("rect")
+        .attr("x", function (d, i) {
+            return i/2;
+        })
+        .attr("y", 0)
+        .attr("height", 2)
+        .attr("width", 2)
+        .attr("transform", "translate(20,50)")
+        .attr("class", ".tooltip")
+        .transition().duration(500)
+        .style("fill", function (d) {
+            return colorScale(scale(d));
+        });
+
+
+
     var links_g = svg.append("g");
 
     var nodes_g = svg.append("g");
 
     svg.append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(" + (width - 20) + ",0)")
+        .attr("transform", "translate(" + (50) + ",0)")
         .call(d3.svg.axis()
             .scale(x)
             .orient("left")
@@ -453,6 +502,9 @@ function network_diagram(data) {
         })
         .attr("class", "halo");
 
+
+
+
     var slider = svg.append("g")
         .attr("class", "slider")
         .call(brush);
@@ -462,28 +514,29 @@ function network_diagram(data) {
 
     var handle = slider.append("circle")
         .attr("class", "handle")
-        .attr("transform", "translate(" + (width - 20) + ",0)")
+        .attr("transform", "translate(" + (50) + ",0)")
         .attr("r", 5);
 
 
     svg.append("text")
-        .attr("x", width - 15)
+        .attr("x", 170)
         .attr("y", 60)
         .attr("text-anchor", "end")
         .attr("font-size", "12px")
         .style("opacity", 0.5)
-        .text("Euclidean Distance Threshold")
+        .text("Euclidean Distance Threshold");
 
 
     var nodes = [];
-    for (i = 0; i < column.length; i++) {
-        nodes.push({"name": column[i]})
+    for (i = 0; i < audio_label.length; i++) {
+        nodes.push({"name": audio_label[i],
+                    "url":  url[i]})
     }
     var links = [];
     var link2 = [];
-    for (i = 0; i < column.length - 1; i++) {
+    for (i = 0; i < audio_label.length - 1; i++) {
         var link1 = [];
-        for (j = i + 1; j < column.length; j++) {
+        for (j = i + 1; j < audio_label.length; j++) {
             link1.push({"source": i, "target": j})
         }
         link2.push(link1)
@@ -496,13 +549,15 @@ function network_diagram(data) {
     links.forEach(function (d, i) {
         d.i = i;
     });
+    console.log(links)
 
     function brushed() {
         var value = brush.extent()[0];
+        console.log(value)
 
         if (d3.event.sourceEvent) {
             value = x.invert(d3.mouse(this)[1]);
-            console.log(value)
+            console.log(value);
             brush.extent([value, value]);
         }
         handle.attr("cy", x(value));
@@ -548,7 +603,9 @@ function network_diagram(data) {
                 .attr("cy", function (d) {
                     return d.y;
                 });
-
+            d3.selectAll(".song")[0].forEach((g,index)=>{
+                d3.select(g).attr('transform',`translate(${(nodes[index].x)-10},${(nodes[index].y)-50})`)
+            })
             text.attr("x", function (d) {
                 return d.x;
             })
@@ -567,17 +624,49 @@ function network_diagram(data) {
     var node = nodes_g.selectAll(".node")
         .data(nodes)
         .enter().append("circle")
-        .attr("class", "node")
+        .attr("class", "nodes")
         .attr("r", 5)
         .style("fill", function (d) {
             return color(d.group);
         })
-        .call(force.drag)
+        .on("click", function(d){
+            // Play audio on click
+            let audioElement;
+            if (this.getElementsByTagName("audio").length === 0) {
+                // Create audio object from source url
+                audioElement = new Audio(d.url);
+                // Preload audio to improve response times
+                audioElement.preload = "auto";
+                // Cache audio for later use to improve performance
+                this.appendChild(audioElement);
+                // Play the audio
+                audioElement.play();
+            } else {
+                // Get saved audio element
+                audioElement = this.getElementsByTagName("audio")[0];
+                if (isPlaying(audioElement)) {
+                    // Pause if it is playing
+                    audioElement.pause();
+                } else {
+                    // Play if not already playing
+                    audioElement.play();
+                }
+            }
+        
+            function isPlaying(audio) {
+                return audio
+                    && audio.currentTime > 0  // Audio has started playing
+                    && !audio.paused          // Audio playback is not paused
+                    && !audio.ended           // Audio playback is not ended
+                    && audio.readyState >= 3; // Audio data is available and ready for playback
+            }
+        })
+        .call(force.drag);
 
-    node.append("title")
-        .text(function (d) {
-            return d.name;
-        });
+    // node.append("title")
+    //     .text(function (d) {
+    //         return d.name;
+    //     });
 
     var text = svg.append("g")
         .attr("class", "labels")
@@ -602,14 +691,5 @@ function network_diagram(data) {
 }
 
 
-//get file directory
-// document.getElementById("filepicker").addEventListener("change", function(event) {
-//     let output = document.getElementById("listing");
-//     let files = event.target.files;
-//
-//     for (let i=0; i<files.length; i++) {
-//         let item = document.createElement("li");
-//         item.innerHTML = files[i].webkitRelativePath;
-//         output.appendChild(item);
-//     };
-// }, false);
+
+
