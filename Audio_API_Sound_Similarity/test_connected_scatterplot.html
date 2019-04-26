@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="google-site-verification" content="Cb1i2q7oVgeeYvCfXyzou6YrKo5cPOGleoeIojAGqLM" />
+    <meta name="description" content="Connected Scatterplot This is a recreation of Hannah Fairfield&#x2019;s excellent Driving Shifts Into Reverse (2010). Read the annotations of the original! See also Fairfield&#x2019;s Driving Safety, in Fits and Starts (2012), Noah Veltman&#x2019;s variation of this graphic, and a paper on connected scatterplots by Haroz et al. Data: Hannah Fairfield">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:title" content="Connected Scatterplot">
+    <meta property="og:description" content="An Observable notebook by D3.">
+    <meta property="og:image" content="https://static.observableusercontent.com/thumbnail/5e514eabbb39dd4996a94917ab9e359b43918072461b6578fd4deb2281ca5f30.jpg">
+    <meta property="article:published_time" content="2018-05-08T22:56:29.559Z">
+    <meta property="article:modified_time" content="2019-03-01T04:13:53.677Z">
+    <link rel="prefetch" href="https://static.observableusercontent.com/worker/worker.b8893b2dc72441a3f0d28173c03d277d5448dd6e83a4c56b75f3789d46288fa2.js">
+    <link rel="prefetch" href="https://d3.static.observableusercontent.com/worker/worker.611b6f4ec377b5f92355fa7a0054063a7cbcc099e108f00e46d61253d521518b.html">
+    <link rel="preload" href="https://api.observablehq.com/document/@d3/connected-scatterplot" crossorigin="use-credentials" as="fetch">
+    <title>Connected Scatterplot / D3 / Observable</title>
+    <link rel="stylesheet" type="text/css" href="https://static.observablehq.com/style.8cf42c5c186956ae64a2948c0d0aabf94f3b5e364890755b6d3513f3b11849d4.css">
+    <link rel="apple-touch-icon" href="https://static.observablehq.com/favicon-512.e85350a27dfadeea7c7c78c797c24419525df5579de174d86d258c40ae57473a.png">
+    <link rel="icon" type="image/png" href="https://static.observablehq.com/favicon-512.e85350a27dfadeea7c7c78c797c24419525df5579de174d86d258c40ae57473a.png" sizes="512x512">
+    <link rel="search" type="application/opensearchdescription+xml" href="https://static.observablehq.com/opensearch.2f2ef9951b0f956fdefad21904e009bdc07d195eb7bd756829e83523fd64ea39.xml" title="Observable search">
+</head>
+<body class="sans-serif bg-near-white">
+<div  id="app"></div>
+<div class="modal"></div>
+<div class="overlay" class="absolute top-0 left-0"></div>
+
+<script src="https://static.observablehq.com/bundle.7967242bbce0924a9d34b0462e77d4dbd7a58df3088794fad513ca325e419ab0.js" integrity="sha512-XMx8G6tP080sQDhW4BhujCoLGh4BN409JwJ775pRP96LXVlxu+WLrJSDCHMi3cL1Sue+CrpscpFOLOtb3feMDg==" crossorigin></script>
+<script async src="https://www.google-analytics.com/analytics.js"></script><script type="application/ld+json">{"@context":"http:\/\/schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/observablehq.com\/@d3\/connected-scatterplot"},"headline":"Connected Scatterplot","image":["https:\/\/static.observableusercontent.com\/thumbnail\/5e514eabbb39dd4996a94917ab9e359b43918072461b6578fd4deb2281ca5f30.jpg"],"datePublished":"2018-05-08T22:56:29.559Z","dateModified":"2019-03-01T04:13:53.677Z","author":{"@type":"Person","name":"D3"},"publisher":{"@type":"Organization","name":"Observable","logo":{"@type":"ImageObject","url":"https:\/\/static.observablehq.com\/favicon-512.e85350a27dfadeea7c7c78c797c24419525df5579de174d86d258c40ae57473a.png"}}}</script><noscript><p>Connected Scatterplot This is a recreation of Hannah Fairfield’s excellent Driving Shifts Into Reverse (2010). Read the annotations of the original! See also Fairfield’s Driving Safety, in Fits and Starts (2012), Noah Veltman’s variation of this graphic, and a paper on connected scatterplots by Haroz et al. Data: Hannah Fairfield</p>
+    <pre>viewof replay = html&#x60;&lt;button&gt;Replay&#x60;</pre>
+    <pre>chart = {
+  replay;
+
+  const svg = d3.select(DOM.svg(width, height));
+
+  const l = length(line(data));
+
+  svg.append(&quot;g&quot;)
+      .call(xAxis);
+
+  svg.append(&quot;g&quot;)
+      .call(yAxis);
+
+  svg.append(&quot;path&quot;)
+      .datum(data)
+      .attr(&quot;fill&quot;, &quot;none&quot;)
+      .attr(&quot;stroke&quot;, &quot;black&quot;)
+      .attr(&quot;stroke-width&quot;, 2.5)
+      .attr(&quot;stroke-linejoin&quot;, &quot;round&quot;)
+      .attr(&quot;stroke-linecap&quot;, &quot;round&quot;)
+      .attr(&quot;stroke-dasharray&quot;, &#x60;0,${l}&#x60;)
+      .attr(&quot;d&quot;, line)
+    .transition()
+      .duration(5000)
+      .ease(d3.easeLinear)
+      .attr(&quot;stroke-dasharray&quot;, &#x60;${l},${l}&#x60;);
+
+  svg.append(&quot;g&quot;)
+      .attr(&quot;fill&quot;, &quot;white&quot;)
+      .attr(&quot;stroke&quot;, &quot;black&quot;)
+      .attr(&quot;stroke-width&quot;, 2)
+    .selectAll(&quot;circle&quot;)
+    .data(data)
+    .join(&quot;circle&quot;)
+      .attr(&quot;cx&quot;, d =&gt; x(d.x))
+      .attr(&quot;cy&quot;, d =&gt; y(d.y))
+      .attr(&quot;r&quot;, 3);
+
+  const label = svg.append(&quot;g&quot;)
+      .attr(&quot;font-family&quot;, &quot;sans-serif&quot;)
+      .attr(&quot;font-size&quot;, 10)
+    .selectAll(&quot;g&quot;)
+    .data(data)
+    .join(&quot;g&quot;)
+      .attr(&quot;transform&quot;, d =&gt; &#x60;translate(${x(d.x)},${y(d.y)})&#x60;)
+      .attr(&quot;opacity&quot;, 0);
+
+  label.append(&quot;text&quot;)
+      .text(d =&gt; d.name)
+      .each(function(d) {
+        const t = d3.select(this);
+        switch (d.orient) {
+          case &quot;top&quot;: t.attr(&quot;text-anchor&quot;, &quot;middle&quot;).attr(&quot;dy&quot;, &quot;-0.7em&quot;); break;
+          case &quot;right&quot;: t.attr(&quot;dx&quot;, &quot;0.5em&quot;).attr(&quot;dy&quot;, &quot;0.32em&quot;).attr(&quot;text-anchor&quot;, &quot;start&quot;); break;
+          case &quot;bottom&quot;: t.attr(&quot;text-anchor&quot;, &quot;middle&quot;).attr(&quot;dy&quot;, &quot;1.4em&quot;); break;
+          case &quot;left&quot;: t.attr(&quot;dx&quot;, &quot;-0.5em&quot;).attr(&quot;dy&quot;, &quot;0.32em&quot;).attr(&quot;text-anchor&quot;, &quot;end&quot;); break;
+        }
+      })
+      .call(halo);
+
+  label.transition()
+      .delay((d, i) =&gt; length(line(data.slice(0, i + 1))) / l * (5000 - 125))
+      .attr(&quot;opacity&quot;, 1);
+
+  return svg.node();
+}</pre>
+    <pre>height = 720</pre>
+    <pre>margin = ({top: 20, right: 30, bottom: 30, left: 40})</pre>
+    <pre>x = d3.scaleLinear()
+    .domain(d3.extent(data, d =&gt; d.x)).nice()
+    .range([margin.left, width - margin.right])</pre>
+    <pre>y = d3.scaleLinear()
+    .domain(d3.extent(data, d =&gt; d.y)).nice()
+    .range([height - margin.bottom, margin.top])</pre>
+    <pre>xAxis = g =&gt; g
+    .attr(&quot;transform&quot;, &#x60;translate(0,${height - margin.bottom})&#x60;)
+    .call(d3.axisBottom(x).ticks(width / 80))
+    .call(g =&gt; g.select(&quot;.domain&quot;).remove())
+    .call(g =&gt; g.selectAll(&quot;.tick line&quot;).clone()
+        .attr(&quot;y2&quot;, -height)
+        .attr(&quot;stroke-opacity&quot;, 0.1))
+    .call(g =&gt; g.append(&quot;text&quot;)
+        .attr(&quot;x&quot;, width - 4)
+        .attr(&quot;y&quot;, -4)
+        .attr(&quot;font-weight&quot;, &quot;bold&quot;)
+        .attr(&quot;text-anchor&quot;, &quot;end&quot;)
+        .attr(&quot;fill&quot;, &quot;black&quot;)
+        .text(data.x)
+        .call(halo))</pre>
+    <pre>yAxis = g =&gt; g
+    .attr(&quot;transform&quot;, &#x60;translate(${margin.left},0)&#x60;)
+    .call(d3.axisLeft(y).ticks(null, &quot;$.2f&quot;))
+    .call(g =&gt; g.select(&quot;.domain&quot;).remove())
+    .call(g =&gt; g.selectAll(&quot;.tick line&quot;).clone()
+        .attr(&quot;x2&quot;, width)
+        .attr(&quot;stroke-opacity&quot;, 0.1))
+    .call(g =&gt; g.select(&quot;.tick:last-of-type text&quot;).clone()
+        .attr(&quot;x&quot;, 4)
+        .attr(&quot;text-anchor&quot;, &quot;start&quot;)
+        .attr(&quot;font-weight&quot;, &quot;bold&quot;)
+        .attr(&quot;fill&quot;, &quot;black&quot;)
+        .text(data.y)
+        .call(halo))</pre>
+    <pre>function halo(text) {
+  text.select(function() { return this.parentNode.insertBefore(this.cloneNode(true), this); })
+      .attr(&quot;fill&quot;, &quot;none&quot;)
+      .attr(&quot;stroke&quot;, &quot;white&quot;)
+      .attr(&quot;stroke-width&quot;, 4)
+      .attr(&quot;stroke-linejoin&quot;, &quot;round&quot;);
+}</pre>
+    <pre>function length(path) {
+  return d3.create(&quot;svg:path&quot;).attr(&quot;d&quot;, path).node().getTotalLength();
+}</pre>
+    <pre>line = d3.line()
+    .curve(d3.curveCatmullRom)
+    .x(d =&gt; x(d.x))
+    .y(d =&gt; y(d.y))</pre>
+    <pre>data = {
+  const data = await d3.csv(&quot;https://gist.githubusercontent.com/mbostock/bd35887eafa65347debee780753c43a9/raw/bf812ca674d62101e144dad8003107124bf8d1ea/driving.csv&quot;, ({side, year, miles, gas}) =&gt; ({orient: side, name: year, x: +miles, y: +gas}));
+  data.x = &quot;Miles per person per year&quot;;
+  data.y = &quot;Cost per gallon&quot;;
+  return data;
+}</pre>
+    <pre>d3 = require(&quot;d3@5&quot;)</pre></noscript>

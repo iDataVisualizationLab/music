@@ -158,20 +158,20 @@ h4 {
     position:absolute;
     top: 200px;
     left: 0px;
-    width:675px;
+    width:1350px;
     height:1000px;
     resize: both;
 }
 
-#network_mst{
-    border: 1px solid black;
-    position:absolute;
-    top: 200px;
-    left: 675px;
-    width:675px;
-    height:1000px;
-    resize: both;
-}
+/*#network_mst{*/
+    /*border: 1px solid black;*/
+    /*position:absolute;*/
+    /*top: 200px;*/
+    /*left: 675px;*/
+    /*width:675px;*/
+    /*height:1000px;*/
+    /*resize: both;*/
+/*}*/
 /*#myCanvas{*/
     /*position:absolute;*/
     /*top:900px;*/
@@ -302,14 +302,14 @@ h4 {
     background-color: #4CAF50; /* Green */
     border: 2px solid gray;
     color: white;
-    padding: 5px 36px;
+    padding: 5px 54px;
     text-align: center;
     text-decoration: none;
     /*display: inline-block;*/
     font-size: 10px;
     position: absolute;
-    top:50px;
-    left: 1150px;
+    top:30px;
+    left: 0px;
     cursor: pointer;
 }
 #filepicker {

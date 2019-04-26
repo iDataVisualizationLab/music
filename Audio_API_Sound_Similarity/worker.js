@@ -15,7 +15,10 @@ onmessage = function(e){
     for(var k = 0; k < inputs.iterations; k++) {
         tsne.step(); // every time you call this, solution gets better
         Updated_TSNE(tsne.getSolution(),Log_TSNE(k+1));
+
     }
+
+
 
 // Tell the worker container in the main thread that the TSNE solution has been updated
     function Updated_TSNE(tsneOutput, strMessage) {

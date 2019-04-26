@@ -30,10 +30,6 @@ window.onload = function () {
 
 }
 
-//set up configuration for t-sne
-// function getinputduration(value) {
-//     return durations = parseInt(value);
-// }
 var get_durations = document.getElementById("duration")
 get_durations.onchange = function () {
     durations=parseInt(this.value)
@@ -55,8 +51,6 @@ iterations.oninput = function() {
     output_iterations.value = this.value;
     iterations_value = this.value;
 }
-
-
 
 function getData(a, index) {
     //Create audioContext to decode the audio data later
@@ -330,7 +324,7 @@ function calculate_tsne(){
 }
 
 //initiate scatter plot for tsne
-const width = 500, height = 350,
+const width = 500, height = 400,
     margin = {left: 50, top: 50, right: 50, bottom: 50},
     contentWidth = width - margin.left - margin.right,
     contentHeight = height - margin.top - margin.bottom;
@@ -358,93 +352,149 @@ function Initial_Scatterplot(tsne_data) {
 
 // Update the data with the given t-SNE result
 function UpdateDataTSNE(data) {
+    var graph = {};
+    graph.nodes = [];
+    graph.links = [];
 
     data.forEach(function(d, i) {
         data_min[i].x = d[0];  // Add the t-SNE x result to the dataset
         data_min[i].y = d[1];  // Add the t-SNE y result to the dataset
         data_min[i].label=audio_label[i];
-
+        graph.nodes.push({"id":i,"label":d.label,"url":d.url,"group": d.group})
     });
-    // getcluster(data_min)
+    var link2=[];
+    for (i = 0; i < data_min.length - 1; i++) {
+        var link1 = [];
+        for (j = i + 1; j < data_min.length; j++) {
+            link1.push({"source": i, "target": j, "weight": euclideanDistance(data_min[i],data_min[j]),
+                "connection": data_min[i].label+ " : " +data_min[j].label})
+        }
+        link2.push(link1)
+
+    }
+    graph.links=d3.merge(link2)
+
+//create minimumSpanningTree
+      minimumSpanningTree = mst(graph);
+     // store_links=[];
+     store_nodes=[];
+     minimumSpanningTree.links.forEach(d=> {
+        // store_links.push([d.source,d.target])
+         store_nodes.push([data_min[d.source],data_min[d.target]])
+    })
 
 }
 
 function playmusic(){
-     store_links=[];
-     store_links_id=[];
-    minimumSpanningTree.links.forEach(d=> {
-        store_links.push(d.source.id,d.target.id)
-    })
 
-    console.log(store_links)
+    function length(path) {
+        return d3.create("svg:path").attr("d", path).node().getTotalLength();
+    }
+    var valueline = d3.line()
+        .x(function(d) { return xScale(d.x); })
+        .y(function(d) { return yScale(d.y); });
+    const l = length(valueline(data_min));
 
-    // for(var i = 0; i < store_links.length; i++){
-    //     (function(i){
-    //         setTimeout(function(){
-    //             // PlayAudio(minimumSpanningTree.nodes[store_links[i]].element, minimumSpanningTree.nodes[store_links[i]]);
-    //             d3.select(minimumSpanningTree.nodes[store_links[i]].element)
-    //                 // Does work
-    //                 .attr("r", 8)
-    //                 .transition().duration(500)
-    //                 .attr("r",3);
-    //             // d3.selectAll("line")
-    //             //     .style("opacity",function (d){
-    //             //         return
-    //             //     })
-    //         }, 1000 * (i + 1));
-    //     })(i);
-    // }
-
-    for(var i = 0; i < store_links.length; i++){
+    for (var i = 0; i < store_nodes.length; i++){
         (function(i){
             setTimeout(function(){
-                PlayAudio(node_play[store_links[i]].element, node_play[store_links[i]]);
-                d3.select(node_play[store_links[i]].element)
-                // Does work
-                    .attr("r", 30)
-                    .transition().duration(500)
-                    .attr("r",10);
-                // if(i<store_links.length/2) {
-                //     d3.select(link_play[i].element)
-                //         .transition().duration(2000)
-                //         .style("visibility", "visible");
-                // }
-                d3.select(minimumSpanningTree.nodes[store_links[i]].element)
-                    .attr("r", 10)
-                    .transition().duration(500)
-                    .attr("r",5);
+                scatterplot.append("path")
+                    .data([store_nodes[i]])
+                    .attr("fill", "none")
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 1)
+                    .attr("stroke-linejoin", "round")
+                    .attr("stroke-linecap", "round")
+                    .attr("stroke-dasharray", `0,${l}`)
+                    .attr("d", valueline)
+                    .attr("id","line"+i)
+                    .transition()
+                    .duration(2000)
+                    .ease(d3.easeLinear)
+                    .attr("stroke-dasharray", `${l},${l}`);
+                text.append("textPath")
+                    .attr("xlink:href","#line"+i)
+                    .text(i);
+
+
             }, 1000 * (i + 1));
         })(i);
     }
-    for(var i = 0; i < store_links.length/2; i++){
-        (function(i){
-            setTimeout(function(){
-                    d3.select(link_play[i].element)
-                        .transition().duration(2000)
-                        .style("visibility", "visible");
 
-            }, 2000 * (i + 1));
-        })(i);
-    }
+    var text= scatterplot.append("text")
+        .attr("font-size","10px")
+        .attr("x",6)
+        .attr("dy",15);
+    //  store_links=[];
+    //  store_links_id=[];
+    // minimumSpanningTree.links.forEach(d=> {
+    //     store_links.push(d.source,d.target)
+    // })
+    //
+    // console.log(store_links)
+    //
+    // for(var i = 0; i < store_links.length; i++){
+    //     (function(i){
+    //         setTimeout(function(){
+    //             PlayAudio(node_play[store_links[i]].element, node_play[store_links[i]]);
+    //             d3.select(node_play[store_links[i]].element)
+    //             // Does work
+    //                 .attr("r", 30)
+    //                 .transition().duration(500)
+    //                 .attr("r",10);
+    //             d3.select(minimumSpanningTree.nodes[store_links[i]].element)
+    //                 .attr("r", 10)
+    //                 .transition().duration(500)
+    //                 .attr("r",5);
+    //         }, 1000 * (i + 1));
+    //     })(i);
+    // }
+    // for(var i = 0; i < store_links.length/2; i++){
+    //     (function(i){
+    //         setTimeout(function(){
+    //                 d3.select(link_play[i].element)
+    //                     .transition().duration(2000)
+    //                     .style("visibility", "visible");
+    //
+    //         }, 2000 * (i + 1));
+    //     })(i);
+    // }
 }
-
 
 // Draw a scatterplot from the given data
 function _Draw_Scatterplot(data){
 
-    const xScale = d3.scaleLinear()
+     xScale = d3.scaleLinear()
         .domain(getExtent(data, "x"))
         .range([0, contentWidth]);
-    const yScale = d3.scaleLinear()
+     yScale = d3.scaleLinear()
         .domain(getExtent(data, "y"))
         .range([0, contentHeight]);
 
     UpdateNodes(data);
 
+    // store_nodes.forEach(function (d) {
+    //     // Add the paths with different curves.
+    //     scatterplot.append("path")
+    //         .data([d])
+    //         .attr("fill", "none")
+    //         .attr("stroke", "black")
+    //         .attr("stroke-width", 1)
+    //         .attr("stroke-linejoin", "round")
+    //         .attr("stroke-linecap", "round")
+    //         .attr("stroke-dasharray", `0,${l}`)
+    //         .attr("d", valueline)
+    //         .transition()
+    //         .duration(10000)
+    //         .ease(d3.easeLinear)
+    //         .attr("stroke-dasharray", `${l},${l}`);
+    // })
+
+
     function UpdateNodes(data) {
 
-        svg_scatterplot.append("g")
-            .call(d3.brush().extent([[0, 0], [width, height]]).on("brush", brusheded).on("end", brushended));
+        // svg_scatterplot.append("g")
+        //     .call(d3.brush().extent([[0, 0], [width, height]]).on("brush", brusheded).on("end", brushended));
 
         function brusheded() {
             var s = d3.event.selection,
@@ -513,8 +563,10 @@ function _Draw_Scatterplot(data){
                     });
             }
         }
+
+
         var colors = d3.scaleOrdinal(d3.schemeCategory20);
-        const radius = 3;
+        const radius = 5;
         const opacity = "1";
         const selection = scatterplot.selectAll(".compute").data(data);
         //Exit
@@ -530,20 +582,11 @@ function _Draw_Scatterplot(data){
             .style("fill", function(d){
                 return colors(d.group)
             })
-            // .on("click", function (d) {
-            //     PlayAudio(this, d)
-            // })
-
             .on("mouseover", function(d) {
                 PlayAudio(this, d)
                 MouseOvertooltip(d);
                 d3.select(this)     // Does work
                     .attr("r", radius * 2);
-                // d3.select(this)
-                //     .append("title")
-                //     .text(function(d) { return d.label
-                //     })
-
             })
             .on("mouseout", function(d) {
                 div.style("opacity", 0);
@@ -553,6 +596,8 @@ function _Draw_Scatterplot(data){
                     .select("text")
                     .remove();
             });
+
+
         //Update
         selection
             .attr("cx", d => xScale(d.x))
