@@ -20,6 +20,7 @@ onmessage = function(e){
 
 
 
+
 // Tell the worker container in the main thread that the TSNE solution has been updated
     function Updated_TSNE(tsneOutput, strMessage) {
         postMessage({status:"TSNE_Updated", content:tsneOutput, logMessage:strMessage});

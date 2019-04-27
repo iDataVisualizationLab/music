@@ -31,7 +31,7 @@
 <div id="controller">
     <p id="tsne">T-SNE Configuration</p>
     <form action="/action_page.php" id="form">
-        Max audio's duration: <input type=number value=4 id="duration"><br>
+        Max audio's duration: <input type=number value=2 id="duration"><br>
     </form>
     <!--<button id="button1" onclick="calculate_Euclidean()">Euclidean Comparision</button>-->
     <!--<button id="button2" onclick="calculate_SmithWaterman()">SmithWaterman Comparision</button>-->
@@ -45,8 +45,8 @@
     </div>
     <div class="slidecontainer_iteration">
         <label>Iterations:</label>
-        <input type="range" min="500" max="5000" value="1000" class="slider" id="myRange2" oninput="iteration_output.value = myRange2.value">
-        <output name="Output2" id="iteration_output">1000</output>
+        <input type="range" min="500" max="5000" value="500" class="slider" id="myRange2" oninput="iteration_output.value = myRange2.value">
+        <output name="Output2" id="iteration_output">500</output>
     </div>
 </div>
 

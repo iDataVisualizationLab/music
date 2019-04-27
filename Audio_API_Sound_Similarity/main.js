@@ -7,7 +7,7 @@ var origin_data1 = [];
 var total_origin_data=[];
 var windowsize = 4096;
 var total_self_similarity_data = [];
-var durations = 4 ;
+var durations = 2 ;
 var audio_label = [];
 var all_canvas_image = [];
 var audio_statistic = [];
@@ -298,7 +298,7 @@ function drawmatrix(self_similarity_data, index1) {
     }
     console.log("I am calculating the distance");
     if (index1 == (fileContent.length - 1)) {
-        alert('Song Loading Completed')
+        // alert('Song Loading Completed')
         d3.select("#loader").style("display", "none");
         drawLegend()
     }
@@ -352,7 +352,7 @@ function Initial_Scatterplot(tsne_data) {
 
 // Update the data with the given t-SNE result
 function UpdateDataTSNE(data) {
-    var graph = {};
+     graph = {};
     graph.nodes = [];
     graph.links = [];
 
@@ -362,6 +362,20 @@ function UpdateDataTSNE(data) {
         data_min[i].label=audio_label[i];
         graph.nodes.push({"id":i,"label":d.label,"url":d.url,"group": d.group})
     });
+
+
+//create minimumSpanningTree
+//       minimumSpanningTree = mst(graph);
+//      // store_links=[];
+//      store_nodes=[];
+//      minimumSpanningTree.links.forEach(d=> {
+//         // store_links.push([d.source,d.target])
+//          store_nodes.push([data_min[d.source],data_min[d.target]])
+//     })
+
+}
+
+function playmusic(){
     var link2=[];
     for (i = 0; i < data_min.length - 1; i++) {
         var link1 = [];
@@ -374,7 +388,7 @@ function UpdateDataTSNE(data) {
     }
     graph.links=d3.merge(link2)
 
-//create minimumSpanningTree
+    //create minimumSpanningTree
       minimumSpanningTree = mst(graph);
      // store_links=[];
      store_nodes=[];
@@ -382,11 +396,6 @@ function UpdateDataTSNE(data) {
         // store_links.push([d.source,d.target])
          store_nodes.push([data_min[d.source],data_min[d.target]])
     })
-
-}
-
-function playmusic(){
-
     function length(path) {
         return d3.create("svg:path").attr("d", path).node().getTotalLength();
     }
@@ -409,22 +418,22 @@ function playmusic(){
                     .attr("d", valueline)
                     .attr("id","line"+i)
                     .transition()
-                    .duration(2000)
+                    .duration(500)
                     .ease(d3.easeLinear)
                     .attr("stroke-dasharray", `${l},${l}`);
-                text.append("textPath")
-                    .attr("xlink:href","#line"+i)
-                    .text(i);
+                // text.append("textPath")
+                //     .attr("xlink:href","#line"+i)
+                //     .text(i);
 
 
-            }, 1000 * (i + 1));
+            }, 200 * (i + 1));
         })(i);
     }
 
-    var text= scatterplot.append("text")
-        .attr("font-size","10px")
-        .attr("x",6)
-        .attr("dy",15);
+    // var text= scatterplot.append("text")
+    //     .attr("font-size","10px")
+    //     .attr("x",6)
+    //     .attr("dy",15);
     //  store_links=[];
     //  store_links_id=[];
     // minimumSpanningTree.links.forEach(d=> {
