@@ -28,29 +28,30 @@ window.onload = function () {
         getData(fileContent[0], 0)
     }, false);
 
+
+    var get_durations = document.getElementById("duration")
+    get_durations.onchange = function () {
+        durations=parseInt(this.value)
+    }
+    var perplexity = document.getElementById("myRange1");
+    var iterations = document.getElementById("myRange2");
+    var output_perplexity = document.getElementById("perplexity_output");
+    var output_iterations = document.getElementById("iteration_output");
+    perplexity_value=perplexity.value;
+    iterations_value=iterations.value
+
+    perplexity.oninput = function() {
+        output_perplexity.value= this.value;
+        perplexity_value = this.value;
+    }
+
+    iterations.oninput = function() {
+        output_iterations.value = this.value;
+        iterations_value = this.value;
+    }
 }
 
-var get_durations = document.getElementById("duration")
-get_durations.onchange = function () {
-    durations=parseInt(this.value)
-    console.log(durations)
-}
-var perplexity = document.getElementById("myRange1");
-var iterations = document.getElementById("myRange2");
-var output_perplexity = document.getElementById("perplexity_output");
-var output_iterations = document.getElementById("iteration_output");
-perplexity_value=perplexity.value;
-iterations_value=iterations.value
 
-perplexity.oninput = function() {
-    output_perplexity.value= this.value;
-    perplexity_value = this.value;
-}
-
-iterations.oninput = function() {
-    output_iterations.value = this.value;
-    iterations_value = this.value;
-}
 
 function getData(a, index) {
     //Create audioContext to decode the audio data later
@@ -66,7 +67,7 @@ function getData(a, index) {
     //return the audio data to audioData variable type arraybuffer
     request.onload = function () {
         d3.select("#loader").style("display", "block");
-        audioData = request.response;
+        var audioData = request.response;
         //decode the audio data from array buffer and stored to AudioBufferSourceNode
         audioCtx.decodeAudioData(audioData, function (buffer) {
             //store data to buffer source node
@@ -187,8 +188,8 @@ function data_preprocess(origin_data){
 
 //function callback of Meyda Analyzer 1 which calculate mfcc coefficient
 function show1(features) {
-    mfcc = features[featureType];
-    rms = features[featureType2];
+    var mfcc = features[featureType];
+    var rms = features[featureType2];
     if (rms != 0) {
         origin_data1.push(mfcc)
     }
@@ -313,6 +314,7 @@ function calculate_tsne(){
     fileContent.forEach((d,i)=>{
         data_min[i].url=d;
         data_min[i].info=audio_statistic[i];
+        data_min[i].id=i;
     })
     getcluster(data_min)
     // startWorker(total_pre_process_data,Initial_Scatterplot,getcluster)
@@ -322,6 +324,7 @@ function calculate_tsne(){
         iterations: iterations_value})
 
 }
+
 
 //initiate scatter plot for tsne
 const width = 500, height = 400,
@@ -352,30 +355,24 @@ function Initial_Scatterplot(tsne_data) {
 
 // Update the data with the given t-SNE result
 function UpdateDataTSNE(data) {
-     graph = {};
-    graph.nodes = [];
-    graph.links = [];
 
     data.forEach(function(d, i) {
         data_min[i].x = d[0];  // Add the t-SNE x result to the dataset
         data_min[i].y = d[1];  // Add the t-SNE y result to the dataset
         data_min[i].label=audio_label[i];
-        graph.nodes.push({"id":i,"label":d.label,"url":d.url,"group": d.group})
+
     });
 
-
-//create minimumSpanningTree
-//       minimumSpanningTree = mst(graph);
-//      // store_links=[];
-//      store_nodes=[];
-//      minimumSpanningTree.links.forEach(d=> {
-//         // store_links.push([d.source,d.target])
-//          store_nodes.push([data_min[d.source],data_min[d.target]])
-//     })
 
 }
 
 function playmusic(){
+    let graph1 = {};
+    graph1.nodes = [];
+    graph1.links = [];
+    for ( i=0; i < data_min.length; i++) {
+        graph1.nodes.push({"id": i, "links": []})
+    }
     var link2=[];
     for (i = 0; i < data_min.length - 1; i++) {
         var link1 = [];
@@ -384,29 +381,92 @@ function playmusic(){
                 "connection": data_min[i].label+ " : " +data_min[j].label})
         }
         link2.push(link1)
-
     }
-    graph.links=d3.merge(link2)
+    graph1.links=d3.merge(link2)
 
     //create minimumSpanningTree
-      minimumSpanningTree = mst(graph);
-     // store_links=[];
-     store_nodes=[];
-     minimumSpanningTree.links.forEach(d=> {
-        // store_links.push([d.source,d.target])
-         store_nodes.push([data_min[d.source],data_min[d.target]])
+       minimumSpanningTree = mst(graph1);
+    var store_nodes=[];
+    minimumSpanningTree.links.forEach(d=> {
+        store_nodes.push([data_min[d.source],data_min[d.target]])
     })
+    draw_path(store_nodes)
+
+
+
+
+
+
+
+}
+function draw_shortestpath(){
+    minimumSpanningTree.links.forEach(d=>{
+        minimumSpanningTree.links.push({"source":d.target,"target":d.source,"weight": d.weight})
+    })
+    var nodes= minimumSpanningTree.nodes;
+    var links= minimumSpanningTree.links;
+
+    nodes[2].start=true;
+    var a=nodes[2].id
+    nodes[6].end=true;
+    var b=nodes[6].id
+    console.log(minimumSpanningTree)
+
+
+
+    function convert_graph(graph) {
+        var j, k, l, len, len1, map, n, ref;
+        map = {};
+        ref = graph.nodes;
+        for (j = 0, len = ref.length; j < len; j++) {
+            n = ref[j];
+            for (k = 0, len1 = links.length; k < len1; k++) {
+                l = links[k];
+                if (n.id === l.source) {
+                    if (!(n.id in map)) {
+                        map[n.id] = {};
+                    }
+                    map[n.id][l.target] = l.weight;
+                }
+            }
+        }
+        return map;
+    };
+
+    map = convert_graph(minimumSpanningTree);
+
+    lib_graph = new Graph(map);
+
+    shortest_path = lib_graph.findShortestPath(a, b);
+    for (i=0;i<shortest_path.length;i++){shortest_path[i]=parseInt(shortest_path[i])}
+    console.log(shortest_path)
+    var store_nodes=[];
+    shortest_path.forEach((d,i)=>{
+        if (i<shortest_path.length-1) {
+            store_nodes.push([data_min[shortest_path[i]], data_min[shortest_path[i + 1]]])
+        }
+    })
+
+    draw_path(store_nodes)
+
+}
+function draw_path(store_nodes) {
     function length(path) {
         return d3.create("svg:path").attr("d", path).node().getTotalLength();
     }
+
     var valueline = d3.line()
-        .x(function(d) { return xScale(d.x); })
-        .y(function(d) { return yScale(d.y); });
+        .x(function (d) {
+            return xScale(d.x);
+        })
+        .y(function (d) {
+            return yScale(d.y);
+        });
     const l = length(valueline(data_min));
 
-    for (var i = 0; i < store_nodes.length; i++){
-        (function(i){
-            setTimeout(function(){
+    for (var i = 0; i < store_nodes.length; i++) {
+        (function (i) {
+            setTimeout(function () {
                 scatterplot.append("path")
                     .data([store_nodes[i]])
                     .attr("fill", "none")
@@ -416,7 +476,7 @@ function playmusic(){
                     .attr("stroke-linecap", "round")
                     .attr("stroke-dasharray", `0,${l}`)
                     .attr("d", valueline)
-                    .attr("id","line"+i)
+                    .attr("id", "line" + i)
                     .transition()
                     .duration(500)
                     .ease(d3.easeLinear)
@@ -429,45 +489,12 @@ function playmusic(){
             }, 200 * (i + 1));
         })(i);
     }
+}
 
-    // var text= scatterplot.append("text")
-    //     .attr("font-size","10px")
-    //     .attr("x",6)
-    //     .attr("dy",15);
-    //  store_links=[];
-    //  store_links_id=[];
-    // minimumSpanningTree.links.forEach(d=> {
-    //     store_links.push(d.source,d.target)
-    // })
-    //
-    // console.log(store_links)
-    //
-    // for(var i = 0; i < store_links.length; i++){
-    //     (function(i){
-    //         setTimeout(function(){
-    //             PlayAudio(node_play[store_links[i]].element, node_play[store_links[i]]);
-    //             d3.select(node_play[store_links[i]].element)
-    //             // Does work
-    //                 .attr("r", 30)
-    //                 .transition().duration(500)
-    //                 .attr("r",10);
-    //             d3.select(minimumSpanningTree.nodes[store_links[i]].element)
-    //                 .attr("r", 10)
-    //                 .transition().duration(500)
-    //                 .attr("r",5);
-    //         }, 1000 * (i + 1));
-    //     })(i);
-    // }
-    // for(var i = 0; i < store_links.length/2; i++){
-    //     (function(i){
-    //         setTimeout(function(){
-    //                 d3.select(link_play[i].element)
-    //                     .transition().duration(2000)
-    //                     .style("visibility", "visible");
-    //
-    //         }, 2000 * (i + 1));
-    //     })(i);
-    // }
+
+
+function reset(){
+    scatterplot.selectAll("path").remove()
 }
 
 // Draw a scatterplot from the given data
@@ -482,85 +509,67 @@ function _Draw_Scatterplot(data){
 
     UpdateNodes(data);
 
-    // store_nodes.forEach(function (d) {
-    //     // Add the paths with different curves.
-    //     scatterplot.append("path")
-    //         .data([d])
-    //         .attr("fill", "none")
-    //         .attr("stroke", "black")
-    //         .attr("stroke-width", 1)
-    //         .attr("stroke-linejoin", "round")
-    //         .attr("stroke-linecap", "round")
-    //         .attr("stroke-dasharray", `0,${l}`)
-    //         .attr("d", valueline)
-    //         .transition()
-    //         .duration(10000)
-    //         .ease(d3.easeLinear)
-    //         .attr("stroke-dasharray", `${l},${l}`);
-    // })
-
-
     function UpdateNodes(data) {
 
         // svg_scatterplot.append("g")
         //     .call(d3.brush().extent([[0, 0], [width, height]]).on("brush", brusheded).on("end", brushended));
 
-        function brusheded() {
-            var s = d3.event.selection,
-                x0 = s[0][0]-15,
-                y0 = s[0][1]-15,
-                dx = s[1][0] - x0,
-                dy = s[1][1] - y0;
-             var brush_data=[]
-            svg_scatterplot.selectAll('circle')
-                // .style("fill", function (d) {
-                //     brush_data.push({"data": d, "element": this, "url": d.url, "label": d.label, "x":d.x, "y":d.y, "group":d.group});
-                //     console.log(brush_data);
-                //     if (xScale(d.x) >= x0 && xScale(d.x) <= x0 + dx && yScale(d.y) >= y0 && yScale(d.y) <= y0 + dy) {
-                //         return colors(d.group);
-                //         // return "#000";
-                //     }
-                //
-                //     else { return colors(d.group); }
-                // })
-                .style("opacity",function (d){
-                        brush_data.push({"data": d, "element": this, "url": d.url, "label": d.label, "x":d.x, "y":d.y, "group":d.group});
-                        console.log(brush_data)
-                    if (xScale(d.x) >= x0 && xScale(d.x) <= x0 + dx && yScale(d.y) >= y0 && yScale(d.y) <= y0 + dy) {
-                        return 0.5;
-                    }
-
-                })
-        .on("mouseover", function(d) {
-            if (xScale(d.x) >= x0 && xScale(d.x) <= x0 + dx && yScale(d.y) >= y0 && yScale(d.y) <= y0 + dy) {
-                PlayAudio(this, d)
-                MouseOvertooltip(d);
-            }})
-                .on("mouseout", function(d) {
-                    div.style("opacity", 0);
-                });
-
-            var graph = {};
-            graph.nodes = [];
-            graph.links = [];
-            brush_data.forEach((d,i)=> {
-                graph.nodes.push({"id":i,"label":d.label,"url":d.url,"element":d.element, "group": d.group})
-            })
-            console.log(graph)
-             var link2=[];
-            for (i = 0; i < brush_data.length - 1; i++) {
-                var link1 = [];
-                for (j = i + 1; j < brush_data.length; j++) {
-                    link1.push({"source": i, "target": j, "weight": euclideanDistance(brush_data[i].data,brush_data[j].data),
-                    "connection": brush_data[i].label+ " : " +brush_data[j].label})
-                }
-                link2.push(link1)
-
-            }
-            graph.links=d3.merge(link2)
-
-             minimumSpanningTree = mst(graph);
-        }
+        // function brusheded() {
+        //     var s = d3.event.selection,
+        //         x0 = s[0][0]-15,
+        //         y0 = s[0][1]-15,
+        //         dx = s[1][0] - x0,
+        //         dy = s[1][1] - y0;
+        //      var brush_data=[]
+        //     svg_scatterplot.selectAll('circle')
+        //         // .style("fill", function (d) {
+        //         //     brush_data.push({"data": d, "element": this, "url": d.url, "label": d.label, "x":d.x, "y":d.y, "group":d.group});
+        //         //     console.log(brush_data);
+        //         //     if (xScale(d.x) >= x0 && xScale(d.x) <= x0 + dx && yScale(d.y) >= y0 && yScale(d.y) <= y0 + dy) {
+        //         //         return colors(d.group);
+        //         //         // return "#000";
+        //         //     }
+        //         //
+        //         //     else { return colors(d.group); }
+        //         // })
+        //         .style("opacity",function (d){
+        //                 brush_data.push({"data": d, "element": this, "url": d.url, "label": d.label, "x":d.x, "y":d.y, "group":d.group});
+        //                 console.log(brush_data)
+        //             if (xScale(d.x) >= x0 && xScale(d.x) <= x0 + dx && yScale(d.y) >= y0 && yScale(d.y) <= y0 + dy) {
+        //                 return 0.5;
+        //             }
+        //
+        //         })
+        // .on("mouseover", function(d) {
+        //     if (xScale(d.x) >= x0 && xScale(d.x) <= x0 + dx && yScale(d.y) >= y0 && yScale(d.y) <= y0 + dy) {
+        //         PlayAudio(this, d)
+        //         MouseOvertooltip(d);
+        //     }})
+        //         .on("mouseout", function(d) {
+        //             div.style("opacity", 0);
+        //         });
+        //
+        //     var graph = {};
+        //     graph.nodes = [];
+        //     graph.links = [];
+        //     brush_data.forEach((d,i)=> {
+        //         graph.nodes.push({"id":i,"label":d.label,"url":d.url,"element":d.element, "group": d.group})
+        //     })
+        //     console.log(graph)
+        //      var link2=[];
+        //     for (i = 0; i < brush_data.length - 1; i++) {
+        //         var link1 = [];
+        //         for (j = i + 1; j < brush_data.length; j++) {
+        //             link1.push({"source": i, "target": j, "weight": euclideanDistance(brush_data[i].data,brush_data[j].data),
+        //             "connection": brush_data[i].label+ " : " +brush_data[j].label})
+        //         }
+        //         link2.push(link1)
+        //
+        //     }
+        //     graph.links=d3.merge(link2)
+        //
+        //      minimumSpanningTree = mst(graph);
+        // }
 
 
         function brushended() {
@@ -588,7 +597,8 @@ function _Draw_Scatterplot(data){
             .attr("cy", d => yScale(d.y))
             .attr("r", radius)
             .style("opacity", opacity)
-            .style("fill", function(d){
+            .style("fill", function(d,i){
+
                 return colors(d.group)
             })
             .on("mouseover", function(d) {
@@ -596,6 +606,10 @@ function _Draw_Scatterplot(data){
                 MouseOvertooltip(d);
                 d3.select(this)     // Does work
                     .attr("r", radius * 2);
+                d3.select(this)
+                    .append("title")
+                    .text(function(d) { return d.id
+                    })
             })
             .on("mouseout", function(d) {
                 div.style("opacity", 0);
@@ -627,129 +641,6 @@ function MouseOvertooltip(d) {
         "BufferSize: " + d.info.bufferSize.toFixed(2) + "<br/>" +
         "HopSize: " + d.info.hopSize.toFixed(2) + "<br/>");
 }
-
-// function draw_network(graph){
-//     var width_network = 650;
-//     var height_network = 400;
-//     var colors = d3.scaleOrdinal(d3.schemeCategory20);
-//
-//      svg_network =  d3.select("#network_mst")
-//         .append("svg")
-//         .attr("width", width_network)
-//         .attr("height", height_network);
-//         // .attr("transform",'translate(100,-30)');
-//
-//     var simulation = d3.forceSimulation()
-//         .force("link", d3.forceLink().id(function(d){ return d.id}).distance(function(d){return 50*d.weight}).strength(1))
-//         .force("charge", d3.forceManyBody().strength(-200))
-//         .force("center", d3.forceCenter(width_network / 2, height_network / 2));
-//     maxWeight=20
-//     function linkColor(link) {
-//         return d3.interpolateRgb("black", "red")(link.weight / maxWeight);
-//     }
-//
-//     function linkWidth(link) {
-//         return d3.scaleLinear()
-//             .domain([0, maxWeight])
-//             .range([0.5, 3])(link.weight) + "px";
-//     }
-//      node_play=[];
-//     link_play=[];
-//     var link = svg_network.append("g")
-//         .attr("class", "links")
-//         .selectAll("line")
-//         .data(graph.links)
-//         .enter().append("line")
-//         // .attr("id", function (d){
-//         //     return "link"+ d.source + d.target;
-//         // } )
-//         .attr("stroke",function (d){
-//             link_play.push({"id": d.source, "element": this})
-//             return linkColor(d.weight)
-//         })
-//         .attr("stroke-width", "1px")
-//         .style("visibility", "hidden");
-//
-//     var node = svg_network.append("g")
-//         .attr("class", "nodes")
-//         .selectAll("circle")
-//         .data(graph.nodes)
-//         .enter().append("circle")
-//         .attr("id",function(d){
-//             return d.id
-//         })
-//         .attr("r", 10)
-//         .style("fill", function (d){
-//             node_play.push({"id": d.id, "element": this, "url": d.url, "label": d.label})
-//             return colors(d.group)
-//             console.log("color_node"+colors(d.group))
-//         })
-//         .on("mouseover", function(d) {
-//                 PlayAudio(this, d)
-//             })
-//
-//         .call(d3.drag()
-//             .on("start", dragstarted)
-//             .on("drag", dragged)
-//             .on("end", dragended));
-//
-//
-//     node.append("title")
-//         .text(function(d) { return "node: " + d.id + ":" + d.label; });
-//
-//     link.append("title")
-//         .text(function(d) {
-//             return d.connection;
-//         });
-//
-//     // Kick off the simulation.
-//     simulation
-//         .nodes(graph.nodes)
-//         .on("tick", ticked);
-//     simulation.force("link")
-//         .links(graph.links);
-//
-//
-//     // Update positions, which will quickly stabilize as the simulation cools.
-//     function ticked() {
-//         link
-//             .attr("x1", function(d) { return d.source.x; })
-//             .attr("y1", function(d) { return d.source.y; })
-//             .attr("x2", function(d) { return d.target.x; })
-//             .attr("y2", function(d) { return d.target.y; });
-//
-//         node
-//             .attr("cx", function(d) { return d.x; })
-//             .attr("cy", function(d) { return d.y; });
-//     }
-//     //add zoom capabilities
-//     var zoom_handler = d3.zoom()
-//         .on("zoom", zoom_actions);
-//
-//     zoom_handler(svg_network);
-//     //Zoom functions
-//     function zoom_actions(){
-//         node.attr("transform", d3.event.transform)
-//         link.attr("transform", d3.event.transform)
-//     }
-//     function dragstarted(d) {
-//         if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-//         d.fx = d.x;
-//         d.fy = d.y;
-//     }
-//
-//     function dragged(d) {
-//         d.fx = d3.event.x;
-//         d.fy = d3.event.y;
-//     }
-//
-//     function dragended(d) {
-//         if (!d3.event.active) simulation.alphaTarget(0);
-//         d.fx = null;
-//         d.fy = null;
-//     }
-//
-// }
 
 // Get a set of cluster centroids based on the given data
 function getcluster(data){
@@ -784,11 +675,6 @@ function calculate_Euclidean() {
         }
         totalscore.push(scorefinal)
     }
-    //Display distance pair in heatmap
-    // chart_display(totalscore);
-    //Display distance in network diagram
-    // network_diagram(totalscore)
-
 
 }
 
