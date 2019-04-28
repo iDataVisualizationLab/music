@@ -4,6 +4,11 @@
     stroke-width: 1.5px;
 }
 
+.notifyjs-corner{
+    position: absolute;
+    left:1px;
+    width: 300px;
+}
 /*.links {*/
 /*!*stroke: #000000;*!*/
 /*opacity: 0;*/
@@ -247,7 +252,7 @@ h4 {
     background-color: #4CAF50; /* Green */
     border: 2px solid gray;
     color: white;
-    padding: 5px 24px;
+    padding: 5px 52px;
     text-align: center;
     text-decoration: none;
     /*display: inline-block;*/

@@ -303,6 +303,8 @@ function drawmatrix(self_similarity_data, index1) {
     console.log("I am calculating the distance");
     if (index1 == (fileContent.length - 1)) {
         // alert('Song Loading Completed')
+        // $.notify("Audio Loading Completed");
+        $.notify("Audio Loading Completed", "success");
         d3.select("#loader").style("display", "none");
         // drawLegend()
     }
@@ -310,27 +312,6 @@ function drawmatrix(self_similarity_data, index1) {
 }
 
 function calculate_tsne(){
-    //initiate scatter plot for tsne
-         var width = 500, height = 400,
-        margin = {left: 50, top: 50, right: 50, bottom: 50},
-        contentWidth = width - margin.left - margin.right,
-        contentHeight = height - margin.top - margin.bottom;
-
-         svg_scatterplot = d3.select("#theGraph")
-        .append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("transform",'translate(100,-30)');
-
-         var scatterplot = svg_scatterplot
-        .append("g")
-        .attr("transform", `translate(${margin.left}, ${margin.right})`)
-        .attr("id", "snodes");
-
-    div = d3.select("body").append("div")
-        .attr("class", "tooltip_circle")
-        .style("opacity", 0);
-
     var total_pre_process_data=[];
     total_origin_data.forEach(d=>{
         total_pre_process_data.push(data_preprocess(d))});
@@ -346,9 +327,29 @@ function calculate_tsne(){
         epsilon: 10,        // epsilon is learning rate (10 = default)
         perplexity: perplexity_value,    // roughly how many neighbors each point influences (30 = default)
         iterations: iterations_value})
-
+    total_origin_data=[];
 }
 
+//initiate scatter plot for tsne
+width = 500, height = 400,
+    margin = {left: 50, top: 50, right: 50, bottom: 50},
+    contentWidth = width - margin.left - margin.right,
+    contentHeight = height - margin.top - margin.bottom;
+
+svg_scatterplot = d3.select("#theGraph")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("transform",'translate(100,-30)');
+
+scatterplot = svg_scatterplot
+    .append("g")
+    .attr("transform", `translate(${margin.left}, ${margin.right})`)
+    .attr("id", "snodes");
+
+div = d3.select("body").append("div")
+    .attr("class", "tooltip_circle")
+    .style("opacity", 0);
 
 // Draw a scatterplot from the given t-SNE data
 function Initial_Scatterplot(tsne_data) {
@@ -505,11 +506,18 @@ function draw_path(store_nodes,time_play) {
 
 
 function reset(){
+    stopWorker()
     scatterplot.selectAll("path").remove()
 }
 
-function resetAll(){
-    d3.select("svg").remove();
+// function resetAll(){
+//     d3.select("svg").remove();
+//
+// }
+
+function stopWorker() {
+    w.terminate();
+    w = undefined;
 }
 
 // Draw a scatterplot from the given data
@@ -619,10 +627,12 @@ function _Draw_Scatterplot(data){
                 if (selected_node==false){
                     minimumSpanningTree.nodes[d.id].start=true;
                     start_node_id=d.id
+                    $.notify("Start Node Selected", "success");
                     selected_node=true;
                 }
                 else {
                     minimumSpanningTree.nodes[d.id].end=true;
+                    $.notify("End Node Selected", "success");
                     end_node_id=d.id;
                     selected_node=false;
                 }
