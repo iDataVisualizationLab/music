@@ -329,7 +329,7 @@ function calculate_tsne(){
 
 }
 
-//initiate scatter plot for tsne
+/*//initiate scatter plot for tsne
 const width = 500, height = 350,
     margin = {left: 50, top: 50, right: 50, bottom: 50},
     contentWidth = width - margin.left - margin.right,
@@ -348,7 +348,7 @@ const scatterplot = svg_scatterplot
 
 div = d3.select("body").append("div")
     .attr("class", "tooltip_circle")
-    .style("opacity", 0);
+    .style("opacity", 0); */
 
 // Draw a scatterplot from the given t-SNE data
 function Initial_Scatterplot(tsne_data) {

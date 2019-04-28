@@ -256,7 +256,7 @@ h4 {
     top: 2px;
     cursor: pointer;
 }
-#button2 {
+#button4 {
     background-color: #4CAF50; /* Green */
     border: 2px solid gray;
     color: white;
@@ -266,7 +266,8 @@ h4 {
     /*display: inline-block;*/
     font-size: 10px;
     position: absolute;
-    top:30px;
+    top:45px;
+    left:1150px;
     cursor: pointer;
 }
 #button3 {
@@ -283,7 +284,7 @@ h4 {
     cursor: pointer;
 }
 
-#button4 {
+#button2 {
     background-color: #4CAF50; /* Green */
     border: 2px solid gray;
     color: white;

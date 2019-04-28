@@ -4,7 +4,7 @@
     <script src="./assets/js/jquery.min.js"></script>
     <script src="./assets/js/p5/p5.min.js"></script>
     <script src="./assets/js/math.min.js"></script>
-    <script src="./assets/js/d3.v3.min.js"></script>
+    <!--<script src="./assets/js/d3.v3.min.js"></script>-->
     <script src="./assets/js/d3.v4.min.js"></script>
     <script src="./assets/js/disjoint-set.js"></script>
     <script src="./assets/js/kruskal-mst.js"></script>
@@ -36,9 +36,9 @@
         Max audio's duration: <input type=number value=2 id="duration"><br>
     </form>
     <button id="button1" onclick="draw_shortestpath()">Draw Path</button>
-    <!--<button id="button2" onclick="calculate_SmithWaterman()">SmithWaterman Comparision</button>-->
+    <button id="button2" onclick="resetAll()">Reset All</button>
     <button id="button3" onclick=" calculate_tsne()">T-sne Comparision</button>
-    <button id="button4" onclick=" reset()">Reset</button>
+    <button id="button4" onclick=" reset()">Reset Path</button>
     <button id="button5" onclick=" playmusic()">Play MST</button>
     <div class="slidecontainer_perplexity">
         <label>Perplexity:</label>

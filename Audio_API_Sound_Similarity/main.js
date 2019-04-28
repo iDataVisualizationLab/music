@@ -14,6 +14,9 @@ var audio_statistic = [];
 var data_min=[];
 var perplexity_value;
 var iterations_value;
+var selected_node=false;
+var start_node_id;
+var end_node_id;
 
 //get file directory
 window.onload = function () {
@@ -301,12 +304,33 @@ function drawmatrix(self_similarity_data, index1) {
     if (index1 == (fileContent.length - 1)) {
         // alert('Song Loading Completed')
         d3.select("#loader").style("display", "none");
-        drawLegend()
+        // drawLegend()
     }
 
 }
 
 function calculate_tsne(){
+    //initiate scatter plot for tsne
+         var width = 500, height = 400,
+        margin = {left: 50, top: 50, right: 50, bottom: 50},
+        contentWidth = width - margin.left - margin.right,
+        contentHeight = height - margin.top - margin.bottom;
+
+         svg_scatterplot = d3.select("#theGraph")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("transform",'translate(100,-30)');
+
+         var scatterplot = svg_scatterplot
+        .append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.right})`)
+        .attr("id", "snodes");
+
+    div = d3.select("body").append("div")
+        .attr("class", "tooltip_circle")
+        .style("opacity", 0);
+
     var total_pre_process_data=[];
     total_origin_data.forEach(d=>{
         total_pre_process_data.push(data_preprocess(d))});
@@ -325,27 +349,6 @@ function calculate_tsne(){
 
 }
 
-
-//initiate scatter plot for tsne
-const width = 500, height = 400,
-    margin = {left: 50, top: 50, right: 50, bottom: 50},
-    contentWidth = width - margin.left - margin.right,
-    contentHeight = height - margin.top - margin.bottom;
-
-const svg_scatterplot = d3.select("#theGraph")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("transform",'translate(100,-30)');
-
-const scatterplot = svg_scatterplot
-    .append("g")
-    .attr("transform", `translate(${margin.left}, ${margin.right})`)
-    .attr("id", "snodes");
-
-div = d3.select("body").append("div")
-    .attr("class", "tooltip_circle")
-    .style("opacity", 0);
 
 // Draw a scatterplot from the given t-SNE data
 function Initial_Scatterplot(tsne_data) {
@@ -390,7 +393,7 @@ function playmusic(){
     minimumSpanningTree.links.forEach(d=> {
         store_nodes.push([data_min[d.source],data_min[d.target]])
     })
-    draw_path(store_nodes)
+    draw_path(store_nodes,200)
 
 
 
@@ -400,19 +403,14 @@ function playmusic(){
 
 }
 function draw_shortestpath(){
+    var node_circle=[];
+    node_circle = svg_scatterplot.selectAll("circle")._groups[0];
     minimumSpanningTree.links.forEach(d=>{
         minimumSpanningTree.links.push({"source":d.target,"target":d.source,"weight": d.weight})
     })
     var nodes= minimumSpanningTree.nodes;
     var links= minimumSpanningTree.links;
-
-    nodes[2].start=true;
-    var a=nodes[2].id
-    nodes[6].end=true;
-    var b=nodes[6].id
     console.log(minimumSpanningTree)
-
-
 
     function convert_graph(graph) {
         var j, k, l, len, len1, map, n, ref;
@@ -435,11 +433,9 @@ function draw_shortestpath(){
 
     map = convert_graph(minimumSpanningTree);
 
-    lib_graph = new Graph(map);
-
-    shortest_path = lib_graph.findShortestPath(a, b);
+    var lib_graph = new Graph(map);
+    var shortest_path = lib_graph.findShortestPath(start_node_id, end_node_id);
     for (i=0;i<shortest_path.length;i++){shortest_path[i]=parseInt(shortest_path[i])}
-    console.log(shortest_path)
     var store_nodes=[];
     shortest_path.forEach((d,i)=>{
         if (i<shortest_path.length-1) {
@@ -447,10 +443,29 @@ function draw_shortestpath(){
         }
     })
 
-    draw_path(store_nodes)
+    draw_path(store_nodes,1000)
+    var store_links=[];
+    minimumSpanningTree.links.forEach(d=> {
+        store_links.push(d.source,d.target)
+    })
+
+    for (var i = 0; i < shortest_path.length; i++) {
+        (function (i) {
+            setTimeout(function () {
+                PlayAudio(node_circle[shortest_path[i]], data_min[shortest_path[i]]);
+                d3.select(node_circle[shortest_path[i]])
+                // Does work
+                    .attr("r", 15)
+                    .transition().duration(500)
+                    .attr("r",5);
+
+            }, 800 * (i + 1));
+        })(i);
+    }
 
 }
-function draw_path(store_nodes) {
+function draw_path(store_nodes,time_play) {
+
     function length(path) {
         return d3.create("svg:path").attr("d", path).node().getTotalLength();
     }
@@ -481,20 +496,20 @@ function draw_path(store_nodes) {
                     .duration(500)
                     .ease(d3.easeLinear)
                     .attr("stroke-dasharray", `${l},${l}`);
-                // text.append("textPath")
-                //     .attr("xlink:href","#line"+i)
-                //     .text(i);
-
-
-            }, 200 * (i + 1));
+            }, time_play * (i + 1));
         })(i);
     }
+
 }
 
 
 
 function reset(){
     scatterplot.selectAll("path").remove()
+}
+
+function resetAll(){
+    d3.select("svg").remove();
 }
 
 // Draw a scatterplot from the given data
@@ -572,15 +587,15 @@ function _Draw_Scatterplot(data){
         // }
 
 
-        function brushended() {
-            if (!d3.event.selection) {
-                svg_scatterplot.selectAll('circle')
-                    .attr("r",3)
-                    .style("fill", function (d) {
-                        return colors(d.group)
-                    });
-            }
-        }
+        // function brushended() {
+        //     if (!d3.event.selection) {
+        //         svg_scatterplot.selectAll('circle')
+        //             .attr("r",3)
+        //             .style("fill", function (d) {
+        //                 return colors(d.group)
+        //             });
+        //     }
+        // }
 
 
         var colors = d3.scaleOrdinal(d3.schemeCategory20);
@@ -597,9 +612,20 @@ function _Draw_Scatterplot(data){
             .attr("cy", d => yScale(d.y))
             .attr("r", radius)
             .style("opacity", opacity)
-            .style("fill", function(d,i){
-
+            .style("fill", function(d){
                 return colors(d.group)
+            })
+            .on("click", function (d){
+                if (selected_node==false){
+                    minimumSpanningTree.nodes[d.id].start=true;
+                    start_node_id=d.id
+                    selected_node=true;
+                }
+                else {
+                    minimumSpanningTree.nodes[d.id].end=true;
+                    end_node_id=d.id;
+                    selected_node=false;
+                }
             })
             .on("mouseover", function(d) {
                 PlayAudio(this, d)
@@ -740,11 +766,10 @@ function drawLegend(){
         .attr("font-size", "15px");
 }
 function PlayAudio(thisElement, d) {
-    console.log(thisElement)
     // Play audio on click
     let audioElement;
     if (thisElement.getElementsByTagName("audio").length === 0) {
-        console.log(thisElement.getElementsByTagName("audio").length)
+
         // Create audio object from source url
         audioElement = new Audio(d.url);
         // Preload audio to improve response times

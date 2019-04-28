@@ -3,6 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="5b2b83c6-993f-4806-837b-49312259cb3c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/back_up/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/back_up/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/style.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
     </list>
@@ -17,61 +19,25 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/worker.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="288">
-              <caret line="19" selection-start-line="19" selection-end-line="19" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/webworker.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="6" column="29" lean-forward="true" selection-start-line="6" selection-start-column="29" selection-end-line="6" selection-end-column="29" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/assets/css/style.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="280">
-              <caret line="304" column="20" selection-start-line="304" selection-start-column="20" selection-end-line="304" selection-end-column="20" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="260">
-              <caret line="600" column="36" lean-forward="true" selection-start-line="600" selection-start-column="36" selection-end-line="600" selection-end-column="36" />
+            <state relative-caret-position="212">
+              <caret line="484" column="18" selection-start-line="484" selection-start-column="18" selection-end-line="484" selection-end-column="18" />
               <folding>
-                <element signature="e#15187#16776#0" />
-                <element signature="e#19121#19146#0" />
-                <element signature="e#21602#21872#0" />
+                <element signature="e#18889#18919#0" />
+                <element signature="e#19042#19067#0" />
+                <element signature="e#21661#21687#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test.js">
+        <entry file="file://$PROJECT_DIR$/assets/css/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret selection-end-line="6" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/assets/js/dijkstra.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1445">
-              <caret line="129" column="5" lean-forward="true" selection-start-line="129" selection-start-column="5" selection-end-line="129" selection-end-column="5" />
+            <state relative-caret-position="178">
+              <caret line="342" column="6" selection-start-line="342" selection-start-column="6" selection-end-line="342" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -79,8 +45,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="39" column="74" selection-start-line="39" selection-start-column="74" selection-end-line="39" selection-end-column="74" />
+            <state relative-caret-position="901">
+              <caret line="53" lean-forward="true" selection-start-line="53" selection-end-line="53" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/assets/css/style.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="229">
+              <caret line="291" column="15" selection-start-line="291" selection-start-column="15" selection-end-line="291" selection-end-column="15" />
             </state>
           </provider>
         </entry>
@@ -97,21 +72,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>path</find>
-      <find>orient</find>
-      <find>value</find>
-      <find>scatter</find>
-      <find>scatterplot</find>
-      <find>network</find>
-      <find>button5</find>
-      <find>mouseover</find>
-      <find>xscale</find>
-      <find>length</find>
-      <find>minimum</find>
-      <find>play</find>
-      <find>500</find>
-      <find>iterations</find>
-      <find>song</find>
       <find>all_canvas_image</find>
       <find>audio_statistic</find>
       <find>fileContent</find>
@@ -120,13 +80,28 @@
       <find>shortest</find>
       <find>nodes</find>
       <find>graph</find>
-      <find>shortestpath</find>
-      <find>circle</find>
       <find>data_min</find>
       <find>links</find>
-      <find>playmusic</find>
       <find>shortest_a</find>
       <find>element</find>
+      <find>this</find>
+      <find>.push(this</find>
+      <find>mouseover</find>
+      <find>shortestpath</find>
+      <find>shor</find>
+      <find>playaudio</find>
+      <find>playmusic</find>
+      <find>tsne</find>
+      <find>getCluster</find>
+      <find>circle</find>
+      <find>findshortes</find>
+      <find>end_node_id</find>
+      <find>selected_nodes</find>
+      <find>reset</find>
+      <find>calculat</find>
+      <find>main</find>
+      <find>calculate_tsne</find>
+      <find>w</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -136,14 +111,14 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/test_connected_scatterplot.html" />
-        <option value="$PROJECT_DIR$/assets/css/back_up/main.js" />
-        <option value="$PROJECT_DIR$/assets/css/style.css" />
         <option value="$PROJECT_DIR$/worker.js" />
         <option value="$PROJECT_DIR$/webworker.js" />
         <option value="$PROJECT_DIR$/test.js" />
         <option value="$PROJECT_DIR$/assets/js/p5/dijkstra.js" />
         <option value="$PROJECT_DIR$/assets/js/dijkstra.js" />
         <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/assets/css/style.css" />
+        <option value="$PROJECT_DIR$/assets/css/back_up/main.js" />
         <option value="$PROJECT_DIR$/main.js" />
       </list>
     </option>
@@ -176,6 +151,12 @@
               <item name="Audio_API_Sound_Similarity" type="b2602c69:ProjectViewProjectNode" />
               <item name="Audio_API_Sound_Similarity" type="462c0819:PsiDirectoryNode" />
               <item name="assets" type="462c0819:PsiDirectoryNode" />
+              <item name="css" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Audio_API_Sound_Similarity" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Audio_API_Sound_Similarity" type="462c0819:PsiDirectoryNode" />
+              <item name="assets" type="462c0819:PsiDirectoryNode" />
               <item name="js" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -195,7 +176,7 @@
   <component name="PropertiesComponent">
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Downloads/CS5331-Project-2-master test/CS5331-Project-2-master" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
   </component>
@@ -222,12 +203,13 @@
       <option name="presentableId" value="Default" />
       <updated>1556298292530</updated>
       <workItem from="1556298295252" duration="19054000" />
-      <workItem from="1556385110450" duration="14789000" />
+      <workItem from="1556385110450" duration="20599000" />
+      <workItem from="1556424732701" duration="5076000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="33843000" />
+    <option name="totallyTimeSpent" value="44729000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1376" height="744" extended-state="6" />
@@ -280,16 +262,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/assets/css/back_up/main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="124">
-          <caret line="568" column="17" selection-start-line="568" selection-start-column="17" selection-end-line="568" selection-end-column="17" />
-          <folding>
-            <element signature="e#21384#24926#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/assets/js/kruskal-mst.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
@@ -307,17 +279,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/assets/css/style.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="304" column="20" selection-start-line="304" selection-start-column="20" selection-end-line="304" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/worker.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="288">
           <caret line="19" selection-start-line="19" selection-end-line="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/js/p5/dijkstra.js" />
+    <entry file="file://$PROJECT_DIR$/assets/js/dijkstra.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1445">
+          <caret line="129" column="5" lean-forward="true" selection-start-line="129" selection-start-column="5" selection-end-line="129" selection-end-column="5" />
         </state>
       </provider>
     </entry>
@@ -328,35 +301,52 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/assets/js/p5/dijkstra.js">
+    <entry file="file://$PROJECT_DIR$/assets/js/d3.v3.min.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="254">
-          <caret line="61" column="6" lean-forward="true" selection-start-line="61" selection-start-column="6" selection-end-line="61" selection-end-column="6" />
+        <state relative-caret-position="17">
+          <caret line="1" column="10164" selection-start-line="1" selection-start-column="10164" selection-end-line="1" selection-end-column="10164" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/assets/js/dijkstra.js">
+    <entry file="file://$PROJECT_DIR$/assets/css/style.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1445">
-          <caret line="129" column="5" lean-forward="true" selection-start-line="129" selection-start-column="5" selection-end-line="129" selection-end-column="5" />
+        <state relative-caret-position="229">
+          <caret line="291" column="15" selection-start-line="291" selection-start-column="15" selection-end-line="291" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/css/back_up/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5168">
+          <caret line="304" column="30" selection-start-line="304" selection-start-column="22" selection-end-line="304" selection-end-column="30" />
+          <folding>
+            <element signature="e#21384#24926#0" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="39" column="74" selection-start-line="39" selection-start-column="74" selection-end-line="39" selection-end-column="74" />
+        <state relative-caret-position="901">
+          <caret line="53" lean-forward="true" selection-start-line="53" selection-end-line="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/css/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="342" column="6" selection-start-line="342" selection-start-column="6" selection-end-line="342" selection-end-column="6" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="600" column="36" lean-forward="true" selection-start-line="600" selection-start-column="36" selection-end-line="600" selection-end-column="36" />
+        <state relative-caret-position="212">
+          <caret line="484" column="18" selection-start-line="484" selection-start-column="18" selection-end-line="484" selection-end-column="18" />
           <folding>
-            <element signature="e#15187#16776#0" />
-            <element signature="e#19121#19146#0" />
-            <element signature="e#21602#21872#0" />
+            <element signature="e#18889#18919#0" />
+            <element signature="e#19042#19067#0" />
+            <element signature="e#21661#21687#0" />
           </folding>
         </state>
       </provider>
