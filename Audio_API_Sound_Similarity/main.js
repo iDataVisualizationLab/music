@@ -335,7 +335,9 @@ function calculate_tsne(){
         stopworker=false;
     }
     stopworker=true;
-    scatterplot.selectAll("path").remove()
+    scatterplot.selectAll("circle").remove();
+    scatterplot.selectAll("path").remove();
+    // scatterplot.selectAll("circle").remove()
     var total_pre_process_data=[];
     total_origin_data.forEach(d=>{
         total_pre_process_data.push(data_preprocess(d))});
@@ -487,9 +489,9 @@ function draw_shortestpath(){
                 PlayAudio(node_circle[shortest_path[i]], data_min[shortest_path[i]]);
                 d3.select(node_circle[shortest_path[i]])
                 // Does work
-                    .attr("r", 15)
+                    .attr("r", 10)
                     .transition().duration(500)
-                    .attr("r",5);
+                    .attr("r",3);
 
             }, 800 * (i + 1));
         })(i);
@@ -504,6 +506,7 @@ function draw_path(store_nodes,time_play) {
     }
 
     var valueline = d3.line()
+        .curve(d3.curveCatmullRom)
         .x(function (d) {
             return xScale(d.x);
         })
