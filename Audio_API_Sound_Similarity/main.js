@@ -6,7 +6,7 @@ var featureType2 = 'rms';
 var origin_data1 = [];
 var total_origin_data=[];
 var windowsize = 4096;
-var durations=4;
+var durations=2;
 var data_min=[];
 var perplexity_value;
 var iterations_value;
@@ -633,7 +633,7 @@ function _Draw_Scatterplot(data){
 
 
         var colors = d3.scaleOrdinal(d3.schemeCategory20);
-        const radius = 5;
+        const radius = 3;
         const opacity = "1";
         const selection = scatterplot.selectAll(".compute").data(data);
         //Exit
@@ -686,7 +686,7 @@ function _Draw_Scatterplot(data){
         //Update
         selection
             .attr("cx", d => xScale(d.x))
-            .attr("cy", d => yScale(d.y)).attr("r", 5);
+            .attr("cy", d => yScale(d.y)).attr("r", 3);
     }
 }
 
