@@ -163,20 +163,20 @@ h4 {
     position:absolute;
     top: 200px;
     left: 0px;
-    width:1350px;
+    width:700px;
     height:1000px;
     resize: both;
 }
 
-/*#network_mst{*/
-    /*border: 1px solid black;*/
-    /*position:absolute;*/
-    /*top: 200px;*/
-    /*left: 675px;*/
-    /*width:675px;*/
-    /*height:1000px;*/
-    /*resize: both;*/
-/*}*/
+#network_mst{
+    border: 1px solid black;
+    position:absolute;
+    top: 200px;
+    left: 675px;
+    width:675px;
+    height:1000px;
+    resize: both;
+}
 /*#myCanvas{*/
     /*position:absolute;*/
     /*top:900px;*/
@@ -184,23 +184,23 @@ h4 {
     /*width:200px;*/
     /*height:200px;*/
 /*}*/
-.tooltip {
-    text-align: center;
-    font-family: monospace;
-    font-size: 8px;
-    color: #000;
-    position: relative;
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid #66F;
-    padding: 5px;
-    border-radius: 10px ;
-    width: 25px;
-    z-index:10000;
-    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);
-    -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);
-    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);
-    pointer-events: none;
-}
+/*.tooltip {*/
+    /*text-align: center;*/
+    /*font-family: monospace;*/
+    /*font-size: 8px;*/
+    /*color: #000;*/
+    /*position: relative;*/
+    /*background: rgba(255, 255, 255, 0.8);*/
+    /*border: 1px solid #66F;*/
+    /*padding: 5px;*/
+    /*border-radius: 10px ;*/
+    /*width: 25px;*/
+    /*z-index:10000;*/
+    /*-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);*/
+    /*-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);*/
+    /*box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);*/
+    /*pointer-events: none;*/
+/*}*/
 
 #loader {
     border: 16px solid #f3f3f3;
@@ -370,7 +370,7 @@ div.tooltip_circle {
     left:150px;
     text-align: left;
     width: 130px;
-    height: 100px;
+    height: 60px;
     padding: 2px;
     font: 12px sans-serif;
     background: lightsteelblue;

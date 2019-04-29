@@ -1,6 +1,9 @@
 <html>
 <head>
     <link rel="stylesheet" href="./assets/css/style.css">
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2/webcomponents-bundle.js"></script>
+    <script src="https://unpkg.com/tone"></script>
+    <script src="https://unpkg.com/@tonejs/ui"></script>
     <!--<script src="./assets/js/jquery.min.js"></script>-->
     <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
 
@@ -36,12 +39,12 @@
 <div id="controller">
     <p id="tsne">T-SNE Configuration</p>
     <form action="/action_page.php" id="form">
-        Max audio's duration: <input type=number value=2 id="duration"><br>
+        Max audio's duration: <input type=number value=4 id="duration"><br>
     </form>
     <button id="button1" onclick="draw_shortestpath()">Draw Path</button>
     <!--<button id="button2" onclick="resetAll()">Reset All</button>-->
     <button id="button3" onclick=" calculate_tsne()">T-sne Comparision</button>
-    <button id="button4" onclick=" reset()">Reset Path</button>
+    <!--<button id="button4" onclick=" reset()">Reset Worker</button>-->
     <button id="button5" onclick=" playmusic()">Play MST</button>
     <div class="slidecontainer_perplexity">
         <label>Perplexity:</label>
@@ -62,9 +65,10 @@
     <div id="textDiv"></div>
 </div>
 
-<!--<div id="network_mst">-->
-    <!--<h4>MST Network</h4>-->
-<!--</div>-->
+    <tone-demo id="network_mst"autoplay>
+        <tone-keyboard octaves="4"></tone-keyboard>
+    </tone-demo>
+
 
 <script src="webworker.js"></script>
 <script src="main.js"></script>

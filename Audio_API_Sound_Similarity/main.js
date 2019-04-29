@@ -6,35 +6,38 @@ var featureType2 = 'rms';
 var origin_data1 = [];
 var total_origin_data=[];
 var windowsize = 4096;
-var total_self_similarity_data = [];
-var durations = 2 ;
-var audio_label = [];
-var all_canvas_image = [];
-var audio_statistic = [];
+var durations=4;
 var data_min=[];
 var perplexity_value;
 var iterations_value;
 var selected_node=false;
 var start_node_id;
 var end_node_id;
+var stopworker=false;
 
 //get file directory
 window.onload = function () {
+    audio_statistic = [];
+    all_canvas_image = [];
+    total_self_similarity_data = [];
+    audio_label = [];
     d3.select("#loader").style("display", "none");
     document.getElementById("filepicker").addEventListener("change", function (event) {
         let files = event.target.files;
         fileContent = [];
         for (i = 0; i < files.length; i++) {
-            audio_label.push(files[i].name)
+            audio_label.push(files[i].name.split('_').slice(0,2).join("_"))
             fileContent.push(URL.createObjectURL(files[i]));
         }
         getData(fileContent[0], 0)
+
     }, false);
 
 
     var get_durations = document.getElementById("duration")
     get_durations.onchange = function () {
         durations=parseInt(this.value)
+        console.log(durations)
     }
     var perplexity = document.getElementById("myRange1");
     var iterations = document.getElementById("myRange2");
@@ -52,6 +55,19 @@ window.onload = function () {
         output_iterations.value = this.value;
         iterations_value = this.value;
     }
+
+    //create keyboard
+    const synth = new Tone.AMSynth().toMaster()
+
+//attach a listener to the keyboard events
+    document.querySelector('tone-keyboard').addEventListener('noteon', e => {
+        synth.triggerAttack(e.detail.name)
+    })
+
+    document.querySelector('tone-keyboard').addEventListener('noteoff', e => {
+        synth.triggerRelease()
+    })
+
 }
 
 
@@ -312,6 +328,12 @@ function drawmatrix(self_similarity_data, index1) {
 }
 
 function calculate_tsne(){
+    if (stopworker==true){
+        stopWorker()
+        stopworker=false;
+    }
+    stopworker=true;
+    scatterplot.selectAll("path").remove()
     var total_pre_process_data=[];
     total_origin_data.forEach(d=>{
         total_pre_process_data.push(data_preprocess(d))});
@@ -394,7 +416,7 @@ function playmusic(){
     minimumSpanningTree.links.forEach(d=> {
         store_nodes.push([data_min[d.source],data_min[d.target]])
     })
-    draw_path(store_nodes,200)
+    draw_path(store_nodes,100)
 
 
 
@@ -436,7 +458,8 @@ function draw_shortestpath(){
 
     var lib_graph = new Graph(map);
     var shortest_path = lib_graph.findShortestPath(start_node_id, end_node_id);
-    for (i=0;i<shortest_path.length;i++){shortest_path[i]=parseInt(shortest_path[i])}
+    for (i=0;i<shortest_path.length;i++){
+        shortest_path[i]=parseInt(shortest_path[i])}
     var store_nodes=[];
     shortest_path.forEach((d,i)=>{
         if (i<shortest_path.length-1) {
@@ -444,12 +467,14 @@ function draw_shortestpath(){
         }
     })
 
-    draw_path(store_nodes,1000)
+    draw_path(store_nodes,900)
     var store_links=[];
     minimumSpanningTree.links.forEach(d=> {
         store_links.push(d.source,d.target)
     })
-
+    svg_scatterplot.selectAll("circle").style("opacity",function (d){
+        return shortest_path.includes(d.id)?1:0.3;
+    })
     for (var i = 0; i < shortest_path.length; i++) {
         (function (i) {
             setTimeout(function () {
@@ -466,7 +491,8 @@ function draw_shortestpath(){
 
 }
 function draw_path(store_nodes,time_play) {
-
+    scatterplot.selectAll("path").remove()
+    svg_scatterplot.selectAll("circle").style("opacity",1);
     function length(path) {
         return d3.create("svg:path").attr("d", path).node().getTotalLength();
     }
@@ -507,7 +533,7 @@ function draw_path(store_nodes,time_play) {
 
 function reset(){
     stopWorker()
-    scatterplot.selectAll("path").remove()
+
 }
 
 // function resetAll(){
@@ -660,7 +686,7 @@ function _Draw_Scatterplot(data){
         //Update
         selection
             .attr("cx", d => xScale(d.x))
-            .attr("cy", d => yScale(d.y)).attr("r", 3);
+            .attr("cy", d => yScale(d.y)).attr("r", 5);
     }
 }
 
