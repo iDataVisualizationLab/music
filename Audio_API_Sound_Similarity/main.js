@@ -14,15 +14,17 @@ var selected_node=false;
 var start_node_id;
 var end_node_id;
 var stopworker=false;
+var audio_statistic = [];
+var all_canvas_image = [];
+var total_self_similarity_data = [];
+var audio_label = [];
 
 //get file directory
 window.onload = function () {
-    audio_statistic = [];
-    all_canvas_image = [];
-    total_self_similarity_data = [];
-    audio_label = [];
+
     d3.select("#loader").style("display", "none");
     document.getElementById("filepicker").addEventListener("change", function (event) {
+        audio_label = [];
         let files = event.target.files;
         fileContent = [];
         for (i = 0; i < files.length; i++) {
@@ -350,6 +352,10 @@ function calculate_tsne(){
         perplexity: perplexity_value,    // roughly how many neighbors each point influences (30 = default)
         iterations: iterations_value})
     total_origin_data=[];
+    audio_statistic = [];
+    all_canvas_image = [];
+    total_self_similarity_data = [];
+
 }
 
 //initiate scatter plot for tsne
