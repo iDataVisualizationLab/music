@@ -5,18 +5,19 @@ var featureType = 'mfcc';
 var featureType2 = 'rms';
 var origin_data1 = [];
 var total_origin_data=[];
-var total_self_similarity_data = [];
+var windowsize = 4096;
 var durations=4;
+var data_min=[];
 var perplexity_value;
 var iterations_value;
+var selected_node=false;
 var start_node_id;
 var end_node_id;
 var stopworker=false;
 var audio_statistic = [];
 var all_canvas_image = [];
+var total_self_similarity_data = [];
 var audio_label = [];
-var image_url=[];
-
 
 //get file directory
 window.onload = function () {
@@ -57,6 +58,18 @@ window.onload = function () {
         iterations_value = this.value;
     }
 
+//     //create keyboard
+//     const synth = new Tone.AMSynth().toMaster()
+//
+// //attach a listener to the keyboard events
+//     document.querySelector('tone-keyboard').addEventListener('noteon', e => {
+//         synth.triggerAttack(e.detail.name)
+//     })
+//
+//     document.querySelector('tone-keyboard').addEventListener('noteoff', e => {
+//         synth.triggerRelease()
+//     })
+
 }
 
 
@@ -89,7 +102,7 @@ function getData(a, index) {
                 if (index == fileContent.length) {
                     var index1 = 0
                     //draw self_similarity matrix1
-                    // drawmatrix(total_self_similarity_data[index1], index1);
+                    drawmatrix(total_self_similarity_data[index1], index1);
                 } else {
                     getData(fileContent[index], index)
                 }
@@ -104,7 +117,6 @@ function getData(a, index) {
                 source11.connect(offlineCtx.destination);
                 //start the buffer source node
                 source11.start();
-                var windowsize = 4096;
                 //Create Meyda analyzer and set up the parameter
                 meydaAnalyzer1 = Meyda.createMeydaAnalyzer({
                     'audioContext': offlineCtx,
@@ -134,20 +146,16 @@ function getData(a, index) {
                     var matrix1 = origin_data1;
                     total_origin_data.push(origin_data1)
                     //Create self_similarity data based on origin_data by calculate Euclidean distance between each pair of data point of origin_data
-                    // var matrix11 = [];
-                    // var matrix11 = predata(matrix1, index);
+                    var matrix11 = [];
+                    var matrix11 = predata(matrix1, index);
                     ++index;
-                    console.log("loading"+index)
                     if (index < fileContent.length) {
                         origin_data1 = [];
                         getData(fileContent[index], index)
                     } else if (index == fileContent.length) {
-                        d3.select("#loader").style("display", "none");
                         var index1 = 0
                         //draw self_similarity matrix1
-                        // drawmatrix(total_self_similarity_data[index1], index1);
-                        calculate_tsne()
-                        $.notify("Audio Loading Completed", "success");
+                        drawmatrix(total_self_similarity_data[index1], index1);
                     }
                 }
             }
@@ -163,47 +171,39 @@ function data_preprocess(origin_data){
     if (origin_data.length%2!=0) {
         origin_data=origin_data.slice(0,origin_data.length-1)
     }
-    function scale(data){
-        var scale1=d3.scaleLinear().domain([math.min(total_origin_data),math.max(total_origin_data)]).range([0,1])
-        var scale_data=[]
-        data.forEach(d=>scale_data.push(scale1(d)))
-        return scale_data
-    }
     const reducer = (accumulator, currentValue) => math.add(accumulator, currentValue);
     var mean = [];
     var standardeviation = [];
     var mean_std = [];
     var difference1 = [];
-    var difference2 = [];
+    var difference2 = []
     var t_sne_data = [];
     var t_sne_data_extra = [];
     var origin_data_unzip = []
     origin_data_unzip = _.unzip(origin_data);
     origin_data_unzip.forEach(function (d) {
-        mean.push(math.mean(scale(d)));
+        mean.push(math.mean(d));
         standardeviation.push(math.std(d))
     })
     var std_difference1=[];
     var std_difference2=[];
-    var length=origin_data.length/2;
     for (i=0; i< origin_data_unzip.length; i++) {
         for (k = 0; k < origin_data_unzip[0].length; k += 2) {
-            std_difference1.push(math.subtract(origin_data_unzip[i][k+1],origin_data_unzip[i][k]))
+            std_difference1.push(math.subtract(origin_data_unzip[i][k],origin_data_unzip[i][k+1]))
         }
         std_difference2.push(math.std(std_difference1));
         // console.log(std_difference2)
     }
-    mean_std=scale(mean).concat(scale(standardeviation))
+    mean_std=mean.concat(standardeviation)
     for (i = 0; i < origin_data.length; i += 2) {
-        difference1.push(nj.subtract(origin_data[i+1], origin_data[i]).tolist());
+        difference1.push(nj.subtract(origin_data[i], origin_data[i + 1]).tolist());
     }
     difference2 = difference1.reduce(reducer)
 
-    t_sne_data_extra=mean_std.concat(scale(math.divide(difference2,length)));
+    t_sne_data_extra=mean_std.concat(difference2);
 
-    return mean
-    // t_sne_data= t_sne_data_extra.concat(scale(std_difference2))
-    // return t_sne_data_extra;
+    // return t_sne_data= t_sne_data_extra.concat(std_difference2)
+    return t_sne_data_extra;
     // console.log("tala:" +t_sne_data)
 }
 
@@ -263,6 +263,72 @@ function euclideanDistance(a, b) {
     return sum
 }
 
+//the function take self_similarity data as an input and then draw the self_similarity matrix
+function drawmatrix(self_similarity_data, index1) {
+    console.log('draw')
+    //scale the self_similarity data value to draw
+    var CSM22 = d3.scaleLinear()
+        .domain([math.min(total_self_similarity_data), math.max(total_self_similarity_data)])
+        .range([0, 1]);
+    var scaled_self_similarity_data = [];
+    for (var i = 0; i < self_similarity_data.length; i++) {
+        var CSM44 = [];
+        for (var j = 0; j < self_similarity_data[0].length; j++) {
+            CSM44.push(CSM22(self_similarity_data[i][j]))
+        }
+        scaled_self_similarity_data.push(CSM44);
+    }
+    //Create color data from scaled_self_similarity_data
+    var color_data = [];
+    for (var i = 0; i < scaled_self_similarity_data.length; i++) {
+        var data3 = [];
+        for (var j = 0; j < scaled_self_similarity_data[0].length; j++) {
+            //get R G B value after convert scaled self similarity data to HSL color scale
+            data3.push(d3.rgb(d3.hsl(scaled_self_similarity_data[i][j] * 257, 1, 0.5)));
+        }
+        color_data.push(data3);
+    }
+    var c = document.getElementById("myCanvas");
+    c.width = color_data.length;
+    c.height = color_data.length;
+    var ctx = c.getContext("2d");
+    // define the size of image
+    var imgData = ctx.createImageData(color_data[0].length, color_data.length);
+    //draw each pixel, one pixel contain 4 values (R G B A),
+    for (var i = 0; i < color_data.length; i++) {
+        for (var j = 0; j < color_data[0].length; j++) {
+            //each step is 4, the next pixel value have index in position 4 5 6 7,
+            var pos = (i * color_data[0].length + j) * 4;
+            imgData.data[pos + 0] = color_data[i][j].r;
+            imgData.data[pos + 1] = color_data[i][j].g;
+            imgData.data[pos + 2] = color_data[i][j].b;
+            imgData.data[pos + 3] = 255;
+        }
+    }
+    //define where to put the image in canvas
+    ctx.putImageData(imgData, 0, 0);
+    //save canvas to png image then call back to use in network diagram
+    var imagedata = c.toDataURL("image/png").replace("image/png", "image/octet-stream");
+    all_canvas_image.push(imagedata);
+
+    //clear canvas everytime draw matrix
+    ctx.clearRect(0, 0, 100, 100);
+    ++index1;
+    if (index1 < fileContent.length) {
+
+        drawmatrix(total_self_similarity_data[index1], index1)
+    }
+    console.log("I am calculating the distance");
+    if (index1 == (fileContent.length - 1)) {
+        // alert('Song Loading Completed')
+        // $.notify("Audio Loading Completed");
+        $.notify("Audio Loading Completed", "success");
+        d3.select("#loader").style("display", "none");
+        // drawLegend()
+    }
+
+}
+
 function calculate_tsne(){
     if (stopworker==true){
         stopWorker()
@@ -276,46 +342,26 @@ function calculate_tsne(){
     total_origin_data.forEach(d=>{
         total_pre_process_data.push(data_preprocess(d))});
     data_min=total_pre_process_data;
-     store_distance=[];
-    data_min.forEach(d=>{
-        store_distance.push(get_min_distance(d));
-        d.distancevalue=get_min_distance2(d)
-    })
-
     fileContent.forEach((d,i)=>{
-
         data_min[i].url=d;
         data_min[i].info=audio_statistic[i];
         data_min[i].id=i;
     })
     getcluster(data_min)
-    process_chart()
-    for (var i=0;i<data_min.length;i++) {
-        draw_radar_chart(data_min[i],data_min[i].group)
-    }
-     function process_chart(){
-        // if (i==data_min.length-1){
-        //     console.log("heheheheh")
-
-        //     // startWorker(total_pre_process_data,Initial_Scatterplot,getcluster)
-            setTimeout(function(){
-                startWorker({dataset:total_pre_process_data,
-                epsilon: 10,        // epsilon is learning rate (10 = default)
-                perplexity: perplexity_value,    // roughly how many neighbors each point influences (30 = default)
-                iterations: iterations_value})
-            },2000);
-
-    }
-    // draw_radar_chart(data_min[i])
-    image_url=[];
-    // total_origin_data=[];
+    // startWorker(total_pre_process_data,Initial_Scatterplot,getcluster)
+    startWorker({dataset:total_pre_process_data,
+        epsilon: 10,        // epsilon is learning rate (10 = default)
+        perplexity: perplexity_value,    // roughly how many neighbors each point influences (30 = default)
+        iterations: iterations_value})
+    total_origin_data=[];
     audio_statistic = [];
     all_canvas_image = [];
     total_self_similarity_data = [];
+
 }
 
 //initiate scatter plot for tsne
-width = 700, height = 450,
+width = 500, height = 400,
     margin = {left: 50, top: 50, right: 50, bottom: 50},
     contentWidth = width - margin.left - margin.right,
     contentHeight = height - margin.top - margin.bottom;
@@ -331,11 +377,9 @@ scatterplot = svg_scatterplot
     .attr("transform", `translate(${margin.left}, ${margin.right})`)
     .attr("id", "snodes");
 
-var div = d3.select("body").append("div")
+div = d3.select("body").append("div")
     .attr("class", "tooltip_circle")
     .style("opacity", 0);
-
-
 
 // Draw a scatterplot from the given t-SNE data
 function Initial_Scatterplot(tsne_data) {
@@ -345,18 +389,18 @@ function Initial_Scatterplot(tsne_data) {
 
 // Update the data with the given t-SNE result
 function UpdateDataTSNE(data) {
+
     data.forEach(function(d, i) {
         data_min[i].x = d[0];  // Add the t-SNE x result to the dataset
         data_min[i].y = d[1];  // Add the t-SNE y result to the dataset
         data_min[i].label=audio_label[i];
-        data_min[i].image=image_url[i];
-        data_min[i].distance1=store_distance[i];
+
     });
+
+
 }
 
 function playmusic(){
-    d3.selectAll("circle")
-        .style("stroke", 'none');
     let graph1 = {};
     graph1.nodes = [];
     graph1.links = [];
@@ -372,21 +416,20 @@ function playmusic(){
         }
         link2.push(link1)
     }
-    console.log(link2)
     graph1.links=d3.merge(link2)
 
     //create minimumSpanningTree
        minimumSpanningTree = mst(graph1);
-     store_nodes=[];
-    minimumSpanningTree.links.forEach((d,i)=> {
+    var store_nodes=[];
+    minimumSpanningTree.links.forEach(d=> {
         store_nodes.push([data_min[d.source],data_min[d.target]])
-        store_nodes[i].value = minimumSpanningTree.links[i].weight
     })
     draw_path(store_nodes,100)
+
 }
 function draw_shortestpath(){
     var node_circle=[];
-    node_circle = svg_scatterplot.selectAll("image")._groups[0];
+    node_circle = svg_scatterplot.selectAll("circle")._groups[0];
     minimumSpanningTree.links.forEach(d=>{
         minimumSpanningTree.links.push({"source":d.target,"target":d.source,"weight": d.weight})
     })
@@ -417,7 +460,6 @@ function draw_shortestpath(){
 
     var lib_graph = new Graph(map);
     var shortest_path = lib_graph.findShortestPath(start_node_id, end_node_id);
-    console.log(shortest_path)
     for (i=0;i<shortest_path.length;i++){
         shortest_path[i]=parseInt(shortest_path[i])}
     var store_nodes=[];
@@ -427,13 +469,13 @@ function draw_shortestpath(){
         }
     })
 
-    draw_path_only(store_nodes,900)
+    draw_path(store_nodes,900)
     var store_links=[];
     minimumSpanningTree.links.forEach(d=> {
         store_links.push(d.source,d.target)
     })
-    svg_scatterplot.selectAll("image").style("opacity",function (d){
-        return shortest_path.includes(d.id)?1:0.5;
+    svg_scatterplot.selectAll("circle").style("opacity",function (d){
+        return shortest_path.includes(d.id)?1:0.3;
     })
     for (var i = 0; i < shortest_path.length; i++) {
         (function (i) {
@@ -441,23 +483,18 @@ function draw_shortestpath(){
                 PlayAudio(node_circle[shortest_path[i]], data_min[shortest_path[i]]);
                 d3.select(node_circle[shortest_path[i]])
                 // Does work
-                    .attr("width", 80)
-                    .attr("height",80)
+                    .attr("r", 10)
                     .transition().duration(500)
-                    .attr("width", 40)
-                    .attr("height",40);
+                    .attr("r",3);
 
             }, 800 * (i + 1));
         })(i);
     }
-}
-function draw_path_only(store_nodes,time_play) {
-    var selected_node=false;
-    var colors = d3.scaleOrdinal(d3.schemeCategory20);
-    var active_value;
-    scatterplot.selectAll("path").remove();
-    svg_scatterplot.selectAll("circle").style("opacity",1);
 
+}
+function draw_path(store_nodes,time_play) {
+    scatterplot.selectAll("path").remove()
+    svg_scatterplot.selectAll("circle").style("opacity",1);
     function length(path) {
         return d3.create("svg:path").attr("d", path).node().getTotalLength();
     }
@@ -471,7 +508,7 @@ function draw_path_only(store_nodes,time_play) {
             return yScale(d.y);
         });
     const l = length(valueline(data_min));
-    var active_value;
+
     for (var i = 0; i < store_nodes.length; i++) {
         (function (i) {
             setTimeout(function () {
@@ -491,123 +528,21 @@ function draw_path_only(store_nodes,time_play) {
                     .attr("stroke-dasharray", `${l},${l}`);
             }, time_play * (i + 1));
         })(i);
-
-
     }
 
 }
-function draw_path(store_nodes) {
-    var selected_node=false;
-
-    scatterplot.selectAll("path").remove();
-    svg_scatterplot.selectAll("image").remove();
-    svg_scatterplot.selectAll("image").style("opacity",1);
-
-    function length(path) {
-        return d3.create("svg:path").attr("d", path).node().getTotalLength();
-    }
-
-    var valueline = d3.line()
-        .curve(d3.curveCatmullRom)
-        .x(function (d) {
-            return xScale(d.x);
-        })
-        .y(function (d) {
-            return yScale(d.y);
-        });
-    const l = length(valueline(data_min));
-    var active_value;
-    for (var i = 0; i < store_nodes.length; i++) {
-        scatterplot.append("path")
-            .data([store_nodes[i]])
-            .attr("fill", "none")
-            .attr("stroke", "black")
-            .attr("stroke-width", 1)
-            .attr("stroke-linejoin", "round")
-            .attr("stroke-linecap", "round")
-            .attr("stroke-dasharray", `0,${l}`)
-            .attr("d", valueline)
-            .attr("id", "line" + i)
-            .transition()
-            .duration(500)
-            .ease(d3.easeLinear)
-            .attr("stroke-dasharray", `${l},${l}`);
-    }
 
 
-        selection.enter().append('svg:image')
-            .attr('xlink:href', function (d) {
-                return d.image;
-            })
-            .attr('x', function (d) {
-                return (xScale(d.x)-20);
-            })
-            .attr('y', function (d) {
-                return (yScale(d.y)-20);
-            })
-            .attr('width', 40)
-            .attr('height', 40)
-            .on("click", function (d) {
-                active_value = d.id;
-                if (selected_node == false) {
-                    minimumSpanningTree.nodes[d.id].start = true;
-                    start_node_id = d.id
-                    $.notify("Start Node Selected", "success");
-                    selected_node = true;
-                    svg_scatterplot.selectAll('image')
-                        .style('opacity', function (d) {
-                            return d.id == active_value ? 1 : 0.5;
-                        })
-                } else {
-                    minimumSpanningTree.nodes[d.id].end = true;
-                    $.notify("End Node Selected", "success");
-                    end_node_id = d.id;
-                    selected_node = false;
-                    draw_shortestpath()
-                }
-            })
-            .on("mouseover", function (d) {
-                active_value = d.id;
-                PlayAudio(this, d)
-
-                d3.select(this)
-                    .attr("width", 80)
-                    .attr("height", 80)
-
-                scatterplot.selectAll("path")
-                    .style('stroke-width', function (d) {
-                        return (d[0].id == active_value || d[1].id == active_value) ? 5 : 1;
-                    })
-                    .style("opacity", function (d) {
-                        return (d[0].id == active_value || d[1].id == active_value) ? 0.5 : 1;
-                    })
-
-                MouseOvertooltip(d,active_value);
-                d3.select('#tooltip_all')
-                    .style("visibility","visible");
-
-                d3.select(this)
-                    .append("title")
-                    .text(function (d) {
-                        return d.id
-                    })
-
-            })
-            .on("mouseout", function (d) {
-                scatterplot.selectAll("path")
-                    .style('stroke-width', 1);
-                div.style("opacity", 0);
-                d3.selectAll('image')
-                    .attr("width", 40)
-                    .attr("height", 40);
-
-            });
-
-}
 
 function reset(){
     stopWorker()
+
 }
+
+// function resetAll(){
+//     d3.select("svg").remove();
+//
+// }
 
 function stopWorker() {
     w.terminate();
@@ -627,9 +562,66 @@ function _Draw_Scatterplot(data){
     UpdateNodes(data);
 
     function UpdateNodes(data) {
-        selection = scatterplot.selectAll(".compute").data(data);
+
+
+
+
+
+        var colors = d3.scaleOrdinal(d3.schemeCategory20);
+        const radius = 3;
+        const opacity = "1";
+        const selection = scatterplot.selectAll(".compute").data(data);
         //Exit
         selection.exit().remove();
+        //Enter
+        const newElements = selection.enter()
+            .append('circle')
+            .attr("class", "compute")
+            .attr("cx", d => xScale(d.x))
+            .attr("cy", d => yScale(d.y))
+            .attr("r", radius)
+            .style("opacity", opacity)
+            .style("fill", function(d){
+                return colors(d.group)
+            })
+            .on("click", function (d){
+                if (selected_node==false){
+                    minimumSpanningTree.nodes[d.id].start=true;
+                    start_node_id=d.id
+                    $.notify("Start Node Selected", "success");
+                    selected_node=true;
+                }
+                else {
+                    minimumSpanningTree.nodes[d.id].end=true;
+                    $.notify("End Node Selected", "success");
+                    end_node_id=d.id;
+                    selected_node=false;
+                }
+            })
+            .on("mouseover", function(d) {
+                PlayAudio(this, d)
+                MouseOvertooltip(d);
+                d3.select(this)     // Does work
+                    .attr("r", radius * 2);
+                d3.select(this)
+                    .append("title")
+                    .text(function(d) { return d.id
+                    })
+            })
+            .on("mouseout", function(d) {
+                div.style("opacity", 0);
+                d3.select(this)     // Does work
+                    .attr("r", radius);
+                d3.select(this)
+                    .select("text")
+                    .remove();
+            });
+
+
+        //Update
+        selection
+            .attr("cx", d => xScale(d.x))
+            .attr("cy", d => yScale(d.y)).attr("r", 3);
     }
 }
 
@@ -637,21 +629,14 @@ function getExtent(data, key) {
     return d3.extent(data.map(d => d[key]));
 }
 
-function MouseOvertooltip(d, active_value) {
-
+function MouseOvertooltip(d) {
     div.transition()
         .duration(200)
         .style("opacity", .9);
-
     div.html("Label: " + d.label + "<br/>" +
         "Durations: " + d.info.duration.toFixed(2) + "<br/>" +
         "BufferSize: " + d.info.bufferSize.toFixed(2) + "<br/>" +
-        "HopSize: " + d.info.hopSize.toFixed(2) + "<br/>" +
-        "Min_Distance:"+ d.distance1.toFixed(2) + "<br/>")
-
-    plot(d);
-    plot2(d)
-
+        "HopSize: " + d.info.hopSize.toFixed(2) + "<br/>");
 }
 
 // Get a set of cluster centroids based on the given data
@@ -690,6 +675,67 @@ function calculate_Euclidean() {
 
 }
 
+function drawLegend(){
+    var colors = colorbrewer.Spectral[9];
+    var cellSize = 10
+    var legendElementWidth = 40
+    var control1 = d3.select("#controller").append("svg")
+        .attr("width", 450)
+        .attr("height", 100)
+        .attr("transform", "translate(450,10)");
+
+    //create legend bar to show the level of each chroma feature in color. Domain of chroma  [0,1]
+    var legend = control1.append("g")
+        .attr("class", "legend")
+        .attr("transform",
+            "translate(0,25)")
+        .selectAll(".legendElement")
+        .data([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]);
+
+    var legend1=legend.enter().append("g")
+        .attr("class", "legendElement");
+
+
+
+    legend1.append("rect")
+        .attr("x", function (d, i) {
+            return legendElementWidth * i;
+        })
+        .attr("y", 20)
+        .attr("class", "cellLegend bordered")
+        .attr("width", legendElementWidth)
+        .attr("height", cellSize)
+        .style("fill", function (d, i) {
+            return colors[i];
+
+        });
+
+    legend1.append("text")
+        .attr("class", "mono legendElement")
+        .text(function (d) {
+            return ">" + Math.round(d * 100) / 100;
+        })
+        .attr("x", function (d, i) {
+            return legendElementWidth * i;
+        })
+        .attr("y", 40)
+        .attr("font-size", "12px");
+    legend.exit().remove();
+
+    control1.append("text")
+        .text("Similarity")
+        .attr("x", 0)
+        .attr("y", 32)
+        .attr("font-family", "Times New Roman")
+        .attr("font-size", "15px");
+
+    control1.append("text")
+        .text("Dissimilarity")
+        .attr("x", 320)
+        .attr("y", 32)
+        .attr("font-family", "Times New Roman")
+        .attr("font-size", "15px");
+}
 function PlayAudio(thisElement, d) {
     // Play audio on click
     let audioElement;
@@ -729,159 +775,6 @@ Audio.prototype.stop = function () {
     // Reset the playback time marker
     this.currentTime = 0;
 };
-async function draw_radar_chart(given_data,group) {
-    var set_colors;
-    var color_scale = ['#f4429e', '#ad42f4', '#f4f142', '#ce42f4', '#f4aa42', '#42e2f4', '#42f489', '#f4f442', '#ce42f4', '#42f1f4', '#f4c542', '#f47742', '#42c5f4', '#42f4f4', '#4274f4', '#42f47d', '#eef442', '#f4c542', '#f48042'];
-
-    console.log(group)
-    var set_colors=color_scale[group];
-    console.log("color:" + set_colors)
-    var N = 13;
-    var array_label=[];
-    array_label=Array.apply(null, {length: N}).map(Number.call, Number)
-    var marksCanvas = document.getElementById("marksChart");
-
-    var marksData = {
-        labels: array_label,
-        datasets: [{
-            pointHoverRadius: 10,
-            radius:5,
-            pointRadius: 1,
-            pointBorderWidth: 5,
-            borderColor: hexToRgbA(set_colors),
-            data: given_data
-        }]
-    };
 
 
-    function hexToRgbA(hex){
-        var c;
-        if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
-            c= hex.substring(1).split('');
-            if(c.length== 3){
-                c= [c[0], c[0], c[1], c[1], c[2], c[2]];
-            }
-            c= '0x'+c.join('');
-            return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',1)';
-        }
-        throw new Error('Bad Hex');
-    }
-    var options = {
-        scale: {
-            ticks: {
-                // beginAtZero: true,
-                min: math.min(data_min),
-                max: math.max(data_min),
-                // stepSize: 5
-            }},
-        scale: {
-            display:false
-        },
-            pointLabels: {
-                fontSize: 18
-            }
-        ,
-        legend: false,
-        animation: {
-            onComplete: done
 
-        },
-        maintainAspectRatio: false
-    };
-    function done(){
-        var image_store=[];
-        image_url.push(radarChart.toBase64Image());
-        image_store=radarChart.toBase64Image();
-        given_data.image=image_store;
-    }
-
-    var radarChart = new Chart(document.getElementById("marksChart").getContext("2d"), {
-        type: 'radar',
-        data: marksData,
-        options:options
-    });
-}
-
-
-function get_min_distance(data){
-    var distance=[];
-    var b=[]
-    data_min.forEach(d=> distance.push(euclideanDistance(data,d)))
-    b=distance.sort(function(a, b){return a - b});
-    return b[1]
-}
-
-function get_min_distance2(data){
-    distance3=[];
-    var distance2=[];
-
-    data_min.forEach(d=> distance2.push(euclideanDistance(data,d)))
-console.log(distance2)
-    distance3.push(distance2)
-    return distance2;
-}
-
-function plot(data) {
-    data = [{
-        type: 'scatterpolar',
-        r: data,
-        theta: ['m1', 'm2', 'm3', 'm4', 'm5', 'm6','m7', 'm8', 'm9', 'm10', 'm11', 'm12', 'm13'],
-        fill: 'toself'
-    }]
-
-    layout = {
-        title:"Standardized Mean Value" ,
-        // autosize: true,
-        width: 300,
-        height: 300,
-        polar: {
-            radialaxis: {
-                // visible: true,
-                range: [math.min(data_min),math.max(data_min)]
-            }
-        },
-        showlegend: false
-    }
-
-    Plotly.newPlot("tooltip_radar", data, layout)
-
-
-}
-
-function plot2(data){
-    var data1=[];
-    var trace1={};
-    layout2 = {
-        title: 'Distance Comparision Node'+ data.id,
-        showlegend: false,
-        autosize: true,
-        width: 300,
-        height: 300,
-        yaxis:{
-            range: [math.min(distance3),math.max(distance3)*1.5]
-        },
-        xaxis: {
-            range: [0,data_min.length]
-        }
-    }
-
-    var N = data_min.length;
-    var array_label=[];
-    array_label=Array.apply(null, {length: N}).map(Number.call, Number)
-    var index=array_label.indexOf(data.id);
-    array_label.splice(index,1)
-    data.distancevalue.splice(index,1)
-     trace1 = {
-        x: array_label,
-        y: data.distancevalue,
-        type: 'scatter'
-    };
-
-
-    data1 = [trace1];
-
-    Plotly.newPlot('tooltip_line', data1,layout2);
-
-    data1=[];
-
-}

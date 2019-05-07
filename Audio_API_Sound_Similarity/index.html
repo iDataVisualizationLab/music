@@ -1,9 +1,9 @@
 <html>
 <head>
     <link rel="stylesheet" href="./assets/css/style.css">
-    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2/webcomponents-bundle.js"></script>
-    <script src="https://unpkg.com/tone"></script>
-    <script src="https://unpkg.com/@tonejs/ui"></script>
+    <!--<script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2/webcomponents-bundle.js"></script>-->
+    <!--<script src="https://unpkg.com/tone"></script>-->
+    <!--<script src="https://unpkg.com/@tonejs/ui"></script>-->
     <!--<script src="./assets/js/jquery.min.js"></script>-->
     <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
 
@@ -11,6 +11,7 @@
     <script src="./assets/js/math.min.js"></script>
     <!--<script src="./assets/js/d3.v3.min.js"></script>-->
     <script src="./assets/js/d3.v4.min.js"></script>
+    <script src="./assets/js/d3.tip.js"></script>
     <script src="./assets/js/disjoint-set.js"></script>
     <script src="./assets/js/kruskal-mst.js"></script>
     <script src="https://d3js.org/d3-color.v1.min.js"></script>
@@ -24,6 +25,10 @@
     <script src="./assets/js/tsne.js"></script>
     <script src="./assets/js/dijkstra.js"></script>
     <script src="./assets/js/notify.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+
+
 </head>
 
 <body>
@@ -39,7 +44,7 @@
 <div id="controller">
     <p id="tsne">T-SNE Configuration</p>
     <form action="/action_page.php" id="form">
-        Max audio's duration: <input type=number value=2 id="duration"><br>
+        Max audio's duration: <input type=number value=4 id="duration"><br>
     </form>
     <button id="button1" onclick="draw_shortestpath()">Draw Path</button>
     <!--<button id="button2" onclick="resetAll()">Reset All</button>-->
@@ -60,14 +65,24 @@
 
 
 <canvas id="myCanvas"></canvas>
+<div class="chart-container" style="position: relative; height:300px; width:300px">
+    <canvas id="marksChart" height="300px" width="300px"></canvas>
+</div>
+
 <div id="theGraph">
     <h3>Scatter Plot of T-SNE Output</h3>
     <div id="textDiv"></div>
 </div>
 
-    <tone-demo id="network_mst"autoplay>
-        <tone-keyboard octaves="4"></tone-keyboard>
-    </tone-demo>
+<div id="tooltip_all" width="300" height="600">
+    <div id="tooltip_line" width="280" height="250">
+    </div>
+    <div id="tooltip_radar" width="280" height="350">
+    </div>
+</div>
+    <!--<tone-demo id="network_mst"autoplay>-->
+        <!--<tone-keyboard octaves="4"></tone-keyboard>-->
+    <!--</tone-demo>-->
 
 
 <script src="webworker.js"></script>

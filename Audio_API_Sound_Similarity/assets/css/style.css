@@ -163,20 +163,42 @@ h4 {
     position:absolute;
     top: 200px;
     left: 0px;
-    width:700px;
+    width:1350px;
     height:1000px;
     resize: both;
 }
 
-#network_mst{
-    border: 1px solid black;
+
+#tooltip_all{
     position:absolute;
-    top: 200px;
-    left: 675px;
-    width:675px;
-    height:1000px;
+    top: 250px;
+    left: 850px;
+    width:300px;
+    height:600px;
     resize: both;
 }
+
+
+/*#network_mst{*/
+    /*border: 1px solid black;*/
+    /*position:absolute;*/
+    /*top: 200px;*/
+    /*left: 675px;*/
+    /*width:675px;*/
+    /*height:1000px;*/
+    /*resize: both;*/
+/*}*/
+.chart-container{
+    position:absolute;
+    top: 800px;
+    left: 0px;
+    width:20px;
+    height:20px;
+}
+#marksChart{
+    visibility: hidden;
+}
+
 /*#myCanvas{*/
     /*position:absolute;*/
     /*top:900px;*/
@@ -366,11 +388,11 @@ h4 {
 
 div.tooltip_circle {
     position: absolute;
-    top: 250px;
+    top: 240px;
     left:150px;
     text-align: left;
     width: 130px;
-    height: 60px;
+    height: 70px;
     padding: 2px;
     font: 12px sans-serif;
     background: lightsteelblue;
