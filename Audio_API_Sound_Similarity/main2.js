@@ -12,9 +12,12 @@ var iterations_value;
 var start_node_id;
 var end_node_id;
 var stopworker=false;
+var control=false;
 var audio_statistic = [];
+var all_canvas_image = [];
 var audio_label = [];
-var data_min=[];
+var image_url=[];
+
 
 //get file directory
 window.onload = function () {
@@ -167,8 +170,6 @@ function data_preprocess(origin_data){
         data.forEach(d=>scale_data.push(scale1(d)))
         return scale_data
     }
-
-
     const reducer = (accumulator, currentValue) => math.add(accumulator, currentValue);
     var mean = [];
     var standardeviation = [];
@@ -180,13 +181,10 @@ function data_preprocess(origin_data){
     var origin_data_unzip = []
     origin_data_unzip = _.unzip(origin_data);
     origin_data_unzip.forEach(function (d) {
-        mean.push(math.mean(scale(d)));
+        // mean.push(math.mean(scale(d)));
+        mean.push(math.mean(d))
         standardeviation.push(math.std(d))
     })
-    // origin_data_unzip.forEach(function (d) {
-    //     mean.push(math.mean((d)));
-    // })
-
     var std_difference1=[];
     var std_difference2=[];
     var length=origin_data.length/2;
@@ -206,9 +204,6 @@ function data_preprocess(origin_data){
     t_sne_data_extra=mean_std.concat(scale(math.divide(difference2,length)));
 
     return mean
-    // t_sne_data= t_sne_data_extra.concat(scale(std_difference2))
-    // return t_sne_data_extra;
-    // console.log("tala:" +t_sne_data)
 }
 
 //function callback of Meyda Analyzer 1 which calculate mfcc coefficient
@@ -273,27 +268,28 @@ function calculate_tsne(){
         stopworker=false;
     }
     stopworker=true;
-    scatterplot.selectAll("circle").remove();
     scatterplot.selectAll("path").remove();
-    // scatterplot.selectAll("circle").remove()
     var total_pre_process_data=[];
     total_origin_data.forEach(d=>{
-        total_pre_process_data.push(data_preprocess(d))});
-    data_min=total_pre_process_data;
-    // data_min=scale_mean(total_pre_process_data)
+        total_pre_process_data.push(data_preprocess(d))
+    });
+
+    var total_pre_process_data_mean=[];
+    total_pre_process_data.forEach(d=>{total_pre_process_data_mean.push(scale_mean(d))})
+
+    function scale_mean(data){
+        var scale1=d3.scaleLinear().domain([math.min(total_pre_process_data),math.max(total_pre_process_data)]).range([0,1])
+        var scale_data=[]
+        data.forEach(d=>scale_data.push(scale1(d)))
+        return scale_data
+    }
+    // data_min=total_pre_process_data;
+    data_min=total_pre_process_data_mean
      store_distance=[];
     data_min.forEach(d=>{
-        store_distance.push(get_min_distance(d));
-        d.distancevalue=get_min_distance2(d)
+        store_distance.push(math.min(get_min_distance(d)));
+        d.distancevalue=get_min_distance(d)
     })
-
-    // function scale_mean(data){
-    //     var scale1=d3.scaleLinear().domain([math.min(total_pre_process_data),math.max(total_pre_process_data)]).range([0,1])
-    //     var scale_data=[]
-    //     var scale
-    //     data.forEach(d=>d.forEach(d1=>scale_data.push(scale1(d1))))
-    //     return scale_data
-    // }
 
     fileContent.forEach((d,i)=>{
 
@@ -303,12 +299,24 @@ function calculate_tsne(){
     })
     getcluster(data_min)
     process_chart()
+    for (var i=0;i<data_min.length;i++) {
+        draw_radar_chart(data_min[i],data_min[i].group)
+    }
+
      function process_chart(){
+        // if (i==data_min.length-1){
+        //     console.log("heheheheh")
+
+        //     // startWorker(total_pre_process_data,Initial_Scatterplot,getcluster)
+            setTimeout(function(){
                 startWorker({dataset:total_pre_process_data,
                 epsilon: 10,        // epsilon is learning rate (10 = default)
                 perplexity: perplexity_value,    // roughly how many neighbors each point influences (30 = default)
                 iterations: iterations_value})
+            },2000);
+
     }
+    // draw_radar_chart(data_min[i])
     image_url=[];
     // total_origin_data=[];
     audio_statistic = [];
@@ -333,9 +341,9 @@ scatterplot = svg_scatterplot
     .attr("transform", `translate(${margin.left}, ${margin.right})`)
     .attr("id", "snodes");
 
-var div = d3.select("body").append("div")
-    .attr("class", "tooltip_circle")
-    .style("opacity", 0);
+// var div = d3.select("body").append("div")
+//     .attr("class", "tooltip_circle")
+//     .style("opacity", 0);
 
 
 
@@ -351,11 +359,12 @@ function UpdateDataTSNE(data) {
         data_min[i].x = d[0];  // Add the t-SNE x result to the dataset
         data_min[i].y = d[1];  // Add the t-SNE y result to the dataset
         data_min[i].label=audio_label[i];
+        data_min[i].image=image_url[i];
         data_min[i].distance1=store_distance[i];
     });
 }
 
-function playMST(){
+function playmusic(){
     d3.selectAll("circle")
         .style("stroke", 'none');
     let graph1 = {};
@@ -373,8 +382,9 @@ function playMST(){
         }
         link2.push(link1)
     }
-    console.log(link2)
+
     graph1.links=d3.merge(link2)
+
     //create minimumSpanningTree
        minimumSpanningTree = mst(graph1);
     store_nodes_path=[];
@@ -384,15 +394,15 @@ function playMST(){
     })
     draw_path(store_nodes_path,100)
 }
-
 function draw_shortestpath(){
     var node_circle=[];
-    node_circle = svg_scatterplot.selectAll("circle")._groups[0];
+    node_circle = svg_scatterplot.selectAll("image")._groups[0];
     minimumSpanningTree.links.forEach(d=>{
         minimumSpanningTree.links.push({"source":d.target,"target":d.source,"weight": d.weight})
     })
     var nodes= minimumSpanningTree.nodes;
     var links= minimumSpanningTree.links;
+    console.log(minimumSpanningTree)
 
     function convert_graph(graph) {
         var j, k, l, len, len1, map, n, ref;
@@ -428,13 +438,16 @@ function draw_shortestpath(){
         }
     })
 
-    draw_path_only(store_nodes_shortest,1200)
+    draw_path_only(store_nodes_shortest,900)
     var store_links=[];
     minimumSpanningTree.links.forEach(d=> {
         store_links.push(d.source,d.target)
     })
-    svg_scatterplot.selectAll("circle").style("opacity",function (d){
-        return shortest_path.includes(d.id)?1:0.5;
+    svg_scatterplot.selectAll("image").style("opacity",function (d){
+        return shortest_path.includes(d.id)?1:0;
+    })
+    svg_scatterplot.selectAll("text").style("opacity",function (d){
+        return shortest_path.includes(d.id)?1:0;
     })
     for (var i = 0; i < shortest_path.length; i++) {
         (function (i) {
@@ -445,17 +458,17 @@ function draw_shortestpath(){
                     .attr("width", 80)
                     .attr("height",80)
                     .transition().duration(500)
-                    .attr("width", 40)
-                    .attr("height",40);
+                    .attr("width", 60)
+                    .attr("height",60);
 
             }, 800 * (i + 1));
         })(i);
     }
+    // svg_scatterplot.selectAll("image").style("opacity",0);
 }
 function draw_path_only(store_nodes,time_play) {
-    svg_scatterplot.selectAll("path").style("opacity",0);
-    svg_scatterplot.selectAll("circle").style("opacity",1);
-var index;
+    scatterplot.selectAll("path").style("opacity",0);
+    var index;
     for (var i = 0; i < store_nodes.length; i++) {
         (function (i) {
             setTimeout(function () {
@@ -471,13 +484,12 @@ var index;
 
 
     }
-
 }
 function draw_path(store_nodes) {
     var selected_node=false;
-    var colors = d3.scaleOrdinal(d3.schemeCategory20);
     scatterplot.selectAll("path").remove();
-    svg_scatterplot.selectAll("cirlce").remove();
+    svg_scatterplot.selectAll("image").remove();
+    svg_scatterplot.selectAll("image").style("opacity",1);
 
     function length(path) {
         return d3.create("svg:path").attr("d", path).node().getTotalLength();
@@ -509,79 +521,109 @@ function draw_path(store_nodes) {
             .ease(d3.easeLinear)
             .attr("stroke-dasharray", `${l},${l}`);
     }
-
-    const newElements = selection.enter()
-        .append('circle')
-        .attr("class", function (d){
-            return "circle"+ d.id
-        } )
-        .attr("cx", d => xScale(d.x))
-        .attr("cy", d => yScale(d.y))
-        .attr("r", 5)
-        .style("opacity", 1)
-        .style("fill", function(d){
-            return colors(d.group)
+    var nested_data = d3.nest()
+        .key(function(d) { return d.weight; })
+        .entries(minimumSpanningTree.links);
+    selection = scatterplot.selectAll(".image_node").data(data_min);
+    svg_scatterplot.append("g")
+        .attr("class", "rowLabels")
+        .selectAll(".rowLabel")
+        .data(data_min)
+        .enter().append("text")
+        .text(function (rowLabel) {
+            return rowLabel.id
         })
-        .on("click", function (d) {
-            active_value = d.id;
-            if (selected_node == false) {
-                minimumSpanningTree.nodes[d.id].start = true;
-                start_node_id = d.id
-                $.notify("Start Node Selected", "success");
-                selected_node = true;
-                svg_scatterplot.selectAll('circle')
-                    .style('opacity', function (d) {
-                        return d.id == active_value ? 1 : 0.5;
-                    })
-                        .style("stroke",function (d) {
-                            return d.id == active_value ? "black":1;
-                    })
-                    .style("stroke-width",function (d) {
-                        return d.id == active_value ? 1 : 0;
-                    })
-
-            } else {
-                minimumSpanningTree.nodes[d.id].end = true;
-                $.notify("End Node Selected", "success");
-                end_node_id = d.id;
-                svg_scatterplot.selectAll('.circle'+end_node_id)
-                    .style("opacity",1)
-                    .style("stroke","black")
-                    .style("stroke-width",1);
-                selected_node = false;
-                draw_shortestpath()
-            }
+        .attr("class",function (d,i) {
+            return "text"+i
         })
-        .on("mouseover", function (d) {
-            active_value = d.id;
-            PlayAudio(this, d)
+        .attr("x", function (d) {return xScale(d.x)-30 })
+        .attr("y", function (d) {return yScale(d.y)-30 })
+        .style("text-anchor", "middle")
+        .style("font-size", "10px")
+        .attr("transform", function (rowLabel) {
+            return `translate(80, ${60})`;
+        })
+        .style("opacity",0);
+        selection.enter().append('svg:image')
+            .attr('xlink:href', function (d) {
+                return d.image;
+            })
+            .attr('x', function (d) {
+                return (xScale(d.x)-30);
+            })
+            .attr('y', function (d) {
+                return (yScale(d.y)-20);
+            })
+            .attr("class",function(d,i){
+                return "image_node"+i})
+            .attr('width', 60)
+            .attr('height', 60)
+            .on("click", function (d) {
+                svg_scatterplot.selectAll("text").style("opacity",0)
+                active_value = d.id;
 
-            d3.select(this)     // Does work
-                .attr("r", 8);
+                if (selected_node == false) {
+                    minimumSpanningTree.nodes[d.id].start = true;
+                    start_node_id = d.id
+                    $.notify("Start Node Selected", "success");
+                    selected_node = true;
+                    svg_scatterplot.selectAll('image')
+                        .style('opacity', function (d) {
+                            return d.id == active_value ? 1 : 0.5;
+                        })
+                } else {
+                    minimumSpanningTree.nodes[d.id].end = true;
+                    $.notify("End Node Selected", "success");
+                    end_node_id = d.id;
+                    selected_node = false;
+                    draw_shortestpath()
 
-            scatterplot.selectAll("path")
-                .style('stroke-width', function (d) {
-                    if (d[0].id == active_value || d[1].id == active_value) {
-                        return 5;
+                }
+            })
+            .on("mouseover", function (d) {
+                svg_scatterplot.selectAll("image").style("opacity",1);
+                active_value = d.id;
+                PlayAudio(this, d)
+
+                d3.select(this)
+                    .attr("width", 120)
+                    .attr("height", 120)
+                scatterplot.selectAll("path")
+                    .style('stroke-width', function (d) {
+                        return (d[0].id == active_value || d[1].id == active_value) ? 5 : 1;
+                    })
+                    .style("opacity", function (d) {
+                        return (d[0].id == active_value || d[1].id == active_value) ? 0.5 : 1;
+                    })
+
+                nested_data.forEach(d1=>{
+                    if(d1.key==d.distance1){
+                        d1.values.forEach(d2=> {
+                            d3.select(".image_node" + d2.source).attr("width", 120).attr("height", 120)
+                                .transition().duration(200).attr("width", 100).attr("height", 100)
+                            d3.select(".image_node" + d2.target).attr("width", 120).attr("height", 120)
+                                .transition().duration(200).attr("width", 100).attr("height", 100)
+                            svg_scatterplot.selectAll("text").style("opacity",function (d3){
+                                return d3.id==d2.target||d3.id==d2.source?1:0;
+                            })
+                        })
+                        }
                     }
-                })
-                .style("opacity", function (d) {
-                   if (d[0].id == active_value || d[1].id == active_value){
-                       return 0.5;
-                   }
-                })
+                )
+                MouseOvertooltip(d,active_value);
+                d3.select('#tooltip_all')
+                    .style("visibility","visible");
 
-            MouseOvertooltip(d,active_value);
-            d3.select('#tooltip_all')
-                .style("visibility","visible");
-        })
-        .on("mouseout", function (d) {
-            scatterplot.selectAll("path")
-                .style('stroke-width', 1);
-            div.style("opacity", 0);
-            d3.select(this)     // Does work
-                .attr("r", );
-        });
+            })
+            .on("mouseout", function (d){
+                scatterplot.selectAll("path")
+                    .style('stroke-width', 1);
+                // div.style("opacity", 0);
+                d3.selectAll('image')
+                    .attr("width", 60)
+                    .attr("height", 60);
+
+            });
 
 }
 
@@ -604,14 +646,6 @@ function _Draw_Scatterplot(data){
         .domain(getExtent(data, "y"))
         .range([0, contentHeight]);
 
-    UpdateNodes(data);
-
-    function UpdateNodes(data) {
-        selection = scatterplot.selectAll(".compute").data(data);
-        //Exit
-        selection.exit().remove();
-
-    }
 }
 
 function getExtent(data, key) {
@@ -619,25 +653,16 @@ function getExtent(data, key) {
 }
 
 function MouseOvertooltip(d, active_value) {
-
-    div.transition()
-        .duration(200)
-        .style("opacity", .9);
-
-    div.html("Label: " + d.label + "<br/>" +
-        "Durations: " + d.info.duration.toFixed(2) + "<br/>" +
-        "BufferSize: " + d.info.bufferSize.toFixed(2) + "<br/>" +
-        "HopSize: " + d.info.hopSize.toFixed(2) + "<br/>" +
-        "Min_Distance:"+ d.distance1.toFixed(2) + "<br/>")
-
-    plot_radarchart(d);
-    plot_linegraph(d)
+    $("#tooltip_line").empty();
+    plot_line_v4(d)
+    plot_radar(d,d.group)
 }
 
 // Get a set of cluster centroids based on the given data
 function getcluster(data){
     let clusterSet = [];
     let centroids = [];
+
     //give number of clusters we want
     clusters.k(7);
 
@@ -653,6 +678,20 @@ function getcluster(data){
             clusterSet[i].points.includes(data_min[j]) ? data_min[j].group=i:0;
         }
     }
+}
+
+function calculate_Euclidean() {
+
+    var totalscore = [];
+    for (i = 0; i < total_self_similarity_data.length - 1; i++) {
+        var scorefinal = [];
+        for (j = i + 1; j < total_self_similarity_data.length; j++) {
+            //Calculate distance based on Euclidean Distance
+            scorefinal.push(comparescore_Euclidean(total_self_similarity_data[i], total_self_similarity_data[j]))
+        }
+        totalscore.push(scorefinal)
+    }
+
 }
 
 function PlayAudio(thisElement, d) {
@@ -694,89 +733,330 @@ Audio.prototype.stop = function () {
     // Reset the playback time marker
     this.currentTime = 0;
 };
+function draw_radar_chart(given_data,group) {
+    var set_colors;
+    var color_scale = ['#f4429e', '#ad42f4', '#f4f142', '#ce42f4', '#f4aa42', '#42e2f4', '#42f489', '#f4f442', '#ce42f4', '#42f1f4', '#f4c542', '#f47742', '#42c5f4', '#42f4f4', '#4274f4', '#42f47d', '#eef442', '#f4c542', '#f48042'];
+    var set_colors=color_scale[group];
+    console.log("color:" + set_colors)
+    var N = 13;
+    var array_label=[];
+    array_label=Array.apply(null, {length: N}).map(Number.call, Number)
+    var marksCanvas = document.getElementById("marksChart");
 
-function get_min_distance(data){
-    var distance=[];
-    var b=[]
-    data_min.forEach(d=> distance.push(euclideanDistance(data,d)))
-    b=distance.sort(function(a, b){return a - b});
-    return b[1]
+    var marksData = {
+        labels: array_label,
+        datasets: [{
+            label: given_data.id,
+            pointHoverRadius: 2,
+            radius:2,
+            pointRadius: 1,
+            pointBorderWidth: 2,
+            borderColor: hexToRgbA(set_colors),
+            data: given_data
+        }]
+    };
+
+
+    function hexToRgbA(hex){
+        var c;
+        if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+            c= hex.substring(1).split('');
+            if(c.length== 3){
+                c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+            }
+            c= '0x'+c.join('');
+            return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',1)';
+        }
+        throw new Error('Bad Hex');
+    }
+    var options = {
+        scale: {
+            ticks: {
+                beginAtZero: true,
+                min: math.min(data_min),
+                max: math.max(data_min),
+                stepSize: 0.02
+            },
+            display: false,
+            pointLabels: {
+                fontSize: 10
+            }
+            },
+        legend: false,
+        animation: {
+            onComplete: done
+
+        },
+        maintainAspectRatio: false
+    };
+    function done(){
+        var image_store=[];
+        image_url.push(radarChart.toBase64Image());
+        image_store=radarChart.toBase64Image();
+        given_data.image=image_store;
+    }
+
+    var radarChart = new Chart(document.getElementById("marksChart").getContext("2d"), {
+        type: 'radar',
+        data: marksData,
+        options:options
+    });
 }
 
-function get_min_distance2(data){
+
+function get_min_distance(data){
     distance3=[];
     var distance2=[];
-    data_min.forEach(d=> distance2.push(euclideanDistance(data,d)))
+    data_min.forEach(d=> {
+        if (d!=data){
+        distance2.push(euclideanDistance(data,d))
+
+}
+})
     distance3.push(distance2)
     return distance2;
 }
 
-function plot_radarchart(data) {
-    data = [{
-        type: 'scatterpolar',
-        r: data,
-        theta: ['m1', 'm2', 'm3', 'm4', 'm5', 'm6','m7', 'm8', 'm9', 'm10', 'm11', 'm12', 'm13'],
-        fill: 'toself'
-    }]
-
-    layout = {
 
 
-        title:"Standardized Mean Value" ,
-        // autosize: true,
-        width: 300,
-        height: 300,
-        polar: {
-            radialaxis: {
-                visible: true,
-                range: [math.min(data_min),math.max(data_min)]
-            },
-        angularaxis: {
-          rotation: 90,
-            direction: "clockwise"
-        }
+function plot_radar(given_data,group) {
+    var set_colors;
+    var color_scale = ['#f4429e', '#ad42f4', '#f4f142', '#ce42f4', '#f4aa42', '#42e2f4', '#42f489', '#f4f442', '#ce42f4', '#42f1f4', '#f4c542', '#f47742', '#42c5f4', '#42f4f4', '#4274f4', '#42f47d', '#eef442', '#f4c542', '#f48042'];
+    var set_colors=color_scale[group];
+    console.log("color:" + set_colors)
+    var N = 13;
+    var array_label=[];
+    array_label=Array.apply(null, {length: N}).map(Number.call, Number)
+    var marksCanvas = document.getElementById("marksChart");
+
+    var marksData = {
+        labels: array_label,
+        datasets: [{
+            label: given_data.id,
+            pointHoverRadius: 2,
+            radius:2,
+            pointRadius: 1,
+            pointBorderWidth: 2,
+            borderColor: hexToRgbA(set_colors),
+            data: given_data
+        }]
+    };
+
+
+    var options = {
+        title: {
+            display: true,
+            text: 'Standardized Mean Value '+ given_data.label
         },
-        showlegend: false
+        responsive: true,
+        maintainAspectRatio: false,
+        scale: {
+            ticks: {
+                beginAtZero: true,
+                min: math.min(data_min),
+                max: math.max(data_min),
+                stepSize: 0.02
+            },
+
+        },
+        pointLabels: {
+            fontSize: 10
+        }
+        ,
+        legend: false,
+        // scale: {
+        //     display:true
+        // },
+
+        animation: {
+            onComplete: done
+
+        },
+        tooltips: {
+            mode: 'index',
+            intersect: false
+        },
+        hover: {
+            mode: 'index',
+            intersect: false
+        },
+
+    };
+    function done(){
+        var image_store=[];
+        image_url.push(radarChart.toBase64Image());
+        image_store=radarChart.toBase64Image();
+        given_data.image=image_store;
     }
-
-    Plotly.newPlot("tooltip_radar", data, layout)
-
+    $("canvas#tooltip_radar").remove();
+    $("#tooltip_all").append('<canvas id="tooltip_radar" width="200" height="200"></canvas>');
+    var ctx=document.getElementById("tooltip_radar").getContext("2d");
+    var radarChart = new Chart(ctx, {
+        type: 'radar',
+        data: marksData,
+        options:options
+    });
 
 }
-
-function plot_linegraph(data){
-    var data1=[];
-    var trace1={};
-    layout2 = {
-        title: 'Distance Comparision Node'+ data.id,
-        showlegend: false,
-        autosize: true,
-        width: 300,
-        height: 300,
-        yaxis:{
-            title: "Euclidian Distance",
-            range: [0,math.max(distance3)*1.5]
-        },
-        xaxis: {
-            title: "Node ID",
-            range: [0,data_min.length]
+function hexToRgbA(hex){
+    var c;
+    if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+        c= hex.substring(1).split('');
+        if(c.length== 3){
+            c= [c[0], c[0], c[1], c[1], c[2], c[2]];
         }
+        c= '0x'+c.join('');
+        return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',1)';
     }
-
+    throw new Error('Bad Hex');
+}
+function plot_line(data){
+    var set_colors;
+    var color_scale = ['#f4429e', '#ad42f4', '#f4f142', '#ce42f4', '#f4aa42', '#42e2f4', '#42f489', '#f4f442', '#ce42f4', '#42f1f4', '#f4c542', '#f47742', '#42c5f4', '#42f4f4', '#4274f4', '#42f47d', '#eef442', '#f4c542', '#f48042'];
+    var set_colors=color_scale[data.group];
     var N = data_min.length;
     var array_label=[];
     array_label=Array.apply(null, {length: N}).map(Number.call, Number)
     var index=array_label.indexOf(data.id);
+    // var data_temp=data.distancevalue;
     array_label.splice(index,1)
-    data.distancevalue.splice(index,1)
-     trace1 = {
-        x: array_label,
-        y: data.distancevalue,
-        type: 'scatter'
-    };
-
-    data1 = [trace1];
-
-    Plotly.newPlot('tooltip_line', data1,layout2);
+    // data_temp.splice(index,1)
+    var dataArr = data.distancevalue;
+    $("canvas#tooltip_line").remove();
+    $("#tooltip_all").append('<canvas id="tooltip_line" width="300" height="300"></canvas>');
+    var ctx=document.getElementById("tooltip_line").getContext("2d");
+    var chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: array_label,
+            datasets: [{
+                label: data.id,
+                data: dataArr,
+                backgroundColor: hexToRgbA(set_colors),
+                borderColor: hexToRgbA(set_colors),
+                fill: false,
+                tension: 0
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Node:'+ data.id + '- Node:' + array_label[dataArr.indexOf(data.distance1)] + " Min:"+ data.distance1.toFixed(4)
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: Math.min.apply(this, dataArr),
+                        max: Math.max.apply(this, dataArr),
+                        callback: function(value, index, values) {
+                            if (index === values.length - 1) return Math.min.apply(this, dataArr).toFixed(2);
+                            else if (index === 0) return Math.max.apply(this, dataArr).toFixed(2);
+                            else return '';
+                        }
+                    }
+                }]
+            },
+            legend: false
+        }
+    });
 
 }
+
+function plot_line_v4(data) {
+
+    // var set_colors;
+    var color_scale = ['#f4429e', '#ad42f4', '#f4f142', '#ce42f4', '#f4aa42', '#42e2f4', '#42f489', '#f4f442', '#ce42f4', '#42f1f4', '#f4c542', '#f47742', '#42c5f4', '#42f4f4', '#4274f4', '#42f47d', '#eef442', '#f4c542', '#f48042'];
+      if (control== false) {
+              var array_label=create_label(data)
+              var svg = d3.select("#tooltip_line")
+                      .append("svg")
+                      .attr("width", 500)
+                      .attr("height", 300)
+                      .attr("transform", 'translate(0,0)'),
+                  margin = {top: 20, right: 20, bottom: 30, left: 40},
+                  width = +svg.attr("width") - margin.left - margin.right,
+                  height = +svg.attr("height") - margin.top - margin.bottom,
+                  contentWidth = width - margin.left - margin.right,
+                  contentHeight = height - margin.top - margin.bottom;
+              // //Build tooltip
+              let div = d3.select("#tooltip_line").append("div").attr("class", "tooltip").attr("opacity", 0);
+
+              //Build the xAsis
+              const xAxisG = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top + contentHeight})`);
+              const xScale = d3.scaleLinear().domain(d3.extent(array_label)).range([0, contentWidth]);
+              const xAxis = d3.axisBottom(xScale).tickFormat("").ticks(data.distancevalue.length)
+              xAxisG.call(xAxis);
+
+              const yAxisG = svg.append('g').attr("transform", `translate(${margin.left}, ${margin.top})`);
+              const yScale = d3.scaleLinear().domain([0, math.max(data.distancevalue)]).range([contentHeight, 0]);
+              const yAxis = d3.axisLeft(yScale);
+              yAxisG.call(yAxis);
+
+              const graph = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`);
+              const lineGen = d3.line().x(function (d, i) {
+                  return xScale(array_label[i])
+              }).y(d => yScale(d));
+              const linePath = graph.append("path").datum(data.distancevalue).attr("d", lineGen).attr("fill", "none").attr("stroke", "black");
+              let circles = graph.selectAll("circle").data(data.distancevalue).enter().append("circle").call(createCircle);
+              function tick(data1){
+                  yScale.domain([0, d3.max(data1.distancevalue)]);
+                  linePath.datum(data1.distancevalue).attr("d", lineGen).attr("fill", "none").attr("stroke", "black");
+                  circles = graph.selectAll("circle").data(data1.distancevalue).enter().append("circle").merge(circles).call(createCircle);
+                  circles.exit().remove();
+                  xScale.domain(d3.extent(d3.extent(create_label(data1))));
+                  xAxisG.transition().duration(1000).call(xAxis);
+                  yAxisG.transition().duration(1000).call(yAxis);
+
+              }
+              function createCircle(theCircle) {
+                  return theCircle.attr("cx", function (d, i) {
+                      return xScale(array_label[i])
+                  })
+                      .attr("cy", d => yScale(d))
+                      .attr("r", function (d){
+                          if (d==math.min(data.distancevalue)){
+                              return 6
+                          }
+                          else {
+                              return 2
+                          }
+                      })
+                      .style("fill", function (d,i){
+                        return color_scale[(data_min[i].group)]
+                      })
+              .on("mouseover", (d,i) => {
+                      div.style('left', d3.event.pageX + "px").style("top", (d3.event.pageY-100) + "px");
+                      div.style("opacity", 1);
+                      div.html("Source: " + data.id + "</br>" +"Target: " + array_label[i] + "</br>" + "Distance: " + d.toFixed(4) + "</br>");
+                  plot_radar(data_min[array_label[i]],data_min[array_label[i]].group);
+                  })
+                      .on("mouseout", d=>{
+                          div.transition().style("opacity", 0);
+                      });
+
+              }
+
+          }
+      // else {
+      //     tick(data)
+      // }
+
+
+
+
+
+}
+
+
+
+function create_label(data){
+    var N = data_min.length;
+    var array_label = [];
+    array_label = Array.apply(null, {length: N}).map(Number.call, Number)
+    var index = array_label.indexOf(data.id);
+    array_label.splice(index, 1);
+    return array_label
+}
+
+
+
