@@ -12,17 +12,14 @@ onmessage = function(e){
             "<br>Perplexity: " + inputs.perplexity +
             "<br>Iteration: " + iteration;
     };
-    for(var k = 0; k < inputs.iterations; k++) {
+    for(var k = 0; k < inputs.tsne_iteration; k++) {
         tsne.step(); // every time you call this, solution gets better
+        Updated_TSNE(tsne.getSolution(),Log_TSNE(k+1));
     }
-
-    Updated_TSNE(tsne.getSolution(),Log_TSNE(500));
-
-
 
 // Tell the worker container in the main thread that the TSNE solution has been updated
     function Updated_TSNE(tsneOutput, strMessage) {
         postMessage({status:"TSNE_Updated", content:tsneOutput, logMessage:strMessage});
     }
-    // postMessage(tsne.getSolution());
+
 }

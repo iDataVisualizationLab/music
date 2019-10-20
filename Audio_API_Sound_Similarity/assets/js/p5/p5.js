@@ -65320,7 +65320,7 @@ p5.prototype.shuffle = function(arr, bool) {
  * }
  * </div></code>
  */
-p5.prototype.sort = function(list, count) {
+p5.prototype.sortp5 = function(list, count) {
   var arr = count ? list.slice(0, Math.min(count, list.length)) : list;
   var rest = count ? list.slice(Math.min(count, list.length)) : [];
   if (typeof arr[0] === 'string') {

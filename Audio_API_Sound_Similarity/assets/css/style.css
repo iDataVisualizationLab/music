@@ -49,7 +49,7 @@ text.text-hover {
     fill: #00C;
 }
 
-.header {
+#header {
     font-family: 'Open Sans', sans-serif;
     color: #555;
     text-decoration: none;
@@ -59,13 +59,13 @@ text.text-hover {
     letter-spacing: -3px;
     line-height: 1;
     text-shadow: #EDEDED 3px 2px 0;
-    position: absolute;
-    top: 0;
-    left: 1px;
-    width:1350px;
-    height:50px;
+    /*position: absolute;*/
+    /*top: 0;*/
+    /*left: 1px;*/
+    /*width:1350px;*/
+    /*height:50px;*/
     text-align: center;
-    background-image: -webkit-linear-gradient(left top, transparent 0%, transparent 25%, red 25%, blue 50%, transparent 50%, transparent 75%, deepskyblue 75%);
+    background-image: -webkit-linear-gradient(left top, transparent 0%, transparent 0%, red 25%, blue 50%, transparent 0%, transparent 0%, deepskyblue 0%);
     background-size: 10px 10px;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -101,25 +101,39 @@ h4 {
     font-size: 20px;
     text-align: center;
 }
-#filepicker {
-    transition: all 0.5s;
-    position: absolute;
-    left: 1px;
-    top: 50px;
-    overflow: hidden;
+input#filepicker {
     display: inline-block;
-    cursor: pointer;
-    outline: none;
-    height: 45px;
-}
-#filepicker:hover {background-color: #218e1f
+
+    padding: 40px 0 0 0;
+    height: 30px;
+    overflow: hidden;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background: url('https://cdn1.iconfinder.com/data/icons/hawcons/32/698394-icon-130-cloud-upload-512.png') center center no-repeat #e4e4e4;
+    border-radius: 20px;
+    background-size: 60px 60px;
 }
 
-#filepicker:active {
-    background-color: #8e3839;
-    box-shadow: 0 5px #666;
-    transform: translateY(4px);
-}
+/*#filepicker input[type=file] {*/
+/*    transition: all 0.5s;*/
+/*    !*position: absolute;*!*/
+/*    !*left: 1px;*!*/
+/*    !*top: 50px;*!*/
+/*    overflow: hidden;*/
+/*    display: inline-block;*/
+/*    cursor: pointer;*/
+/*    outline: none;*/
+/*    height: 45px;*/
+/*}*/
+/*#filepicker:hover {background-color: #218e1f*/
+/*}*/
+
+/*#filepicker:active {*/
+/*    background-color: #8e3839;*/
+/*    box-shadow: 0 5px #666;*/
+/*    transform: translateY(4px);*/
+/*}*/
 
 .btn {
     border: 2px solid gray;
@@ -132,13 +146,13 @@ h4 {
 
 }
 
-#filepicker input[type=file] {
-    font-size: 100px;
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    opacity: 0;
-}
+/*#filepicker input[type=file] {*/
+/*    font-size: 100px;*/
+/*    !*position: absolute;*!*/
+/*    !*left: 0px;*!*/
+/*    !*top: 0px;*!*/
+/*    opacity: 0;*/
+/*}*/
 
 #network{
     border: 1px solid black;
@@ -158,25 +172,25 @@ h4 {
     height:1000px;
 }
 
-#theGraph{
-    border: 1px solid black;
-    position:absolute;
-    top: 200px;
-    left: 0px;
-    width:1350px;
-    height:1000px;
-    resize: both;
-}
+/*#theGraph{*/
+/*    !*border: 1px solid black;*!*/
+/*    !*position:absolute;*!*/
+/*    !*top: 230px;*!*/
+/*    !*left: 0px;*!*/
+/*    width:1520px;*/
+/*    height:1000px;*/
+/*    resize: both;*/
+/*}*/
 
 
-#tooltip_all{
-    position:absolute;
-    top: 250px;
-    left: 900px;
-    width:300px;
-    height:600px;
-    resize: both;
-}
+/*#tooltip_all{*/
+/*    position:absolute;*/
+/*    top: 250px;*/
+/*    left: 900px;*/
+/*    width:300px;*/
+/*    height:600px;*/
+/*    resize: both;*/
+/*}*/
 
 
 /*#network_mst{*/
@@ -198,31 +212,9 @@ h4 {
 #marksChart{
     visibility: hidden;
 }
-
-/*#myCanvas{*/
-    /*position:absolute;*/
-    /*top:900px;*/
-    /*left:1px;*/
-    /*width:200px;*/
-    /*height:200px;*/
-/*}*/
-/*.tooltip {*/
-    /*text-align: center;*/
-    /*font-family: monospace;*/
-    /*font-size: 8px;*/
-    /*color: #000;*/
-    /*position: relative;*/
-    /*background: rgba(255, 255, 255, 0.8);*/
-    /*border: 1px solid #66F;*/
-    /*padding: 5px;*/
-    /*border-radius: 10px ;*/
-    /*width: 25px;*/
-    /*z-index:10000;*/
-    /*-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);*/
-    /*-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);*/
-    /*box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);*/
-    /*pointer-events: none;*/
-/*}*/
+#marksChart1{
+    visibility: hidden;
+}
 
 #loader {
     border: 16px solid #f3f3f3;
@@ -232,9 +224,9 @@ h4 {
     border-bottom: 16px solid red;
     width: 20px;
     height: 20px;
-    position: absolute;
-    left: 250px;
-    top: 40px;
+    position: relative;
+    left: 100px;
+    /*top: 40px;*/
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;
 }
@@ -254,11 +246,11 @@ h4 {
     border: 1px solid black;
     position: absolute;
     left: 1px;
-    top: 100px;
+    top: 130px;
     display: inline-block;
     outline: none;
     height: 100px;
-    width: 1350px;
+    width: 1520px;
     background-color: lightgray;
 }
 
@@ -341,17 +333,17 @@ h4 {
     left: 0px;
     cursor: pointer;
 }
-#filepicker {
-    transition: all 0.5s;
-    position: absolute;
-    left: 1px;
-    top: 50px;
-    overflow: hidden;
-    display: inline-block;
-    cursor: pointer;
-    outline: none;
-    height: 45px;
-}
+/*#filepicker {*/
+/*    transition: all 0.5s;*/
+/*    !*position: absolute;*!*/
+/*    !*left: 1px;*!*/
+/*    !*top: 50px;*!*/
+/*    overflow: hidden;*/
+/*    !*display: inline-block;*!*/
+/*    cursor: pointer;*/
+/*    outline: none;*/
+/*    height: 45px;*/
+/*}*/
 #button1:hover {background-color: deepskyblue;
 }
 
@@ -366,20 +358,26 @@ h4 {
 #button5:hover {background-color: deepskyblue;
 }
 
-#form{
-    position: absolute;
-    left: 170px
-}
+/*#form{*/
+/*    position: absolute;*/
+/*    left: 170px*/
+/*}*/
 
 .slidecontainer_perplexity{
-    position: absolute;
-    left: 900px;
-    top: 20px;
+  height:25px;
 }
 .slidecontainer_iteration{
-    position: absolute;
-    left: 900px;
-    top: 60px;
+    height:25px;
+}
+#iteration_output{
+    position: relative;
+    top: -60px;
+    left: 20px
+}
+#perplexity_output{
+    position: relative;
+    top: -60px;
+    left: 20px
 }
 #tsne{
     position: absolute;
@@ -387,22 +385,29 @@ h4 {
     top:-10px;
 }
 
-/*#tooltip_line {*/
-    /*position: absolute;*/
-    /*top: 440px;*/
-    /*left:150px;*/
-    /*text-align: left;*/
-    /*width: 130px;*/
-    /*height: 70px;*/
-    /*!*padding: 2px;*!*/
-    /*font: 12px sans-serif;*/
-    /*background: lightsteelblue;*/
-    /*!*border: 0px;*!*/
-    /*!*border-radius: 8px;*!*/
-    /*pointer-events: none;*/
-/*}*/
-
 #tooltip_all {
-    width:200px !important;
-    height: 200px !important;
+    /*width:520px !important;*/
+    height: 635px !important;
 }
+
+#tooltip_radar{
+    position: absolute;
+    width: 200px !important;
+    height: 200px !important;
+    left: 300px;
+    top: 250px;
+}
+
+#tooltip_radar_compare{
+    position: absolute;
+    width: 200px !important;
+    height: 200px !important;
+    left: 100px;
+    top: 250px;
+}
+
+/*#live_canvas {*/
+/*    position: absolute;*/
+/*    left: 0px;*/
+/*    top: 800px;*/
+/*}*/

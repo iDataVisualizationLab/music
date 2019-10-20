@@ -539,11 +539,6 @@ function reset(){
 
 }
 
-// function resetAll(){
-//     d3.select("svg").remove();
-//
-// }
-
 function stopWorker() {
     w.terminate();
     w = undefined;
@@ -560,69 +555,63 @@ function _Draw_Scatterplot(data){
         .range([0, contentHeight]);
 
     UpdateNodes(data);
-
-    function UpdateNodes(data) {
-
-
-
-
-
-        var colors = d3.scaleOrdinal(d3.schemeCategory20);
-        const radius = 3;
-        const opacity = "1";
-        const selection = scatterplot.selectAll(".compute").data(data);
-        //Exit
-        selection.exit().remove();
-        //Enter
-        const newElements = selection.enter()
-            .append('circle')
-            .attr("class", "compute")
-            .attr("cx", d => xScale(d.x))
-            .attr("cy", d => yScale(d.y))
-            .attr("r", radius)
-            .style("opacity", opacity)
-            .style("fill", function(d){
-                return colors(d.group)
-            })
-            .on("click", function (d){
-                if (selected_node==false){
-                    minimumSpanningTree.nodes[d.id].start=true;
-                    start_node_id=d.id
-                    $.notify("Start Node Selected", "success");
-                    selected_node=true;
-                }
-                else {
-                    minimumSpanningTree.nodes[d.id].end=true;
-                    $.notify("End Node Selected", "success");
-                    end_node_id=d.id;
-                    selected_node=false;
-                }
-            })
-            .on("mouseover", function(d) {
-                PlayAudio(this, d)
-                MouseOvertooltip(d);
-                d3.select(this)     // Does work
-                    .attr("r", radius * 2);
-                d3.select(this)
-                    .append("title")
-                    .text(function(d) { return d.id
-                    })
-            })
-            .on("mouseout", function(d) {
-                div.style("opacity", 0);
-                d3.select(this)     // Does work
-                    .attr("r", radius);
-                d3.select(this)
-                    .select("text")
-                    .remove();
-            });
+}
+function UpdateNodes(data) {
+    var colors = d3.scaleOrdinal(d3.schemeCategory20);
+    const radius = 3;
+    const opacity = "1";
+    const selection = scatterplot.selectAll(".compute").data(data);
+    //Exit
+    selection.exit().remove();
+    //Enter
+    const newElements = selection.enter()
+        .append('circle')
+        .attr("class", "compute")
+        .attr("cx", d => xScale(d.x))
+        .attr("cy", d => yScale(d.y))
+        .attr("r", radius)
+        .style("opacity", opacity)
+        .style("fill", function(d){
+            return colors(d.group)
+        })
+        .on("click", function (d){
+            if (selected_node==false){
+                minimumSpanningTree.nodes[d.id].start=true;
+                start_node_id=d.id
+                $.notify("Start Node Selected", "success");
+                selected_node=true;
+            }
+            else {
+                minimumSpanningTree.nodes[d.id].end=true;
+                $.notify("End Node Selected", "success");
+                end_node_id=d.id;
+                selected_node=false;
+            }
+        })
+        .on("mouseover", function(d) {
+            PlayAudio(this, d)
+            MouseOvertooltip(d);
+            d3.select(this)     // Does work
+                .attr("r", radius * 2);
+            d3.select(this)
+                .append("title")
+                .text(function(d) { return d.id
+                })
+        })
+        .on("mouseout", function(d) {
+            div.style("opacity", 0);
+            d3.select(this)     // Does work
+                .attr("r", radius);
+            d3.select(this)
+                .select("text")
+                .remove();
+        });
 
 
-        //Update
-        selection
-            .attr("cx", d => xScale(d.x))
-            .attr("cy", d => yScale(d.y)).attr("r", 3);
-    }
+    //Update
+    selection
+        .attr("cx", d => xScale(d.x))
+        .attr("cy", d => yScale(d.y)).attr("r", 3);
 }
 
 function getExtent(data, key) {

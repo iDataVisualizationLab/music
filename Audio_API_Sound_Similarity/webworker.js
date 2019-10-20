@@ -8,6 +8,7 @@ function startWorker(data){
         w.onmessage = function (event){
                 Initial_Scatterplot(event.data.content)
                 d3.select("#textDiv").html(event.data.logMessage);
+                console.log(event.data)
         };
     }
     else{

@@ -619,17 +619,14 @@ function getExtent(data, key) {
 }
 
 function MouseOvertooltip(d, active_value) {
-
     div.transition()
         .duration(200)
         .style("opacity", .9);
-
     div.html("Label: " + d.label + "<br/>" +
         "Durations: " + d.info.duration.toFixed(2) + "<br/>" +
         "BufferSize: " + d.info.bufferSize.toFixed(2) + "<br/>" +
         "HopSize: " + d.info.hopSize.toFixed(2) + "<br/>" +
         "Min_Distance:"+ d.distance1.toFixed(2) + "<br/>")
-
     plot_radarchart(d);
     plot_linegraph(d)
 }
@@ -780,3 +777,4 @@ function plot_linegraph(data){
     Plotly.newPlot('tooltip_line', data1,layout2);
 
 }
+
