@@ -152,6 +152,7 @@ function getData(a, index) {
 
 //live audio recording, create microphone audio input source from audio context
 function createMicSrcFrom(audioCtx){
+    record=true;
     /* get microphone access */
     return new Promise((resolve, reject)=>{
         /* only audio */
@@ -166,7 +167,7 @@ function createMicSrcFrom(audioCtx){
                 resolve(src);
             }).catch((err)=>{reject(err)})
     })
-    record=true;
+
 }
 
 function stopStream() {
@@ -210,8 +211,8 @@ function setup() {
 }
 
 function startrecord() {
+    $.notify("Loading Record 1", "success");
     loop();
-    debugger
     mfcc_history=[];
         //create meyda analyzer and connect to mic source
         onMicDataCall([featureType, featureType2], show)
@@ -220,6 +221,7 @@ function startrecord() {
             }).catch((err)=>{
             alert(err)
         })
+    record = true;
 }
 
 function show(features){
@@ -251,7 +253,10 @@ function show(features){
             total_origin_data=[];
             total_self_similarity_data=[];
             draw_total_audio_canvas.push(draw_audio_canvas);
+            $.notify("Loading Record 2", "success");
             if(draw_total_audio_canvas.length==2) {
+
+                stopStream();
                 draw_canvas_self_similarity_matrix(draw_total_audio_canvas, canvascompareId);
                 //prepare data for SmithWaterman Algorithm
                 var smith_data =comparescore_SmithWaterman(draw_total_audio_canvas[0],draw_total_audio_canvas[1]);
@@ -263,6 +268,9 @@ function show(features){
                 d3.select("#myCanvas").style("visibility","hidden");
                 draw_total_audio_canvas=[];
             }
+
+
+
             draw_audio_canvas=[];
 
         }
@@ -273,25 +281,26 @@ function show(features){
     }
 }
 
-function draw_heatmap(data) {
+function draw(data) {
     clear()
     background(220, 220, 220);
-    if(data==undefined){
-        noLoop();
-    }
-    else {
-        loop();
-        plot(data);
-    }
+    // if(data==undefined){
+    //     noLoop();
+    // }
+    // else {
+
+        plot(mfcc_test);
+    // }
+
 }
 
-function draw(){
-    clear()
-    background(220, 220, 220);
-    plot(mfcc_test);
-}
+// function draw(){
+//     clear()
+//     background(220, 220, 220);
+//     plot(mfcc_test);
+// }
 
-let plot = (data) => {
+function plot(data){
     for(let i = 0; i < data.length; i++ ) {
         for(let j = 0; j < data [i].length; j++ ) {
             let color_strength = data[i][j] * 100
@@ -460,7 +469,7 @@ function drawmatrix(self_similarity_data, index1, canvasId) {
 
     //define where to put the image in canvas
     ctx.putImageData(imgData, 0, 0);
-    ctx1.putImageData(imgData, index1*(24*parseInt($('#duration').val(), 10)),0)
+    ctx1.putImageData(imgData, index1*(48*parseInt($('#duration').val(), 10)),0)
     //save canvas to png image then call back to use in network diagram
     // var imagedata = c.toDataURL("image/png").replace("image/png", "image/octet-stream");
     var imagedata = c.toDataURL("image/png");
@@ -511,11 +520,11 @@ function tsne_prep(){
 }
 function calculate_tsne(data){
 
-    if (stopworker==true){
-        stopWorker()
-        stopworker=false;
-    }
-    stopworker=true;
+    // if (stopworker==true){
+    //     stopWorker()
+    //     stopworker=false;
+    // }
+    // stopworker=true;
     scatterplot.selectAll("path").remove();
     process_tsne(data);
     image_url=[];
@@ -828,8 +837,22 @@ function Update_Nodes(nested_data){
             svg_scatterplot.selectAll("image").style("opacity",1);
             active_value = d.id;
             console.log(active_value);
-            PlayAudio(this, d)
-            draw_heatmap(total_origin_data[d.id]);
+            PlayAudio(this, d);
+            noLoop();
+            for(let i = 0; i < total_origin_data[d.id].length; i++ ) {
+                for(let j = 0; j < total_origin_data[d.id][i].length; j++ ) {
+                    let color_strength = total_origin_data[d.id][i][j] * 100
+
+                    // setting color
+                    if ( total_origin_data[d.id] [i] [j] >= 0 )
+                        fill ( 0, color_strength, 0 )
+                    else
+                        fill( 0, 0, - color_strength )
+                    // noStroke();
+                    //drawing the rectangle
+                    rect(i * BOX_WIDTH*2, j * BOX_HEIGHT*2, BOX_WIDTH*2, BOX_HEIGHT*2)
+                }
+            }
             d3.select(this)
                 .attr("width", 60)
                 .attr("height", 60)
