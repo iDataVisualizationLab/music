@@ -4,21 +4,15 @@
     <link href="./assets/css/app.css" rel="stylesheet" type="text/css">
     <link href="./assets/css/install-button.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
-    <!-- Latest compiled and minified CSS -->
-<!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <script src="./assets/js/jquery.min.js"></script>
     <script src="./assets/js/bootstrap.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="./assets/js/math.min.js"></script>
     <script src="./assets/js/d3.v4.min.js"></script>
-<!--    <script src="./assets/js/d3.tip.js"></script>-->
-    <script src="./assets/js/disjoint-set.js"></script>
+   <script src="./assets/js/disjoint-set.js"></script>
     <script src="./assets/js/kruskal-mst.js"></script>
-<!--    <script src="https://d3js.org/d3-color.v1.min.js"></script>-->
-<!--    <script src="https://d3js.org/d3-scale.v2.min.js"></script>-->
-<!--    <script src="./assets/js/colorbrewer.v1.min.js"></script>-->
     <script src="./assets/js/underscore.js"></script>
     <script src="./assets/js/numjs.min.js"></script>
     <script src="./assets/js/distance.js"></script>
@@ -81,7 +75,7 @@
         </div>
     </div>
     <div class="row">
-    <div class="col-md-8 well" id="theGraph">
+    <div class="col-md-8" id="theGraph">
 
         <div class="span">T-SNE Output Scatterplot</div>
 
@@ -92,7 +86,7 @@
         <canvas id="compareCanvas"></canvas>
         </div>
     </div>
-        <div class="col-md-4 well" id="tooltip_all">
+        <div class="col-md-4" id="tooltip_all">
 
             <div class="row">
                 <div class="span">Sample's Euclidean Distance Comparision</div>
@@ -111,9 +105,7 @@
             </div>
             </div>
     </div>
-<!--    <div class="row" >-->
-<!--        <canvas id="compareCanvas"></canvas>-->
-<!--    </div>-->
+
     <div class="row" style="position: relative; height:300px; width:300px">
             <canvas id="marksChart" height="200px" width="200px"></canvas>
                 <canvas id="myCanvas"></canvas>
@@ -122,37 +114,9 @@
 </div>
 </div>
 
-<!--<label for="toggle">❔</label>-->
-<!--<input type="checkbox" id="toggle">-->
-<!--<div class="row">-->
-<!--    <p id="tsne">T-SNE Configuration</p>-->
-<!--    <form action="/action_page.php" id="form">-->
-<!--        Max audio's duration: <input type=number value=4 id="duration"><br>-->
-<!--    </form>-->
-<!--    <button class=".btn-primary" onclick="draw_shortestpath()">Draw Path</button>-->
-    <!--<button id="button2" onclick="resetAll()">Reset All</button>-->
-<!--    <button id="button3" onclick=" calculate_tsne()">T-sne Comparision</button>-->
-    <!--<button id="button4" onclick=" reset()">Reset Worker</button>-->
-<!--    <button id=".btn-primary" onclick=" draw_graph()">Play MST</button>-->
-<!--    <canvas id="myCanvas"></canvas>-->
-
-
-<!--</div>-->
-
-<!--<div class="chart-container" style="position: relative; height:300px; width:300px">-->
-<!--    <canvas id="marksChart" height="300px" width="300px"></canvas>-->
-<!--</div>-->
-
-<!--<div id="theGraph">-->
-<!--    <h3>Scatter Plot of T-SNE Output</h3>-->
-<!--&lt;!&ndash;    <canvas class="visualizer" height="60px"></canvas>&ndash;&gt;-->
-
-<!--</div>-->
-
-
 <script src="smithwaterman.js"></script>
 <script src="webworker.js"></script>
-<script src="main2.js"></script>
+<script src="main.js"></script>
 
 
 

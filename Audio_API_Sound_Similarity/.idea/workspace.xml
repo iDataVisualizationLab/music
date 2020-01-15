@@ -2,21 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5b2b83c6-993f-4806-837b-49312259cb3c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/livemfcc.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/smithwaterman.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Testp5.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/assets/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/d3.v3.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/d3.v3.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/jquery.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/jquery.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/p5/p5.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/p5/p5.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/tsne.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/tsne.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/livemfcc.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main1.js" beforeDir="false" afterPath="$PROJECT_DIR$/main1.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main2.js" beforeDir="false" afterPath="$PROJECT_DIR$/main2.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_connected_scatterplot.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main1.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main2.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/webworker.js" beforeDir="false" afterPath="$PROJECT_DIR$/webworker.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/worker.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -44,7 +39,7 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Audio_API_Similarity" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Downloads/Audio_API_Sound_Similarity" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
@@ -134,6 +129,21 @@
       <workItem from="1570501643948" duration="6621000" />
       <workItem from="1571074117840" duration="14988000" />
       <workItem from="1571093167051" duration="1716000" />
+      <workItem from="1571766930188" duration="3880000" />
+      <workItem from="1572230813282" duration="600000" />
+      <workItem from="1572311297463" duration="11867000" />
+      <workItem from="1573447054480" duration="9387000" />
+      <workItem from="1573573364841" duration="4221000" />
+      <workItem from="1574972942052" duration="73000" />
+      <workItem from="1575312794089" duration="1650000" />
+      <workItem from="1575408744651" duration="597000" />
+      <workItem from="1575953527756" duration="306000" />
+      <workItem from="1576303519662" duration="1782000" />
+      <workItem from="1577918923701" duration="600000" />
+      <workItem from="1578019763964" duration="1362000" />
+      <workItem from="1578977529020" duration="1181000" />
+      <workItem from="1579044921263" duration="677000" />
+      <workItem from="1579088455063" duration="386000" />
     </task>
     <servers />
   </component>

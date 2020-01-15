@@ -253,7 +253,7 @@ var tsnejs = tsnejs || {REVISION: 'ALPHA'};
             // generate random solution to t-SNE
             this.Y = randn2d(this.N, this.dim); // the solution
             this.gains = randn2d(this.N, this.dim, 1.0); // step gains to accelerate progress in unchanging directions
-            this.ystep = randn2d(this.N, this.dim, 0.0); // momentum accumulator
+            this.ystep = randn2d(this.N, this.dim, 0.0); // momentum gaccumulator
             this.iter = 0;
         },
 
