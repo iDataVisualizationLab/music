@@ -347,6 +347,7 @@ function Initial_Scatterplot(tsne_data) {
 
 // Update the data with the given t-SNE result
 function UpdateDataTSNE(data) {
+    debugger
     data.forEach(function(d, i) {
         data_min[i].x = d[0];  // Add the t-SNE x result to the dataset
         data_min[i].y = d[1];  // Add the t-SNE y result to the dataset
