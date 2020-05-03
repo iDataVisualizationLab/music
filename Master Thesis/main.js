@@ -45,8 +45,8 @@ window.onload = function () {
         let files = event.target.files;
         // console.log(files);
         for (i = 0; i < files.length; i++) {
-            // audio_label.push(files[i].name.split('_').slice(0, 2).slice(0, 1).join("_"));
-            audio_label.push(files[i].name);
+            audio_label.push(files[i].name.split('_').slice(0, 2).slice(0, 1).join("_"));
+            // audio_label.push(files[i].name);
             fileContent.push(URL.createObjectURL(files[i]));
             fakeDataforfirstplot.push([0]);
         }
