@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sound Similarity</title>
+
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link href="./assets/css/app.css" rel="stylesheet" type="text/css">
+    <link href="./assets/css/install-button.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/ml5@0.4.2/dist/ml5.min.js" crossorigin=""></script>
+    <script src="https://d3js.org/d3-color.v1.min.js"></script>
+    <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <script src="http://d3-legend.susielu.com/d3-legend.min.js"></script>
+    <!-- Compiled and minified CSS -->
+    <!--    <link rel="stylesheet" href="./assets/css/bootstrap.min.css">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--    <script src="./assets/js/ml5.min.js"></script>-->
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/bootstrap.min.js"></script>
+    <script src="./assets/js/notify.js"></script>
+    <script src="./assets/js/meyda.min.js"></script>
+    <script src="./assets/js/math.min.js"></script>
+    <script src="./assets/js/d3.v4.min.js"></script>
+    <!--    <script src="./assets/js/d3.v3.min.js"></script>-->
+    <script src="./assets/js/p5/p5.js"></script>
+    <script src="./assets/js/p5/addons/p5.dom.js"></script>
+    <script src="./assets/js/disjoint-set.js"></script>
+    <script src="./assets/js/kruskal-mst.js"></script>
+    <script src="./assets/js/dijkstra.js"></script>
+    <script src="./assets/js/distance.js"></script>
+    <script src="./assets/js/notify.js"></script>
+    <script src="./assets/js/plotly-latest.min.js"></script>
+    <!--    <script src="./assets/js/k-nearest-neighbors.js"></script>-->
+
+</head>
+<script src="./assets/js/tSNE_Scatterplot.js"></script>
+<script src="smithwaterman.js"></script>
+<script src="tsne_worker.js"></script>
+<script src="main.js"></script>
+<body>
+<div>
+    <div class=".jumbotron" id="header">
+        Sound Visualization
+    </div>
+
+    <div class=".container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="input-group mb-3">
+                    <button type="button" class="btn btn-outline-secondary btn-block input-group-prepend">
+                        <input type="file" id="filepicker" accept=".mp3,.wav,.ogg" name="fileList" multiple/>
+                        <div id="loader">
+                        </div>
+                    </button>
+                </div>
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-outline-secondary btn-block" id="record" onclick=startrecord()><i
+                        class="fa fa-microphone fa-lg" aria-hidden="true"></i></button>
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-outline-secondary btn-block" onclick=stopStream()><i
+                        class="fa fa-stop-circle-o fa-lg" aria-hidden="true"></i></button>
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-outline-secondary btn-block" onclick="draw_shortestpath()">
+                    <i class="fa fa-play-circle" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-outline-secondary btn-block" onclick=" draw_tree()">
+                    Draw MST
+                </button>
+            </div>
+
+        </div>
+        <div class="row" id="body-row">
+            <div class="col-2 border bg-light">
+                <!-- Sidebar -->
+                <div id="sidebar-container" class="sidebar-expanded d-none d-md-block">
+                    <!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
+                    <!-- Bootstrap List Group -->
+                    <ul class="list-group">
+                        <!-- Separator with title -->
+                        <li class="list-group-item list-group-item-dark sidebar-separator-title text-muted d-flex align-items-center menu-collapsed">
+                            <span style="width: 85%;text-align: center">Control Panel</span>
+                        </li>
+                        <!-- /END Separator -->
+                        <!-- Menu with submenu -->
+                        <a href="#submenu1" data-toggle="collapse" aria-expanded="false"
+                           class="bg-light list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-100 justify-content-start align-items-center">
+                                <span class="fa fa-cogs fa-fw mr-3"></span>
+                                <span class="menu-collapsed">TSNE Configuration</span>
+                                <span class="submenu-icon ml-auto"></span>
+                            </div>
+                        </a>
+                        <!-- Submenu content -->
+                        <div id='submenu1' class="collapse sidebar-submenu">
+                            <span class="menu-collapsed">Perplexity</span>
+                            <div class="slidecontainer_perplexity">
+                                <input type="range" min="5" max="100" value="20" class="slider" id="myRange1"
+                                       oninput="perplexity_output.value = myRange1.value">
+                                <output name="Output1" id="perplexity_output">20</output>
+                            </div>
+                            <span class="menu-collapsed">Iteration</span>
+                            <div class="slidecontainer_iteration">
+                                <input type="range" min="100" max="5000" value="100" class="slider" id="myRange2"
+                                       oninput="iteration_output.value = myRange2.value">
+                                <output name="Output2" id="iteration_output">100</output>
+                            </div>
+                        </div>
+                        <a href="#submenu2" data-toggle="collapse" aria-expanded="false"
+                           class="bg-light list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-100 justify-content-start align-items-center">
+                                <span class="fa fa-soundcloud fa-fw mr-3"></span>
+                                <span class="menu-collapsed">Meyda Setting</span>
+                                <span class="submenu-icon ml-auto"></span>
+                            </div>
+                        </a>
+                        <!-- Submenu content -->
+                        <div id='submenu2' class="collapse sidebar-submenu">
+                            <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                                <span class="menu-collapsed">Max Audio Length(sec)</span>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon3">Value:</span>
+                                    </div>
+                                    <input type="number" id="duration" class="form-control" value="2"
+                                           aria-label="4" aria-describedby="basic-addon3">
+                                </div>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                                <span class="menu-collapsed">Sample Rate(Hz)</span>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon0">Value:</span>
+                                    </div>
+                                    <input type="number" id="samplerate" class="form-control" value="22050"
+                                           aria-label="44100" aria-describedby="basic-addon0">
+                                </div>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                                <span class="menu-collapsed">Window Size(sample)</span>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">Value:</span>
+                                    </div>
+                                    <input type="number" id="windowsize" class="form-control" value="2048"
+                                           aria-label="4096" aria-describedby="basic-addon1">
+                                </div>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                                <span class="menu-collapsed">Hop Size(sample)</span>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon2">Value:</span>
+                                    </div>
+                                    <input type="number" id="hopsize" class="form-control" value="1024"
+                                           aria-label="2048" aria-describedby="basic-addon2">
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Separator with title -->
+                        <a href="#submenu3" data-toggle="collapse" aria-expanded="false"
+                           class="bg-light list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-100 justify-content-start align-items-center">
+                                <span class="fa fa-check-circle fa-fw mr-3"></span>
+                                <span class="menu-collapsed">Feature Selection</span>
+                                <span class="submenu-icon ml-auto"></span>
+                            </div>
+                        </a>
+                        <div id='submenu3' class="collapse sidebar-submenu">
+                            <button onclick="selectfeature('m')"
+                                    class="bg-dark list-group-item list-group-item-action text-white">
+                                <div class="d-flex w-100 justify-content-start align-items-center">
+                                    <span class="fa fa-anchor fa-fw mr-3"></span>
+                                    <span class="menu-collapsed">Mean of each dim</span>
+                                </div>
+                            </button>
+                            <button onclick="selectfeature('s')"
+                                    class="bg-dark list-group-item list-group-item-action text-white">
+                                <div class="d-flex w-100 justify-content-start align-items-center">
+                                    <span class="fa fa-anchor fa-fw mr-3"></span>
+                                    <span class="menu-collapsed">Standard Deviation of each dim</span>
+                                </div>
+                            </button>
+                            <button onclick="selectfeature('d')"
+                                    class="bg-dark list-group-item list-group-item-action text-white">
+                                <div class="d-flex w-100 justify-content-start align-items-center">
+                                    <span class="fa fa-anchor fa-fw mr-3"></span>
+                                    <span class="menu-collapsed">Average Net Value</span>
+                                </div>
+                            </button>
+                            <button onclick="selectfeature('t')"
+                                    class="bg-dark list-group-item list-group-item-action text-white">
+                                <div class="d-flex w-100 justify-content-start align-items-center">
+                                    <span class="fa fa-anchor fa-fw mr-3"></span>
+                                    <span class="menu-collapsed">Combination</span>
+                                </div>
+                            </button>
+                        </div>
+                        <a href="#submenu4" data-toggle="collapse" aria-expanded="false"
+                           class="bg-light list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-100 justify-content-start align-items-center">
+                                <span class="fa fa-android fa-fw mr-3"></span>
+                                <span class="menu-collapsed">Neural Network</span>
+                                <span class="submenu-icon ml-auto"></span>
+                            </div>
+                        </a>
+                        <div id='submenu4' class="collapse sidebar-submenu">
+                            <button onclick="AddData()" class="bg-dark list-group-item list-group-item-action text-white">
+                                <div class="d-flex w-100 justify-content-start align-items-center">
+                                    <span class="fa fa-anchor fa-fw mr-3"></span>
+                                    <span class="menu-collapsed">Add Data</span>
+                                </div>
+                            </button>
+                            <button onclick="traindata()" class="bg-dark list-group-item list-group-item-action text-white">
+                                <div class="d-flex w-100 justify-content-start align-items-center">
+                                    <span class="fa fa-anchor fa-fw mr-3"></span>
+                                    <span class="menu-collapsed">Train Data</span>
+                                </div>
+                            </button>
+                            <button onclick="turnoff()" class="bg-dark list-group-item list-group-item-action text-white">
+                                <div class="d-flex w-100 justify-content-start align-items-center">
+                                    <span class="fa fa-power-off fa-fw mr-3"></span>
+                                    <span class="menu-collapsed">Off Neural Network</span>
+                                </div>
+                            </button>
+                        </div>
+
+                        <a href="#submenu5" data-toggle="collapse" aria-expanded="false"
+                           class="bg-light list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-100 justify-content-start align-items-center">
+                                <span class="fa fa-cogs fa-fw mr-3"></span>
+                                <span class="menu-collapsed">Neural Network Config</span>
+                                <span class="submenu-icon ml-auto"></span>
+                            </div>
+                        </a>
+                        <div id='submenu5' class="collapse sidebar-submenu">
+                        <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                            <span class="menu-collapsed">Epoch</span>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic0">Value:</span>
+                                </div>
+                                <input type="number" id="epoch" class="form-control" value="200"
+                                       aria-label="200" aria-describedby="basic0">
+                            </div>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                            <span class="menu-collapsed">Learning Rate</span>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic1">Value:</span>
+                                </div>
+                                <input type="number" id="learningrate" class="form-control" value="0.25"
+                                       aria-label="0.25" aria-describedby="basic1">
+                            </div>
+                        </a>
+                            <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                                <span class="menu-collapsed">Batch Size</span>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic2">Value:</span>
+                                    </div>
+                                    <input type="number" id="batchsize" class="form-control" value="64"
+                                           aria-label="64" aria-describedby="basic2">
+                                </div>
+                            </a>
+                        </div>
+                        <!-- /END Separator -->
+                    </ul><!-- List Group END-->
+                </div>
+
+
+            </div><!-- sidebar-container END -->
+            <div class="col-5 border bg-light">
+                <div class="card bg-light mb-3" style="max-width: 138rem;">
+                    <div class="card-header" style="font-family:Arial;text-align:center">MFCC Heatmap</div>
+                    <div id="live_canvas">
+                    </div>
+                </div>
+            </div>
+            <div class="col-5 border bg-light" id="tooltip_all">
+                <div class="card bg-light mb-3" style="max-width: 140rem;">
+                    <div class="card-header" style="font-family:Arial;text-align:center">Euclidean Distance
+                        Comparision
+                    </div>
+                    <div id="Euclidean_distance"></div>
+                </div>
+            </div>
+            <!-- MAIN -->
+        </div>
+
+        <div class="row">
+            <div class="col-2 border bg-light">
+                <div class="card bg-light mb-3" style="max-width: 20rem; width: 100%">
+                    <div class="card-header" style="font-family:Arial;text-align:center">Radar Chart</div>
+                    <div id="radar_chart"></div>
+                </div>
+            </div>
+            <div class="col-10 border bg-light">
+                <div class="card bg-light mb-3" style="max-width: 280rem;">
+                    <div class="card-header" style="font-family:Arial;text-align:center">TSNE Scatterplot</div>
+                    <div id="theGraph" class="svg-container">
+                    </div>
+                    <div class="row" style="position: relative; height:300px; width:300px">
+                        <canvas id="marksChart" height="200px" width="200px"></canvas>
+                        <canvas id="myCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
