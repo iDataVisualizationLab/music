@@ -82,9 +82,9 @@ let width = window.innerWidth / 3, height = window.innerHeight / 3.5,
 
 function setup() {
 
-    canvas_width = windowWidth / 2.5, canvas_height = windowHeight / 3.2;
+    canvas_width = windowWidth / 2.5, canvas_height = windowHeight / 4.5;
     BOX_WIDTH = canvas_width / 120;
-    BOX_HEIGHT = canvas_height / 26;
+    BOX_HEIGHT = canvas_height / 28;
     var live_canvas = createCanvas(canvas_width, canvas_height);
     live_canvas.parent('live_canvas');
     background(0)
@@ -137,12 +137,12 @@ function setup() {
         // .attr("width", width)
         // .attr("height", height)
         .attr("preserveAspectRatio", "xMinYMin meet")
-        .attr("viewBox", "0 0 900 400")
+        .attr("viewBox", "0 0 500 400")
         .classed("svg-content", true);
 
     scatterplot = svg_scatterplot
         .append("g")
-        .attr("transform", `translate(${150}, ${50})`)
+        .attr("transform", `translate(${50}, ${20})`)
         .attr("id", "snodes");
 
     //Do Machine Learning test
@@ -831,7 +831,7 @@ function draw_euclidean_line_chart(dataset) {
         y: dataset.distance_array,
         mode: 'lines+markers',
         type: 'scatter',
-        name: 'North America',
+        name: 'Euclidean Distance',
         text: dataset.label_array,
         marker: {
             color: 'rgb(219, 64, 82)',
@@ -846,8 +846,12 @@ function draw_euclidean_line_chart(dataset) {
 
     var layout = {
         width: windowWidth / 2.2,
-        height: windowHeight / 3.5,
-        autosize: true
+        height: windowWidth / 6.8,
+        autosize: true,
+        margin: {
+            l: 0,
+            t: 0.2
+        }
     };
 
     var data = trace1;

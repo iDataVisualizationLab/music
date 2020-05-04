@@ -19,7 +19,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
-    <script src="./assets/js/ml5.min.js" crossorigin=""></script>
+<!--    <script src="https://unpkg.com/ml5@0.4.3/dist/ml5.min.js" crossorigin=""></script>-->
     <script src="https://d3js.org/d3-color.v1.min.js"></script>
     <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
@@ -27,7 +27,7 @@
     <!-- Compiled and minified CSS -->
     <!--    <link rel="stylesheet" href="./assets/css/bootstrap.min.css">-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--    <script src="./assets/js/ml5.min.js"></script>-->
+    <script src="./assets/js/ml5.min.js"></script>
     <script src="./assets/js/jquery.min.js"></script>
     <script src="./assets/js/bootstrap.min.js"></script>
     <script src="./assets/js/notify.js"></script>
@@ -159,7 +159,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id="basic-addon1">Value:</span>
                                     </div>
-                                    <input type="number" id="windowsize" class="form-control" value="2048"
+                                    <input type="number" id="windowsize" class="form-control" value="4096"
                                            aria-label="4096" aria-describedby="basic-addon1">
                                 </div>
                             </a>
@@ -169,7 +169,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id="basic-addon2">Value:</span>
                                     </div>
-                                    <input type="number" id="hopsize" class="form-control" value="1024"
+                                    <input type="number" id="hopsize" class="form-control" value="2048"
                                            aria-label="2048" aria-describedby="basic-addon2">
                                 </div>
                             </a>
@@ -241,48 +241,49 @@
                                     <span class="menu-collapsed">Off Neural Network</span>
                                 </div>
                             </button>
-                        </div>
-
-                        <a href="#submenu5" data-toggle="collapse" aria-expanded="false"
-                           class="bg-light list-group-item list-group-item-action flex-column align-items-start">
-                            <div class="d-flex w-100 justify-content-start align-items-center">
-                                <span class="fa fa-cogs fa-fw mr-3"></span>
-                                <span class="menu-collapsed">Neural Network Config</span>
-                                <span class="submenu-icon ml-auto"></span>
-                            </div>
-                        </a>
-                        <div id='submenu5' class="collapse sidebar-submenu">
-                        <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
-                            <span class="menu-collapsed">Epoch</span>
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="basic0">Value:</span>
-                                </div>
-                                <input type="number" id="epoch" class="form-control" value="200"
-                                       aria-label="200" aria-describedby="basic0">
-                            </div>
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
-                            <span class="menu-collapsed">Learning Rate</span>
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="basic1">Value:</span>
-                                </div>
-                                <input type="number" id="learningrate" class="form-control" value="0.25"
-                                       aria-label="0.25" aria-describedby="basic1">
-                            </div>
-                        </a>
-                            <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
-                                <span class="menu-collapsed">Batch Size</span>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="basic2">Value:</span>
-                                    </div>
-                                    <input type="number" id="batchsize" class="form-control" value="64"
-                                           aria-label="64" aria-describedby="basic2">
+                            <a href="#submenu5" data-toggle="collapse" aria-expanded="false"
+                               class="bg-light list-group-item list-group-item-action flex-column align-items-start">
+                                <div class="d-flex w-100 justify-content-start align-items-center">
+                                    <span class="fa fa-cogs fa-fw mr-3"></span>
+                                    <span class="menu-collapsed">Neural Network Config</span>
+                                    <span class="submenu-icon ml-auto"></span>
                                 </div>
                             </a>
+                            <div id='submenu5' class="collapse sidebar-submenu">
+                                <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                                    <span class="menu-collapsed">Epoch</span>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic0">Value:</span>
+                                        </div>
+                                        <input type="number" id="epoch" class="form-control" value="200"
+                                               aria-label="200" aria-describedby="basic0">
+                                    </div>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                                    <span class="menu-collapsed">Learning Rate</span>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic1">Value:</span>
+                                        </div>
+                                        <input type="number" id="learningrate" class="form-control" value="0.25"
+                                               aria-label="0.25" aria-describedby="basic1">
+                                    </div>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                                    <span class="menu-collapsed">Batch Size</span>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic2">Value:</span>
+                                        </div>
+                                        <input type="number" id="batchsize" class="form-control" value="64"
+                                               aria-label="64" aria-describedby="basic2">
+                                    </div>
+                                </a>
+                            </div>
                         </div>
+
+
                         <!-- /END Separator -->
                     </ul><!-- List Group END-->
                 </div>

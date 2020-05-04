@@ -6,12 +6,10 @@ function traindata() {
     let options = {
         epochs: parseInt($('#epoch').val(), 10),
         learningRate: parseFloat($('#learningrate').val(), 10),
-        batchSize: parseInt($('#batchsize').val(), 10)
+        // batchSize: parseInt($('#batchsize').val(), 10)
     }
     // let mlresult;
     model.train(options, whileTraining, finishedTraining);
-
-
 }
 
 function whileTraining(epoch, loss) {
@@ -188,7 +186,7 @@ function Update_Tsne_node(data) {
             .attr("x", function (d) {return xScale(d.x) })
             .attr("y", function (d) {return yScale(d.y) })
             .style("text-anchor", "middle")
-            .style("font-size", "10px");
+            .style("font-size", "6px");
          selection.enter().append('svg:image')
             .attr('xlink:href', function (d) {
                 return d.image_canvas;
@@ -200,8 +198,8 @@ function Update_Tsne_node(data) {
                 return (yScale(d.y));
             })
             .attr("class", "imagee")
-            .attr('width', 10)
-            .attr('height', 10)
+            .attr('width', 6)
+            .attr('height', 6)
             .on('mouseover', function (d) {
                 active_value = d.id;
                 noLoop();
@@ -220,8 +218,8 @@ function Update_Tsne_node(data) {
                 }
                 PlayAudio(this, d);
                 d3.select(this)
-                    .attr("width", 50)
-                    .attr("height", 50);
+                    .attr("width", 20)
+                    .attr("height", 20);
 
                 scatterplot.selectAll('text').style("opacity",0);
 
@@ -267,9 +265,9 @@ function Update_Tsne_node(data) {
                     wsTooltipDiv.style("visibility", "hidden");
                 }
                 d3.select(this)
-                    .attr("width", 10)
-                    .attr("height", 10)
-                d3.select(".text"+ d.id).style("opacity",1).style("font-size", "10px");
+                    .attr("width", 6)
+                    .attr("height", 6)
+                d3.select(".text"+ d.id).style("opacity",1).style("font-size", "6px");
                 d3.selectAll('text').style("opacity",1);
                 scatterplot.selectAll("path")
                     .style('stroke-width',1);
@@ -296,13 +294,13 @@ function Update_Tsne_node(data) {
 
                     PlayAudio(this, d);
                     d3.select(this)
-                        .attr("width", 100)
-                        .attr("height", 100)
+                        .attr("width", 80)
+                        .attr("height", 80)
                 })
                 .on('mouseout', function (d) {
                     d3.select(this)
-                        .attr("width", 60)
-                        .attr("height", 60)
+                        .attr("width", 40)
+                        .attr("height", 40)
                 });
             //Update
             selection
@@ -318,18 +316,18 @@ function Update_Tsne_node(data) {
                 .attr("x", function (d) {return xScale(d.x) })
                 .attr("y", function (d) {return yScale(d.y) })
                 .style("text-anchor", "middle")
-                .style("font-size", "10px")
+                .style("font-size", "6px")
                 .on('mouseover', function (d) {
 
                     PlayAudio(this, d);
                     d3.select(this)
-                        .attr("width", 100)
-                        .attr("height", 100)
+                        .attr("width", 80)
+                        .attr("height", 80)
                 })
                 .on('mouseout', function (d) {
                     d3.select(this)
-                        .attr("width", 60)
-                        .attr("height", 60)
+                        .attr("width", 40)
+                        .attr("height", 40)
                 });
             //Update
             selection
