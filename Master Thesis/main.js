@@ -8,6 +8,8 @@ let draw_ssm_worker;
 let tsne_worker;
 let tsne_data_worker;
 let feature_selection = "t";
+let feature_selected_mode = false;
+let count_done = 1;
 let store_process_tsne_data = [];
 let empty = [];
 //minimum spanning tree
@@ -80,9 +82,9 @@ let width = window.innerWidth / 3, height = window.innerHeight / 3.5,
 
 function setup() {
 
-    canvas_width = windowWidth / 2.5, canvas_height = windowHeight / 4.5;
+    canvas_width = windowWidth / 2.5, canvas_height = windowHeight / 3.2;
     BOX_WIDTH = canvas_width / 120;
-    BOX_HEIGHT = canvas_height / 28;
+    BOX_HEIGHT = canvas_height / 26;
     var live_canvas = createCanvas(canvas_width, canvas_height);
     live_canvas.parent('live_canvas');
     background(0)
@@ -126,7 +128,7 @@ function setup() {
 
         legend_heat.append("g")
             .attr("class", "legendQuant")
-            .attr("transform", "translate(10,0)");
+            .attr("transform", "translate(10,-5)");
 
         legend_heat.select(".legendQuant")
             .call(legend);
@@ -263,7 +265,7 @@ function get_mfcc_data(a, index) {
 
 function selectfeature(value) {
     feature_selection = value;
-    //reset
+    feature_selected_mode = true;
     store_process_tsne_data = [];
     tsne_data_worker.postMessage({
         data: mfcc_data_all,
@@ -288,25 +290,26 @@ function all_worker_process() {
         select_feature: feature_selection,
         control: 'normal'
     })
-    draw_ssm_worker.onmessage = function (e) {
-        var msg = e.data;
-
-        switch (msg.message) {
-            case 'BUSY':
-                // console.log("draw_ssm is busy");
-                break;
-            case 'READY':
-                // console.log("draw_ssm is ready");
-                store_image_in_canvas.push(drawmatrix(msg.data));
-                draw_ssm_worker.postMessage({
-                    data: store_each_sound_mfcc
-                });
-                break;
-            default:
-                break;
+    if (Isrecord != true) {
+        draw_ssm_worker.onmessage = function (e) {
+            var msg = e.data;
+            switch (msg.message) {
+                case 'BUSY':
+                    // console.log("draw_ssm is busy");
+                    break;
+                case 'READY':
+                    // console.log("draw_ssm is ready");
+                    store_image_in_canvas.push(draw_matrix(msg.data));
+                    draw_ssm_worker.postMessage({
+                        data: store_each_sound_mfcc
+                    });
+                    break;
+                default:
+                    break;
+            }
         }
-    }
 
+    }
 
     tsne_data_worker.onmessage = function (e) {
         var msg = e.data;
@@ -360,7 +363,7 @@ function all_worker_process() {
                     })
                 }
 
-                if (fileContent.length == msg.index || (store_process_tsne_data.length == parseInt($('#duration').val() * 5, 10) && Isrecord == true)) {
+                if (fileContent.length == msg.index || (store_process_tsne_data.length == parseInt($('#duration').val()*10 , 10) && Isrecord == true)) {
                     tsne_worker.postMessage({
                         message: 'Done'
                     })
@@ -424,19 +427,24 @@ function all_worker_process() {
 
                 break;
             case 'Done':
-                if (Isrecord == true) {
+                if (Isrecord == true && feature_selected_mode != true) {
+                    mfcc_data_all.forEach(d=>
+                    store_image_in_canvas.push(draw_matrix(predata_copy(d)))
+                    );
                     stopStream();
-                    tsne_worker.terminate();
+                    // tsne_worker.terminate();
                     fileContent = [];
                     store_process_tsne_data.forEach(d => {
                             audio_label.push(d.id);
                         }
                     )
-
+                    count_done ++
                 }
-
-                firstdraw = false;
-                drawscatterplot(msg.value);
+                    firstdraw = false;
+                if (count_done == 3 || Isrecord == false) {
+                    drawscatterplot(msg.value);
+                }
+                console.log('draw' + 'here');
                 //Get Euclidean Distance Comparision
                 store_process_tsne_data.forEach(d => {
                         var store_distance = [];
@@ -481,7 +489,7 @@ function mfcc_extract(features) {
 }
 
 //the function take self_similarity data as an input and then draw the self_similarity matrix
-function drawmatrix(self_similarity_data) {
+function draw_matrix(self_similarity_data) {
     var canvas = "compareCanvas";
     //scale the self_similarity data value to draw
     var CSM22 = d3.scaleLinear()
@@ -579,7 +587,7 @@ function createMicSrcFrom(audioCtx) {
         /* only audio */
         let constraints = {audio: true, video: false}
         Isrecord = true;
-        for (var i = 0; i < parseInt($('#duration').val() * 5); i++) {
+        for (var i = 0; i < parseInt($('#duration').val() * 10); i++) {
             fileContent.push([0]);
             fakeDataforfirstplot.push([0]);
         }
@@ -606,12 +614,12 @@ function record_music(stream) {
         var blob = audioChunks[0];
         var chunk_size = blob.size;
         var offset = chunk_size / store_process_tsne_data.length;
-        store_process_tsne_data.forEach((d, i) => {
-            var chunk = audioChunks[0].slice(offset * i, offset * (i + 1));
-            chunk = new Blob([chunk], {type: 'audio/webm;codecs=opus'});
-            fileContent.push(URL.createObjectURL(chunk));
-            d.url = fileContent[i]
-        })
+        // store_process_tsne_data.forEach((d, i) => {
+        //     var chunk = audioChunks[0].slice(offset * i, offset * (i + 1));
+        //     chunk = new Blob([chunk], {type: 'audio/webm;codecs=opus'});
+        //     fileContent.push(URL.createObjectURL(chunk));
+        //     d.url = fileContent[i]
+        // })
     });
 
 }
@@ -908,3 +916,31 @@ function draw_radar_chart_comparision(dataset) {
     Plotly.newPlot("radar_chart", data, layout, config);
 
 }
+
+//function to process the origin_data to self_similarity data by comparing euclidean distance of every pair of data point
+function predata_copy(origin_data) {
+    // console.log('pre')
+    // data normalization
+    var normalized_data = [];
+    for (var i = 0; i < origin_data.length; i++) {
+        var data1 = [];
+        var average = math.mean(origin_data[i]);
+        for (var j = 0; j < origin_data[0].length; j++) {
+            data1.push((origin_data[i][j] - average) / math.norm(origin_data[i][j] - average));
+        }
+        normalized_data.push(data1);
+    }
+    //calculate euclidean distance between two mfcc vector->create self similarity matrix
+    var self_similarity_data = [];
+
+    for (var i = 0; i < normalized_data.length; i++) {
+        var data2 = [];
+        for (var j = 0; j < normalized_data.length; j++) {
+            data2.push(math.multiply(normalized_data[i], normalized_data[j]) / (math.norm(normalized_data[i]) * math.norm(normalized_data[j])));
+        }
+        self_similarity_data.push(data2);
+    }
+
+    return self_similarity_data;
+}
+
