@@ -119,11 +119,6 @@ function setup() {
             .labelWrap(30)
             .scale(scale);
 
-        var div = d3.select("body").append("div")
-            .attr("class", "row");
-
-        div.append("h4").text(title);
-
         var legend_heat = d3.select("#live_canvas").append('svg').attr("width", windowWidth / 2.5).attr("height", windowHeight / 24);
 
         legend_heat.append("g")
@@ -133,14 +128,6 @@ function setup() {
         legend_heat.select(".legendQuant")
             .call(legend);
     };
-
-    // select the svg area
-//     var legend = d3.select("#live_canvas").append('svg').attr("width", windowWidth / 2.5).attr("height", windowHeight / 24);
-// // Handmade legend
-//     legend.append("rect").attr("x", 160).attr("y", 4).attr("width", 10).attr("height", 10).style("fill", "#008000")
-//     legend.append("rect").attr("x", 240).attr("y", 4).attr("width", 10).attr("height", 10).style("fill", "#0000FF")
-//     legend.append("text").attr("x", 180).attr("y", 10).text(">0").style("font-size", "15px").attr("alignment-baseline", "middle");
-//     legend.append("text").attr("x", 260).attr("y", 10).text("<0").style("font-size", "15px").attr("alignment-baseline", "middle");
 
     //initiate scatter plot for tsne
     svg_scatterplot = d3.select("#theGraph")
@@ -167,8 +154,6 @@ function setup() {
         debug: 'true'
     };
     model = ml5.neuralNetwork(options);
-
-
 }
 
 
@@ -892,24 +877,31 @@ function draw_radar_chart_comparision(dataset) {
 
     layout = {
         polar: {
+
             radialaxis: {
                 visible: true,
                 range: [math.min(dataset), math.max(dataset)],
 
             },
             angularaxis: {
+                start_angle:0,
+                direction:"clockwise",
                 showticklabels: false,
                 ticks: ''
             }
 
         },
         showlegend: true,
+        margin: {
+            l: 0,
+            t: 0
+        },
         legend: {
-            x: 0.5,
+            x: 0.2,
             xanchor: 'center',
             y: 1.1
         },
-        width: 350,
+        width: 300,
         autosize: true
     }
     var config = {responsive: true}
