@@ -38,8 +38,8 @@ With mel scale using in MFCC, our features are more close the human auditory sys
 
 ### How well t-SNE output can be used to visualize the cluster?
 #### Lower window size can help getting better result in the visualization since we collect more data point.
-**4096 window size versus 2048 window size for music notes dataset**
--As shown in the figure below,  we can see clear cluster of oboe, tuba, saxophone, bass drum. Cluster for violin and cello seem not to well separated.![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/4096_music.gif)
+**4096 window size versus 2048 window size for music notes dataset.**
+- As shown in the figure below,  we can see clear cluster of oboe, tuba, saxophone, bass drum. Cluster for violin and cello seem not to well separated.![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/4096_music.gif)
 - With the window size of 2048, the result looks better. All the mentioned cluster gather together well, we also can see a fairly cluster of cello in this case. It's understandable that we could not get a good result for cello and violin since they are all in the same branch string instrument.
 ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/2048_music.gif)
 **4096 window size versus 2048 window size for human speech dataset**
@@ -55,6 +55,7 @@ With mel scale using in MFCC, our features are more close the human auditory sys
 ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/standardeviation_music.gif)
 - Average Net Value of the sample:
 ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/netvalue_music.gif)
+- Obviously, none of the mean, standard deviation or average net value by itself can generate better result than the combination of three of them.
 ### Does it mean that samples lying far away from the others is dissimilarity? 
 **(use minimum spanning tree)**
 ### Self-Similarity Matrix does reflect identical shape of different sound samples
