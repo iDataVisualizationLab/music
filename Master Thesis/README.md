@@ -37,11 +37,15 @@ With mel scale using in MFCC, our features are more close the human auditory sys
 
 ### How well t-SNE output can be used to visualize the cluster?
 #### Lower window size can help getting better result in the visualization since we collect more data point.
-- 4096 window size versus 2048 window size for music notes dataset
+**4096 window size versus 2048 window size for music notes dataset**
 ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/4096_music.gif)
 - Explain
 ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/2048_music.gif)
 - Explain
+**4096 window size versus 2048 window size for human speech dataset**
+![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/4096_speech.gif)
+- Explain
+![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/2048_speech.gif)
 ### How different feature selections change the visualization?
 
 ### Does it mean that samples lying far away from the others is dissimilarity? 
