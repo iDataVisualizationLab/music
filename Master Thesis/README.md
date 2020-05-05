@@ -1,6 +1,6 @@
 
 # Real-time Sound Visualization and Classification
-**(put screen image here)**
+![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/Realtime-tsne.gif)
 ## Main Features:
 The project focus mainly on the following issue:
 * What is it in an audio sample that makes it "sound similar"?
@@ -35,8 +35,12 @@ With mel scale using in MFCC, our features are more close the human auditory sys
 - Concatenating the above features we got a single feature vector length 39.
 
 ### How well t-SNE output can be used to visualize the cluster?
-#### Lower window size can help getting better result in cluster. 
-
+#### Lower window size can help getting better result in the visualization since we collect more data point.
+- 4096 window size versus 2048 window size for music notes dataset
+ ![alt text]([https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/4096_music.gif)
+- Explain
+![alt text]([https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/4096_music.gif)
+- Explain
 ### How different feature selections change the visualization?
 
 ### Does it mean that samples lying far away from the others is dissimilarity? 
