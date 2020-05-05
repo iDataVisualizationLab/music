@@ -208,7 +208,8 @@ function get_mfcc_data(a, index) {
                     'sampleRate': parseInt($('#samplerate').val(), 10),
                     'bufferSize': windowsize,
                     // 'hopSize': windowsize / (parseInt($('#duration').val(), 10) / duration1),
-                    'hopSize': parseInt($('#hopsize').val(), 10),
+                    // 'hopSize': parseInt($('#hopsize').val(), 10),
+                    'hopSize': windowsize/2,
                     'numberOfMFCCCoefficients': 13,
                     'featureExtractors': [featureType, featureType2, 'amplitudeSpectrum'],
                     'callback': mfcc_extract
@@ -631,8 +632,9 @@ function onMicDataCall(features, callback) {
                     'bufferSize': windowsize,
                     'melBands': 26,
                     'sampleRate': parseInt($('#samplerate').val(), 10),
-                    'hopSize': parseInt($('#hopsize').val(), 10),
-                    'featureExtractors': features,
+                    // 'hopSize': parseInt($('#hopsize').val(), 10),
+                    'hopSize': windowsize/2,
+                        'featureExtractors': features,
                     'callback': callback
                 })
                 resolve(analyzer)

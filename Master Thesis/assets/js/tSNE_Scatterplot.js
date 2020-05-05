@@ -231,6 +231,7 @@ function Update_Tsne_node(data) {
                             return (d[0].id == active_value || d[1].id == active_value ? 0.5: 1)
                         })
                 scatterplot.select(".text"+ d.id).style("font-size", "20px").style("opacity",1);
+
                 draw_euclidean_line_chart(d);
                 draw_radar_chart_comparision(d);
 
