@@ -37,16 +37,18 @@ With mel scale using in MFCC, our features are more close the human auditory sys
 - Concatenating the above features we got a single feature vector length 39.
 
 ### How well t-SNE output can be used to visualize the cluster?
-#### Lower window size can help getting better result in the visualization since we collect more data point.
+#### The interesting finding is that lowering window size does not always help getting better result in the visualization even we collect more data point.
 **4096 window size versus 2048 window size for music notes dataset.**
-- As shown in the figure below,  we can see clear cluster of oboe, tuba, saxophone, bass drum. Cluster for violin and cello seem not to well separated.![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/4096_music.gif)
+- As shown in the figure below,  we can see clear cluster of oboe, tuba, saxophone, bass drum. Cluster for violin and cello seem not to well separated.![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/4096_music.png)
 - With the window size of 2048, the result looks better. All the mentioned cluster gather together well, we also can see a fairly cluster of cello in this case. It's understandable that we could not get a good result for cello and violin since they are all in the same branch string instrument.
-![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/2048_music.gif)
+![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/2048_music.png)
 **4096 window size versus 2048 window size for human speech dataset**
 - Human speech dataset gave us a clear t-SNE output than the music note dataset. As shown in the figure below, clusters were well formed including dog, bed, zero, down.
-![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/4096_speech.gif)
-- Decreasing the window size to 2048, it shows one more cluster for "bird".
-![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/2048_speech.gif)
+![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/4096_speech.png)
+- However, with 2048 window size, the clusters are not formed really well.
+![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/2048_speech.png)
+- I tested with higher window size, 8192, longer window size mean that we get less feature in one time frame and we assume that the speech signal is static in the long window size comparing with the music note.
+![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/8192_speech.png)
 ### How different feature selections change the visualization?
 - Now, let's see how the t-SNE output change if we select different features including mean, standard deviation and net value. I took the music notes dataset (window size: 2048) for testing it.
 - Mean for each dimension of the feature: 
