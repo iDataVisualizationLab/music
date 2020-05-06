@@ -111,12 +111,13 @@ function setup() {
 
     function column(title, scale) {
         var legend = d3.legendColor()
-            .labelFormat(d3.format(",.0f"))
+            // .labelFormat(d3.format(",.0f"))
+            .labels([-1, 0, 40 ,80, 120, 160, 200, 240])
             .cells(5)
             .orient('horizontal')
             .labelAlign("start")
             .shapeWidth(65)
-            .labelWrap(30)
+            // .labelWrap(30)
             .scale(scale);
 
         var legend_heat = d3.select("#live_canvas").append('svg').attr("width", windowWidth / 2.5).attr("height", windowHeight / 24);
@@ -137,7 +138,7 @@ function setup() {
         // .attr("width", width)
         // .attr("height", height)
         .attr("preserveAspectRatio", "xMinYMin meet")
-        .attr("viewBox", "0 0 500 400")
+        .attr("viewBox", "0 0 600 400")
         .classed("svg-content", true);
 
     scatterplot = svg_scatterplot
