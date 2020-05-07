@@ -5,6 +5,7 @@ let featureType2 = 'rms';
 let mfcc_data = [];
 let mfcc_data_all = [];
 let draw_ssm_worker;
+
 let tsne_worker;
 let tsne_data_worker;
 let feature_selection = "t";
@@ -210,7 +211,7 @@ function get_mfcc_data(a, index) {
                     'bufferSize': windowsize,
                     // 'hopSize': windowsize / (parseInt($('#duration').val(), 10) / duration1),
                     // 'hopSize': parseInt($('#hopsize').val(), 10),
-                    'hopSize': windowsize/2,
+                    'hopSize': windowsize,
                     'numberOfMFCCCoefficients': 13,
                     'featureExtractors': [featureType, featureType2, 'amplitudeSpectrum'],
                     'callback': mfcc_extract
@@ -227,6 +228,7 @@ function get_mfcc_data(a, index) {
                 offlineCtx.oncomplete = function (e) {
                     //call function to start process when mfcc data is available
                     all_worker_process();
+
                     //Create self_similarity data based on origin_data by calculate Euclidean distance between each pair of data point of origin_data
                     ++index;
                     console.log("loading" + index)
@@ -263,10 +265,11 @@ function selectfeature(value) {
 }
 
 function all_worker_process() {
+    console.log('iam here');
     var store_each_sound_mfcc = [];
     //mfcc_data is generated from function show1 of Meyda Analyzer 1 of each sound samples
     store_each_sound_mfcc = mfcc_data;
-    // console.log(store_each_sound_mfcc);
+
     //mfcc_data_all contains all the mfcc features of all sound samples
     mfcc_data_all.push(store_each_sound_mfcc);
     draw_ssm_worker.postMessage({
@@ -279,17 +282,11 @@ function all_worker_process() {
     })
     if (Isrecord != true) {
         draw_ssm_worker.onmessage = function (e) {
+            console.log("draw_ssm is ready");
             var msg = e.data;
             switch (msg.message) {
-                case 'BUSY':
-                    // console.log("draw_ssm is busy");
-                    break;
                 case 'READY':
-                    // console.log("draw_ssm is ready");
                     store_image_in_canvas.push(draw_matrix(msg.data));
-                    draw_ssm_worker.postMessage({
-                        data: store_each_sound_mfcc
-                    });
                     break;
                 default:
                     break;
@@ -414,6 +411,7 @@ function all_worker_process() {
 
                 break;
             case 'Done':
+                draw_ssm_worker.terminate();
                 if (Isrecord == true && feature_selected_mode != true) {
                     mfcc_data_all.forEach(d=>
                     store_image_in_canvas.push(draw_matrix(predata_copy(d)))
@@ -465,10 +463,10 @@ function mfcc_extract(features) {
     var rms = features[featureType2];
     // var spectrum = features['amplitudeSpectrum'];
     //mfcc data contains all the mfcc feature extracted from sound in time series
-    if (rms > 0) {
+    // if (rms > 0) {
         mfcc_data.push(mfcc)
 
-    }
+    // }
     if (Isrecord == true & mfcc_data.length % 40 == 0 & mfcc_data.length > 0) {
         all_worker_process()
     }
@@ -833,7 +831,7 @@ function draw_euclidean_line_chart(dataset) {
         x: dataset.id_array,
         y: dataset.distance_array,
         mode: 'lines+markers',
-        type: 'scatter',
+        type: 'line',
         name: 'Euclidean Distance',
         text: dataset.label_array,
         marker: {
@@ -848,13 +846,18 @@ function draw_euclidean_line_chart(dataset) {
     };
 
     var layout = {
-        width: windowWidth / 2.2,
-        height: windowWidth / 6.8,
-        autosize: true,
-        margin: {
-            l: 0,
-            t: 0.2
-        }
+        // width: windowWidth / 2.2,
+        height: windowHeight / 3.5,
+        autosize: true
+        // yaxis: {
+        //     showgrid: true,
+        //     zeroline: true,
+        //     showline: true,
+        //     showticklabels: true
+        // },
+        // margin: {
+        //     l: 0,
+        // }
     };
 
     var data = trace1;

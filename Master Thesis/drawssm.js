@@ -18,18 +18,19 @@ function isReady () {
     });
 }
 
-var total_self_similarity_data = [];
+
 
 //function inside onmessage will be called when worker receives data or message
 self.onmessage = function (e) {
-    isBusy();
+    var total_self_similarity_data = [];
     var datadraw=e.data;
-    total_self_similarity_data.push(predata(datadraw.data));
+    total_self_similarity_data = predata(datadraw.data);
+    // total_self_similarity_data.push(predata(datadraw.data));
+
     postMessage({
-        data:  predata(datadraw.data),
+        data:  total_self_similarity_data,
         message: 'READY'
     });
-    // isReady();
 
 }
 
