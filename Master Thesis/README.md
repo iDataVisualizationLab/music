@@ -84,15 +84,19 @@ In case that, t-SNE output can not generate a good cluster. We might want to foc
 #### Can we train a neural network on web browser? 
 - The answer is definitely "yes". Great thanks to ml5.js library, we can collect data to train our own neural network or use existing data to train neural network in real-time to do classification task.
 - In the project, we apply a model of feed-forward neural network with 16 hidden units, 3 layers, sigmoid as activation function and learning setting to 0.25 as default. The model learning paradigm is supervised learning which uses a set of paired inputs and desired outputs. Users have option to customize the neural network parameter like learning rate, epoch.
-- ####Experiment 1: Music Notes Data
+#### Experiment 1: Music Notes Data
 -  Number of sound samples: 194
 -  Epoch: 400
--  15 sound labels
--  Result: error rate is down to 0.4. This value is still considered fairly high. However, let's look at the classification task below to see how well the model was trained.
-![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/learning1.png)
+-  Output units: 15 sound labels
+-  Result: error rate is down to 0.4. This value is still considered fairly high. However, let's look at the classification task below to see how well the model was trained. The result will show the label and confidence value of the selected sample.
 ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/train1.gif)
-
-
+#### Experiment 2: Human Speech Data
+- Number of sound samples: 228
+- Epoch: 400
+- Output units: 7 labels including: zero, dog, down, bed, bird, six, stop
+- Result: error rate is 0.2.
+We can see that the model can classify really much better than the clusters were formed by t-SNE output
+![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/train_speech.gif)
 ### Real-time audio recording and visualization
 ####  Experiment:
 
