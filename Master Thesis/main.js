@@ -46,9 +46,14 @@ window.onload = function () {
     d3.select("#loader").style("display", "none");
     document.getElementById("filepicker").addEventListener("change", function (event) {
         let files = event.target.files;
-        // console.log(files);
+        console.log(files);
         for (i = 0; i < files.length; i++) {
-            audio_label.push(files[i].name.split('_').slice(0, 2).slice(0, 1).join("_"));
+            if (files[i].lastModified > 1370000000000){
+                audio_label.push(files[i].name.split('_').slice(0, 2).slice(0, 1).join("_"));
+            }
+            else {
+                audio_label.push(files[i].name.split('_').slice(0, 2).join("_"));
+            }
             // audio_label.push(files[i].name);
             fileContent.push(URL.createObjectURL(files[i]));
             fakeDataforfirstplot.push([0]);
@@ -192,7 +197,7 @@ function get_mfcc_data(a, index) {
                 }
             } else {
                 //create offline audio context to render the decoding audio data then use the offline audio context and another audio buffer source node as inputs to Meyda Analyzer
-                var offlineCtx = new OfflineAudioContext(1, 44100 * duration1, 44100);
+                var offlineCtx = new OfflineAudioContext(1, parseInt($('#samplerate').val(), 10) * duration1, parseInt($('#samplerate').val(), 10));
                 //create buffer source node which is used in Meyda Analyzer
                 var source11 = offlineCtx.createBufferSource();
                 //store the audio data to the buffer source node again
@@ -211,7 +216,7 @@ function get_mfcc_data(a, index) {
                     'bufferSize': windowsize,
                     // 'hopSize': windowsize / (parseInt($('#duration').val(), 10) / duration1),
                     // 'hopSize': parseInt($('#hopsize').val(), 10),
-                    'hopSize': windowsize,
+                    'hopSize': windowsize/2,
                     'numberOfMFCCCoefficients': 13,
                     'featureExtractors': [featureType, featureType2, 'amplitudeSpectrum'],
                     'callback': mfcc_extract
@@ -280,7 +285,7 @@ function all_worker_process() {
         select_feature: feature_selection,
         control: 'normal'
     })
-    if (Isrecord != true) {
+    // if (Isrecord != true) {
         draw_ssm_worker.onmessage = function (e) {
             console.log("draw_ssm is ready");
             var msg = e.data;
@@ -293,7 +298,7 @@ function all_worker_process() {
             }
         }
 
-    }
+    // }
 
     tsne_data_worker.onmessage = function (e) {
         var msg = e.data;
@@ -347,7 +352,7 @@ function all_worker_process() {
                     })
                 }
 
-                if (fileContent.length == msg.index || (store_process_tsne_data.length == parseInt($('#duration').val()*10 , 10) && Isrecord == true)) {
+                if (fileContent.length == msg.index || (store_process_tsne_data.length == parseInt($('#duration').val()*20 , 10) && Isrecord == true)) {
                     tsne_worker.postMessage({
                         message: 'Done'
                     })
@@ -363,18 +368,18 @@ function all_worker_process() {
                     .domain(d3.extent(msg.value.flat()))
                     .range([0, contentHeight]);
 
-                if (Isrecord == true) {
-                    scatterplot.selectAll(".compute").data(store_process_tsne_data)
-                        .attr("cx", d => (xScale(d.x)))
-                        .attr("cy", d => (yScale(d.y)));
-                } else {
+                // if (Isrecord == true) {
+                //     scatterplot.selectAll(".compute").data(store_process_tsne_data)
+                //         .attr("x", d => (xScale(d.x)))
+                //         .attr("y", d => (yScale(d.y)));
+                // } else {
                     scatterplot.selectAll(".texte").data(store_process_tsne_data.slice(0, msg.value.length))
                         .text(function (d) {
                             return d.label;
                         })
                         .attr("x", d => (xScale(d.x)))
                         .attr("y", d => (yScale(d.y)));
-                }
+                // }
                 break;
             case 'DrawUpdateFeature':
                 svg_scatterplot.selectAll("image").style("opacity",1);
@@ -411,12 +416,12 @@ function all_worker_process() {
 
                 break;
             case 'Done':
-                draw_ssm_worker.terminate();
+                // draw_ssm_worker.terminate();
                 if (Isrecord == true && feature_selected_mode != true) {
                     mfcc_data_all.forEach(d=>
                     store_image_in_canvas.push(draw_matrix(predata_copy(d)))
                     );
-                    stopStream();
+                    stopStream()
                     // tsne_worker.terminate();
                     fileContent = [];
                     store_process_tsne_data.forEach(d => {
@@ -430,6 +435,7 @@ function all_worker_process() {
                     drawscatterplot(msg.value);
                 }
                 console.log('draw' + 'here');
+
                 //Get Euclidean Distance Comparision
                 store_process_tsne_data.forEach(d => {
                         var store_distance = [];
@@ -467,7 +473,7 @@ function mfcc_extract(features) {
         mfcc_data.push(mfcc)
 
     // }
-    if (Isrecord == true & mfcc_data.length % 40 == 0 & mfcc_data.length > 0) {
+    if (Isrecord == true & mfcc_data.length % 60 == 0 & mfcc_data.length > 0) {
         all_worker_process()
     }
 
@@ -572,9 +578,10 @@ function createMicSrcFrom(audioCtx) {
         /* only audio */
         let constraints = {audio: true, video: false}
         Isrecord = true;
-        for (var i = 0; i < parseInt($('#duration').val() * 10); i++) {
+        for (var i = 0; i < parseInt($('#duration').val() * 20); i++) {
             fileContent.push([0]);
             fakeDataforfirstplot.push([0]);
+            audio_label.push(i);
         }
         fakeDataforFirstScatterplot();
         navigator.mediaDevices.getUserMedia(constraints)
@@ -620,20 +627,21 @@ function stopStream() {
 
 function onMicDataCall(features, callback) {
     return new Promise((resolve, reject) => {
-        var audioCtx = new AudioContext();
+
+        audiocontextOptions = {sampleRate: parseInt($('#samplerate').val(), 10)};
+        var audioCtx = new AudioContext(audiocontextOptions);
+        // console.log(audioCtx.sampleRate);
         var windowsize = parseInt($('#windowsize').val(), 10);
         createMicSrcFrom(audioCtx)
             .then((src) => {
-                // console.log(audioCtx.createBufferSource());
                 analyzer = Meyda.createMeydaAnalyzer({
                     'audioContext': audioCtx,
                     'source': src,
                     'bufferSize': windowsize,
                     'melBands': 26,
                     'sampleRate': parseInt($('#samplerate').val(), 10),
-                    // 'hopSize': parseInt($('#hopsize').val(), 10),
                     'hopSize': windowsize/2,
-                        'featureExtractors': features,
+                    'featureExtractors': features,
                     'callback': callback
                 })
                 resolve(analyzer)

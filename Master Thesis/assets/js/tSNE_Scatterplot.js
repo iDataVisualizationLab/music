@@ -281,32 +281,46 @@ function Update_Tsne_node(data) {
     }
     else {
         if (Isrecord == true) {
-            selection.enter().append('circle')
-                .attr('cx', function (d) {
-                    return (xScale(d.x));
+            selection.enter().append("text")
+                .text(function (d) {
+                    return d.label;
                 })
-                .attr('cy', function (d) {
-                    return (yScale(d.y));
-                })
-                .attr("class", "compute")
-                .attr('r', 5)
-                .style("fill", 'blue')
-                .on('mouseover', function (d) {
-
-                    PlayAudio(this, d);
-                    d3.select(this)
-                        .attr("width", 80)
-                        .attr("height", 80)
-                })
-                .on('mouseout', function (d) {
-                    d3.select(this)
-                        .attr("width", 40)
-                        .attr("height", 40)
-                });
+                // .attr("class", (d) => "text" + d.id)
+                .attr("class", "texte")
+                .attr("x", function (d) {return xScale(d.x) })
+                .attr("y", function (d) {return yScale(d.y) })
+                .style("text-anchor", "middle")
+                .style("font-size", "6px");
+            // selection.enter().append('circle')
+            //     .attr('cx', function (d) {
+            //         return (xScale(d.x));
+            //     })
+            //     .attr('cy', function (d) {
+            //         return (yScale(d.y));
+            //     })
+            //     .attr("class", "compute")
+            //     .attr('r', 5)
+            //     .style("fill", 'blue')
+            //     .on('mouseover', function (d) {
+            //
+            //         PlayAudio(this, d);
+            //         d3.select(this)
+            //             .attr("width", 80)
+            //             .attr("height", 80)
+            //     })
+            //     .on('mouseout', function (d) {
+            //         d3.select(this)
+            //             .attr("width", 40)
+            //             .attr("height", 40)
+            //     });
+            // // Update
+            // selection
+            //     .attr("cx", d => (xScale(d.x)))
+            //     .attr("cy", d=> (yScale(d.y)))
             //Update
             selection
-                .attr("cx", d => (xScale(d.x)))
-                .attr("cy", d=> (yScale(d.y)))
+                .attr("x", d => (xScale(d.x)))
+                .attr("y", d=> (yScale(d.y)))
         }
         else {
             selection.enter().append("text")
