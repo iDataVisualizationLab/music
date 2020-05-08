@@ -7,6 +7,15 @@ The project focus mainly on the following issue:
 * How similar sound visualized in 2d plot using tsne method?
 * Applying Neural Network to Train and Predict the sound data.
 * Recording and visualzing sound sample in real-time.
+## Visualization Methods:
+In the project, we apply the following visualization approaches:
+- Real-time heatmap which display the mfcc coefficient in time series.
+- Euclidean distance which shows the distance trend from one sound sample to another.
+- ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/heatmap.png)
+- Radar Chart which shows the comparison between two similar sounds. Each sound represented by a vector of 39 values which will be described later. 
+- ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/radar.png)
+- Scatter plot shows the output of t-SNE
+-  
 
 ### Prerequisites
 The project will cover some knowledge related sound analysis, mfcc coefficients, self-similarity matrix, t-SNE method, minimum spanning tree and basic neural network.
@@ -37,6 +46,10 @@ With mel scale using in MFCC, our features are more close the human auditory sys
 - Concatenating the above features we got a single feature vector length 39.
 
 ### How well t-SNE output can be used to visualize the cluster?
+#### t-SNE (-distributed Stochastic Neighbor Embedding), high dimensionality reduction algorithm
+- t-SNE is not a linear projection. By utilizing the local relationships between points in high dimension to create a low-dimensional mapping. As the result, t-SNE can capture non-linear structure.
+-  There is no clear line between which points are neighbors of the other points. This lack of clear borders can be a major advantage because it allows t-SNE to naturally take both global and local structure into account. 
+- - In the project, after doing many testing, I set t-SNE 's perplexity equal to 20 and for the real-time visualization purpose, t-SNE is calculated every time it gets new data sample, therefore, the sub-iteration is set to 100 and final iteration after collecting all the data is 1000.  
 #### The interesting finding is that lowering window size does not always help getting better result in the visualization even we collect more data point.
 **4096 window size versus 2048 window size for music notes dataset.**
 - As shown in the figure below,  we can see clear cluster of oboe, tuba, saxophone, bass drum. Cluster for violin and cello seem not to well separated.![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/4096_music.png)
@@ -61,12 +74,18 @@ With mel scale using in MFCC, our features are more close the human auditory sys
 ### Does it mean that samples lying far away from the others is dissimilar? 
 - The below figure will show that why we can not rely on the t-SNE output in 2D to tell that "samples which are far away from each other in 2D space are dissimilar".
 - Both oboe and bass drum clusters are showed that they stay away from another subset in the 2D space, however, they are actually similar to each other.
-![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/mst.png)
+![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/mst.png)
 ### Self-Similarity Matrix does reflect identical shape of different sound samples
 In case that, t-SNE output can not generate a good cluster. We might want to focus on the self-similarity matrix image of each sound sample.
-![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/ssm.gif)
+- Music is generally self-similar. Generally, structure and repetition is a general feature of nearly all music. Self Similarity Matrix reveals the relationship between each segment of a track to all the other segments in the same recording. In this project, we computed all pairwise-similarity of each time step using cosine similarity giving domain from 0 to 1. Finally, we get a nxn square SSM represented for each sound sample. 
+- - Dark blue means the sample is the mostly matched with itself. Red means the two comparative sample are totally different
+
+![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/ssm.gif)
 
 ### Training the data and classifying with neural network
+#### Can we train a neural network on web browser? 
+The answer is definitely "yes". Great thanks to ml5.js library, we can collect data to train our own neural network or use existing data to train neural network in real-time to do classification task.
+
 
 ### Real-time audio recording and visualization
 ####  Experiment:
@@ -77,11 +96,9 @@ In case that, t-SNE output can not generate a good cluster. We might want to foc
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+
 

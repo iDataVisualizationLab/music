@@ -113,7 +113,7 @@ self.onmessage = function (e) {
             break;
 
         case 'Done':
-            for (let i = 0; i < 500; i++)
+            for (let i = 0; i < 1000; i++)
             {
                 tsne.step();
                 step_tsne = tsne.getSolution();
