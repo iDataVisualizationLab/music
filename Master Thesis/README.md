@@ -76,13 +76,21 @@ With mel scale using in MFCC, our features are more close the human auditory sys
 ### Self-Similarity Matrix does reflect identical shape of different sound samples
 In case that, t-SNE output can not generate a good cluster. We might want to focus on the self-similarity matrix image of each sound sample.
 - Music is generally self-similar. Generally, structure and repetition is a general feature of nearly all music. Self Similarity Matrix reveals the relationship between each segment of a track to all the other segments in the same recording. In this project, we computed all pairwise-similarity of each time step using cosine similarity giving domain from 0 to 1. Finally, we get a nxn square SSM represented for each sound sample. 
-- - Dark blue means the sample is the mostly matched with itself. Red means the two comparative sample are totally different
+- Dark blue means the sample is the mostly matched with itself. Red means the two comparative sample are totally different
 
 ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/ssm.gif)
 
 ### Training the data and classifying with neural network
 #### Can we train a neural network on web browser? 
-The answer is definitely "yes". Great thanks to ml5.js library, we can collect data to train our own neural network or use existing data to train neural network in real-time to do classification task.
+- The answer is definitely "yes". Great thanks to ml5.js library, we can collect data to train our own neural network or use existing data to train neural network in real-time to do classification task.
+- In the project, we apply a model of feed-forward neural network with 16 hidden units, 3 layers, sigmoid as activation function and learning setting to 0.25 as default. The model learning paradigm is supervised learning which uses a set of paired inputs and desired outputs. Users have option to customize the neural network parameter like learning rate, epoch.
+- ####Experiment 1: Music Notes Data
+-  Number of sound samples: 194
+-  Epoch: 400
+-  15 sound labels
+-  Result: error rate is down to 0.4. This value is still considered fairly high. However, let's look at the classification task below to see how well the model was trained.
+![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/learning1.png)
+![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/train1.gif)
 
 
 ### Real-time audio recording and visualization
