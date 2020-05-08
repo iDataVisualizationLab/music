@@ -13,9 +13,7 @@ In the project, we apply the following visualization approaches:
 - Euclidean distance which shows the distance trend from one sound sample to another.
  ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/heatmap.png)
 - Radar Chart which shows the comparison between two similar sounds. Each sound represented by a vector of 39 values which will be described later. 
- ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/radar.png)
 - Scatter plot shows the output of t-SNE
--  
 
 ### Prerequisites
 The project will cover some knowledge related sound analysis, mfcc coefficients, self-similarity matrix, t-SNE method, minimum spanning tree and basic neural network.
