@@ -72,13 +72,13 @@ With mel scale using in MFCC, our features are more close the human auditory sys
 ### Does it mean that samples lying far away from the others is dissimilar? 
 - The below figure will show that why we can not rely on the t-SNE output in 2D to tell that "samples which are far away from each other in 2D space are dissimilar".
 - Both oboe and bass drum clusters are showed that they stay away from another subset in the 2D space, however, they are actually similar to each other.
-![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/mst.png)
+![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/mst.png)
 ### Self-Similarity Matrix does reflect identical shape of different sound samples
 In case that, t-SNE output can not generate a good cluster. We might want to focus on the self-similarity matrix image of each sound sample.
 - Music is generally self-similar. Generally, structure and repetition is a general feature of nearly all music. Self Similarity Matrix reveals the relationship between each segment of a track to all the other segments in the same recording. In this project, we computed all pairwise-similarity of each time step using cosine similarity giving domain from 0 to 1. Finally, we get a nxn square SSM represented for each sound sample. 
 - - Dark blue means the sample is the mostly matched with itself. Red means the two comparative sample are totally different
 
-![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/ssm.gif)
+![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/ssm.gif)
 
 ### Training the data and classifying with neural network
 #### Can we train a neural network on web browser? 
