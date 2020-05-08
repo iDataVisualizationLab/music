@@ -11,9 +11,9 @@ The project focus mainly on the following issue:
 In the project, we apply the following visualization approaches:
 - Real-time heatmap which display the mfcc coefficient in time series.
 - Euclidean distance which shows the distance trend from one sound sample to another.
-- ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/heatmap.png)
+ ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/heatmap.png)
 - Radar Chart which shows the comparison between two similar sounds. Each sound represented by a vector of 39 values which will be described later. 
-- ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/radar.png)
+ ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/radar.png)
 - Scatter plot shows the output of t-SNE
 -  
 
