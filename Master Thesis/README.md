@@ -1,6 +1,8 @@
 
 # Real-time Sound Visualization and Classification
 ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/Realtime-tsne.gif)
+## Demo:
+https://idatavisualizationlab.github.io/music/Master%20Thesis/
 ## Main Features:
 The project focus mainly on the following issue:
 * What is it in an audio sample that makes it "sound similar"?
@@ -11,7 +13,8 @@ The project focus mainly on the following issue:
 In the project, we apply the following visualization approaches:
 - Real-time heatmap which display the mfcc coefficient in time series.
 - Euclidean distance which shows the distance trend from one sound sample to another.
- ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/heatmap.png)
+<img src="https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/heatmap.png" height="300">
+
 - Radar Chart which shows the comparison between two similar sounds. Each sound represented by a vector of 39 values which will be described later. 
 - Scatter plot shows the output of t-SNE
 
@@ -22,7 +25,7 @@ The project will cover some knowledge related sound analysis, mfcc coefficients,
 What is mfcc coefficients and Why it is so popular in speech recognition field?
 ```
 - MFCC can actually be seen as a form of dimension reduction. Basically, it represents for a rate change in energy level of different frequency band in a short window sound signal's frame. In this project, the window frame is about 92.8 ms. 
-![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/mfcc.png)
+![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/mfcc.png){ width=50% }
 ```
 Why MFCC is used popularly in automatic speech recognition (ASR) system?
 ```
@@ -98,11 +101,13 @@ In case that, t-SNE output can not generate a good cluster. We might want to foc
 We can see that the model can classify really much better than the clusters were formed by t-SNE output
 ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/train_speech.gif)
 ### Real-time audio recording and visualization
-####  Experiment:
+####  Experiment: Human Speech
 - Record audio using Web Audio API
 - The first 20 sound samples will say by me
 - The rest 20 samples will say by my wife
 - I assume that the t-SNE output will show two clear cluster for each person.
+
+#### Experiment: Violin versus Guitar
 
 
 ## Future Work:
