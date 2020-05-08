@@ -99,16 +99,19 @@ We can see that the model can classify really much better than the clusters were
 ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/train_speech.gif)
 ### Real-time audio recording and visualization
 ####  Experiment:
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
+- Record audio using Web Audio API
+- The first 20 sound samples will say by me
+- The rest 20 samples will say by my wife
+- I assume that the t-SNE output will show two clear cluster for each person.
 
 
+## Future Work:
+- t-SNE output can only use for visualization purpose. It can show some cluster and preserve the global as well as local relationship of the sample. However, we can not rely on the t-SNE output in 2D for classification or evaluation later since it changes every time we run the algorithm
+-The neural network shows some possible result in classify the sample, however, we still need to implement the model validation method to enhance the result.
+- I want to work further in developing the application so that the user can record their song or playing a song in real-time, then the application can re-generate the similar song by using the current sound data sample or it can connect to soundcloud or spotify to find the similar song.
 
-## Acknowledgments
+
+
 
 
 
