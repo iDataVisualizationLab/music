@@ -30,7 +30,7 @@ What is mfcc coefficients and Why it is so popular in speech recognition field?
 Why MFCC is used popularly in automatic speech recognition (ASR) system?
 ```
 - Humans are much better at discerning small changes in pitch at low frequencies than they are at high frequencies. We do not hear loudness on a linear scale. Generally to double the perceived volume of a sound we need to put 8 times as much energy into it.
-With mel scale using in MFCC, our features are more close the human auditory system's response more closely than the linearly-spaced frequency bands used in the normal cepstrum. 
+With mel scale using in MFCC, our features are more close to the human auditory system's response more closely than the linearly-spaced frequency bands used in the normal cepstrum. 
 <img src="https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/Melscale.png" height = 300>
 
 ### Dataset
