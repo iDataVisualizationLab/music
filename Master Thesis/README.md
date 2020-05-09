@@ -7,7 +7,7 @@ https://idatavisualizationlab.github.io/music/Master%20Thesis/
 The project focus mainly on the following issue:
 * What is it in an audio sample that makes it "sound similar"?
 * How similar sound visualized in 2d plot using tsne method?
-* Applying Neural Network to Train and Predict the sound data.
+* Applying Neural Network to Train and Classify the sound data.
 * Recording and visualzing sound sample in real-time.
 ## Visualization Methods:
 In the project, we apply the following visualization approaches:

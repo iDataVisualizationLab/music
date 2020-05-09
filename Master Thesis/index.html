@@ -280,9 +280,40 @@
                                                aria-label="64" aria-describedby="basic2">
                                     </div>
                                 </a>
+
+
                             </div>
                         </div>
-
+                        <a href="#submenu6" data-toggle="collapse" aria-expanded="false"
+                           class="bg-light list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-100 justify-content-start align-items-center">
+                                <span class="fa fa-cogs fa-fw mr-3"></span>
+                                <span class="menu-collapsed">Recording Config</span>
+                                <span class="submenu-icon ml-auto"></span>
+                            </div>
+                        </a>
+                        <div id='submenu6' class="collapse sidebar-submenu">
+                            <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                                <span class="menu-collapsed">Number of MFCC per sample</span>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="persample">Value:</span>
+                                    </div>
+                                    <input type="number" id="samplelength" class="form-control" value="50"
+                                           aria-label="50" aria-describedby="persample">
+                                </div>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                                <span class="menu-collapsed">Max Recording Sample</span>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="recordingsample">Value:</span>
+                                    </div>
+                                    <input type="number" id="recordlength" class="form-control" value="20"
+                                           aria-label="20" aria-describedby="recordingsample">
+                                </div>
+                            </a>
+                        </div>
 
                         <!-- /END Separator -->
                     </ul><!-- List Group END-->
