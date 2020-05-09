@@ -102,14 +102,11 @@ In case that, t-SNE output can not generate a good cluster. We might want to foc
 We can see that the model can classify really much better than the clusters were formed by t-SNE output
 ![alt text](https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/train_speech.gif)
 ### Real-time audio recording and visualization
-####  Experiment: Human Speech
+####  Experiment: Guitar Recording in D minor and C major
 - Record audio using Web Audio API
-- The first 20 sound samples will say by me
-- The rest 20 samples will say by my wife
-- I assume that the t-SNE output will show two clear cluster for each person.
-
-#### Experiment: Violin versus Guitar
-
+- The first 10 sound samples will be D minor
+- The rest 10 samples will be C Major
+- I assume that the t-SNE output will show two clear cluster for each chord.
 
 ## Future Work:
 - t-SNE output can only use for visualization purpose. It can show some cluster and preserve the global as well as local relationship of the sample. However, we can not rely on the t-SNE output in 2D for classification or evaluation later since it changes every time we run the algorithm
