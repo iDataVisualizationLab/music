@@ -24,7 +24,7 @@ The project will cover some knowledge related sound analysis, mfcc coefficients,
 ```
 What is mfcc coefficients and Why it is so popular in speech recognition field?
 ```
-- MFCC can actually be seen as a form of dimension reduction. Basically, it represents for a rate change in energy level of different frequency band in a short window sound signal's frame. In this project, the window frame is about 92.8 ms. 
+- MFCC can actually be seen as a form of dimension reduction. Basically, it represents for a rate change in energy level of different frequency band in a short window sound signal's frame. In this project, the window frame is about 46.4 ms. 
 - <img src="https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/mfcc.png" height = 300>
 ```
 Why MFCC is used popularly in automatic speech recognition (ASR) system?
