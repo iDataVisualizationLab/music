@@ -11,8 +11,8 @@ The project focus mainly on the following issue:
 * Recording and visualizing sound sample in real-time.
 ## Visualization Methods:
 In the project, we apply the following visualization approaches:
-- Real-time heatmap which display the mfcc coefficient in time series.
-- Euclidean distance which shows the distance trend from one sound sample to another.
+- Real-time heatmap which displays the mfcc coefficient in time series.
+- Euclidean distance line graph which shows the distance trend from one sound sample to another.
 <img src="https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/heatmap.png" height="300">
 
 - Radar Chart which shows the comparison between two similar sounds. Each sound represented by a vector of 39 values which will be described later. 
@@ -24,7 +24,7 @@ The project will cover some knowledge related sound analysis, mfcc coefficients,
 ```
 What is mfcc coefficients and Why it is so popular in speech recognition field?
 ```
-- MFCC can actually be seen as a form of dimension reduction. Basically, it represents for a rate change in energy level of different frequency band in a short window sound signal's frame. In this project, the window frame is about 92.8 ms. 
+- MFCC can actually be seen as a form of dimension reduction. Basically, it represents for a rate change in energy level of different frequency band in a short window sound signal's frame. In this project, the window frame is 46.4 ms. 
 - <img src="https://github.com/iDataVisualizationLab/music/blob/master/Master%20Thesis/image/mfcc.png" height = 300>
 ```
 Why MFCC is used popularly in automatic speech recognition (ASR) system?
