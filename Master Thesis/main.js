@@ -429,12 +429,14 @@ function all_worker_process() {
                         }
                     )
                     count_done ++
+                    console.log(count_done);
                 }
                     firstdraw = false;
+
                 if (count_done == 2 || Isrecord == false) {
                     drawscatterplot(msg.value);
                 }
-                console.log('draw' + 'here');
+                console.log('draw' + ' here');
 
                 //Get Euclidean Distance Comparision
                 store_process_tsne_data.forEach(d => {

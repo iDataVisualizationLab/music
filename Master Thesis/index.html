@@ -72,10 +72,6 @@
                         class="fa fa-microphone fa-lg" aria-hidden="true"></i></button>
             </div>
             <div class="col">
-                <button type="button" class="btn btn-outline-secondary btn-block" onclick=stopStream()><i
-                        class="fa fa-stop-circle-o fa-lg" aria-hidden="true"></i></button>
-            </div>
-            <div class="col">
                 <button type="button" class="btn btn-outline-secondary btn-block" onclick="draw_shortestpath()">
                     <i class="fa fa-play-circle" aria-hidden="true"></i>
                 </button>
@@ -85,7 +81,10 @@
                     Draw MST
                 </button>
             </div>
-
+            <div class="col">
+                <button type="button" class="btn btn-outline-secondary btn-block" onclick=location.reload(true)><i
+                        class="fa fa-refresh fa-lg" aria-hidden="true"></i></button>
+            </div>
         </div>
         <div class="row" id="body-row">
             <div class="col-2 border bg-light">
@@ -288,7 +287,7 @@
                            class="bg-light list-group-item list-group-item-action flex-column align-items-start">
                             <div class="d-flex w-100 justify-content-start align-items-center">
                                 <span class="fa fa-cogs fa-fw mr-3"></span>
-                                <span class="menu-collapsed">Recording Config</span>
+                                <span class="menu-collapsed">Recording Configuration</span>
                                 <span class="submenu-icon ml-auto"></span>
                             </div>
                         </a>

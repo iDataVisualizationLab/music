@@ -98,7 +98,7 @@ self.onmessage = function (e) {
                 stop = ((cost_old - cost) < stopCondition) && (cost_old - cost) > 0;
                 cost = cost_old;
                 step_tsne = tsne.getSolution();
-                // console.log(step_tsne);
+                console.log(stop);
                 postMessage({
                                 message: 'DrawUpdate',
                                 value: step_tsne
@@ -113,7 +113,7 @@ self.onmessage = function (e) {
             break;
 
         case 'Done':
-            for (let i = 0; i < 1000; i++)
+            for (let i = 0; i < 500; i++)
             {
                 tsne.step();
                 step_tsne = tsne.getSolution();
@@ -131,7 +131,7 @@ self.onmessage = function (e) {
         case 'features':
             // tsne_feature = new tsnejs.tSNE(msg.value);
             tsne.initDataRaw(msg.data);
-            for (let i = 0; i < 1000; i++)
+            for (let i = 0; i < 700; i++)
             {
                 tsne.step();
                 step_tsne = tsne.getSolution();
