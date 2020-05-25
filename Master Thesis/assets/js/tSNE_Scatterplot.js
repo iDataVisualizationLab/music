@@ -52,11 +52,11 @@ function AddData() {
 }
 function predict(inputs){
 model.classify(inputs,gotResults)
-    .then(result => {
-        console.log(result);
-        mlresult =result;
-        createTableTooltip(wsTooltipDiv, result)
-})
+        .then(result => {
+            mlresult =result;
+            predict_array.push((result.slice(0,1))[0].label);
+            createTableTooltip(wsTooltipDiv, result);
+        })
 }
 
 function gotResults(error,results) {
@@ -93,7 +93,6 @@ function createTableTooltip(wsTooltipDiv, info) {
         .data(info.slice(0,5))
         .enter()
         .append("tr");
-
 
     let cells = rows.selectAll("td")
         .data(function (row) {
@@ -329,7 +328,6 @@ function Update_Tsne_node(data) {
 
 }
 
-
 // Update the data with the given t-SNE result
 function UpdateDataTSNE(data) {
     data.forEach(function(d, i) {
@@ -341,6 +339,7 @@ function UpdateDataTSNE(data) {
             store_process_tsne_data[i].label = audio_label[i];
     });
 }
+
 function capitalize(string){
     return string.charAt(0).toUpperCase() + string.slice(1);
 }

@@ -12,6 +12,7 @@ let tsne_data_worker;
 let feature_selection = "t";
 let feature_selected_mode = false;
 let count_done = 1;
+let count_load = 1;
 let store_process_tsne_data = [];
 let empty = [];
 //minimum spanning tree
@@ -21,7 +22,6 @@ let end_node_id;
 
 let fakeDataforfirstplot = [];
 let store_image_in_canvas = [];
-let output_tsne;
 let firstdraw = true;
 var Isrecord = false;
 let audioChunks = [];
@@ -37,20 +37,26 @@ let tsne_config = {
 //Machine Learning
 let model;
 let state = 'collection';
-
+let predict_array = [];
 
 var heatmap_max_length = 27;
 
 //get file directory
 window.onload = function () {
+
+
     //Load the sound sample then get the sound label
     d3.select("#loader").style("display", "none");
     document.getElementById("filepicker").addEventListener("change", function (event) {
+        if (count_load > 1) {
+            reset_variable();
+        }
+        audio_label = [];
         let files = event.target.files;
-        console.log(files);
+        // console.log(files);
         for (i = 0; i < files.length; i++) {
             // if (files[i].lastModified > 1370000000000){
-                audio_label.push(files[i].name.split('_').slice(0, 2).slice(0, 1).join("_"));
+            audio_label.push(files[i].name.split('_').slice(0, 2).slice(0, 1).join("_"));
             // }
             // else {
             //     audio_label.push(files[i].name.split('_').slice(0, 2).join("_"));
@@ -59,11 +65,11 @@ window.onload = function () {
             fileContent.push(URL.createObjectURL(files[i]));
             fakeDataforfirstplot.push([0]);
         }
-        // fakeDataforfirstplot = Array(fileContent.length).fill([0]);
         fakeDataforFirstScatterplot();
-        // tsne_worker = new Worker('new_tsne_worker.js');
         //getData function was called recursively to
         get_mfcc_data(fileContent[0], 0);
+        count_load++
+        $("#filepicker").val('');
     }, false);
 }
 
@@ -119,7 +125,7 @@ function setup() {
     function column(title, scale) {
         var legend = d3.legendColor()
             // .labelFormat(d3.format(",.0f"))
-            .labels([-1, 0, 40 ,80, 120, 160, 200, 240])
+            .labels([-1, 0, 40, 80, 120, 160, 200, 240])
             .cells(5)
             .orient('horizontal')
             .labelAlign("start")
@@ -188,7 +194,7 @@ function get_mfcc_data(a, index) {
             //find the duration of the audio in second after decoding
             var duration1 = 0;
             duration1 = source.buffer.duration;
-            console.log(duration1);
+            // console.log(duration1);
             //ignore the sound sample's duration exceeds the default setting
             if (duration1 > parseInt($('#duration').val(), 10)) {
                 fileContent.splice(index, 1)
@@ -217,7 +223,7 @@ function get_mfcc_data(a, index) {
                     'bufferSize': windowsize,
                     // 'hopSize': windowsize / (parseInt($('#duration').val(), 10) / duration1),
                     // 'hopSize': parseInt($('#hopsize').val(), 10),
-                    'hopSize': windowsize/2,
+                    'hopSize': windowsize / 2,
                     'numberOfMFCCCoefficients': 13,
                     'featureExtractors': [featureType, featureType2, 'amplitudeSpectrum'],
                     'callback': mfcc_extract
@@ -242,10 +248,7 @@ function get_mfcc_data(a, index) {
                     if (index < fileContent.length) {
                         get_mfcc_data(fileContent[index], index)
                     } else if (index == fileContent.length) {
-
                         d3.select("#loader").style("display", "none");
-
-
                     }
                 }
             }
@@ -267,7 +270,6 @@ function selectfeature(value) {
         select_feature: feature_selection,
         control: 'rerun'
     })
-
 }
 
 function all_worker_process() {
@@ -287,20 +289,18 @@ function all_worker_process() {
         control: 'normal'
     })
 
-        draw_ssm_worker.onmessage = function (e) {
-            console.log("draw_ssm is ready");
-            var msg = e.data;
-            switch (msg.message) {
-                case 'READY':
-                    console.log(msg.data);
-                    store_image_in_canvas.push(draw_matrix(msg.data));
-                    break;
-                default:
-                    break;
-            }
+    draw_ssm_worker.onmessage = function (e) {
+        console.log("draw_ssm is ready");
+        var msg = e.data;
+        switch (msg.message) {
+            case 'READY':
+                // console.log(msg.data);
+                store_image_in_canvas.push(draw_matrix(msg.data));
+                break;
+            default:
+                break;
         }
-
-    // }
+    }
 
     tsne_data_worker.onmessage = function (e) {
         var msg = e.data;
@@ -312,6 +312,15 @@ function all_worker_process() {
             case 'READY':
                 // console.log('tsne_data_worker is ready');
                 store_process_tsne_data.push(msg.value);
+                if (state == 'prediction') {
+                    var inputs = {};
+                    for (i = 0; i < msg.value.length; i++) {
+                        var name = i;
+                        inputs[name] = msg.value[i];
+                    }
+                    wsTooltipDiv.style("visibility", "visible").style("top", "150").style("left", "150");
+                    predict(inputs, gotResults);
+                }
                 // console.log("process" + "" + store_process_tsne_data.length);
                 if (store_process_tsne_data.length == 2) {
                     tsne_worker.postMessage({message: 'initTSNE', value: tsne_config.opt});
@@ -321,6 +330,7 @@ function all_worker_process() {
                         message: 'DataReady',
                     });
                 }
+
                 break;
             case 'FEATURES':
                 // tsne_worker.terminate();
@@ -353,7 +363,7 @@ function all_worker_process() {
                     })
                 }
 
-                if (fileContent.length == msg.index || (store_process_tsne_data.length == parseInt($('#recordingsample').val(), 10) && Isrecord == true )) {
+                if (fileContent.length == msg.index || (store_process_tsne_data.length == parseInt($('#recordingsample').val(), 10) && Isrecord == true)) {
                     tsne_worker.postMessage({
                         message: 'Done'
                     })
@@ -369,16 +379,16 @@ function all_worker_process() {
                     .domain(d3.extent(msg.value.flat()))
                     .range([0, contentHeight]);
 
-                    scatterplot.selectAll(".texte").data(store_process_tsne_data.slice(0, msg.value.length))
-                        .text(function (d) {
-                            return d.label;
-                        })
-                        .attr("x", d => (xScale(d.x)))
-                        .attr("y", d => (yScale(d.y)));
+                scatterplot.selectAll(".texte").data(store_process_tsne_data.slice(0, msg.value.length))
+                    .text(function (d) {
+                        return d.label;
+                    })
+                    .attr("x", d => (xScale(d.x)))
+                    .attr("y", d => (yScale(d.y)));
                 // }
                 break;
             case 'DrawUpdateFeature':
-                svg_scatterplot.selectAll("image").style("opacity",1);
+                svg_scatterplot.selectAll("image").style("opacity", 1);
                 scatterplot.selectAll("path").remove()
                 UpdateDataTSNE(msg.value);
                 // console.log("drawing" + "" + msg.value.length);
@@ -414,8 +424,8 @@ function all_worker_process() {
             case 'Done':
                 // draw_ssm_worker.terminate();
                 if (Isrecord == true && feature_selected_mode != true) {
-                    mfcc_data_all.forEach(d=>
-                    store_image_in_canvas.push(draw_matrix(predata_copy(d)))
+                    mfcc_data_all.forEach(d =>
+                        store_image_in_canvas.push(draw_matrix(predata_copy(d)))
                     );
                     stopStream()
                     // tsne_worker.terminate();
@@ -424,18 +434,17 @@ function all_worker_process() {
                             audio_label.push(d.id);
                         }
                     )
-                    count_done ++
+                    count_done++
                     console.log(count_done);
                 }
-                    firstdraw = false;
+                firstdraw = false;
 
-                if (count_done == 2 || (Isrecord == false && store_image_in_canvas.length == store_process_tsne_data.length)) {
-                    console.log(store_image_in_canvas);
+                if (count_done >= 2 || (Isrecord == false && store_image_in_canvas.length == store_process_tsne_data.length)) {
+                    // console.log(store_image_in_canvas);
                     drawscatterplot(msg.value);
-                    console.log(msg.value);
+                    // console.log(msg.value);
                     console.log('draw' + ' final');
-                }
-                else {
+                } else {
                     tsne_worker.postMessage({
                         message: 'Done'
                     })
@@ -583,19 +592,7 @@ function createMicSrcFrom(audioCtx) {
         /* only audio */
         let constraints = {audio: true, video: false}
         Isrecord = true;
-        tsne_worker.terminate();
-        tsne_worker = new Worker('new_tsne_worker.js');
-        store_process_tsne_data = [];
-        audio_label = [];
-        fileContent = [];
-        store_image_in_canvas = [];
-        fakeDataforfirstplot = [];
-        mfcc_data_all = [];
-        firstRun = true;
-        firstdraw = true;
-        count_done = 1;
-        d3.selectAll("text").remove();
-        d3.selectAll("image").remove();
+        reset_variable();
         for (var i = 0; i < parseInt($('#recordlength').val(), 10); i++) {
             fileContent.push([0]);
             fakeDataforfirstplot.push([0]);
@@ -658,7 +655,7 @@ function onMicDataCall(features, callback) {
                     'bufferSize': windowsize,
                     'melBands': 26,
                     'sampleRate': parseInt($('#samplerate').val(), 10),
-                    'hopSize': windowsize/2,
+                    'hopSize': windowsize / 2,
                     'featureExtractors': features,
                     'callback': callback
                 })
@@ -920,8 +917,8 @@ function draw_radar_chart_comparision(dataset) {
 
             },
             angularaxis: {
-                start_angle:0,
-                direction:"clockwise",
+                start_angle: 0,
+                direction: "clockwise",
                 showticklabels: false,
                 ticks: ''
             }
@@ -972,3 +969,18 @@ function predata_copy(origin_data) {
     return self_similarity_data;
 }
 
+function reset_variable() {
+    tsne_worker.terminate();
+    tsne_worker = new Worker('new_tsne_worker.js');
+    store_process_tsne_data = [];
+    audio_label = [];
+    fileContent = [];
+    store_image_in_canvas = [];
+    fakeDataforfirstplot = [];
+    mfcc_data_all = [];
+    firstRun = true;
+    firstdraw = true;
+    count_done = 1;
+    d3.selectAll("text").remove();
+    d3.selectAll("image").remove();
+}
