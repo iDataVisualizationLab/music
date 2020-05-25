@@ -2,6 +2,7 @@ let audio_label = [];
 let fileContent = [];
 let featureType = 'mfcc';
 let featureType2 = 'rms';
+let invalid_mfcc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 let mfcc_data = [];
 let mfcc_data_all = [];
 let draw_ssm_worker;
@@ -48,12 +49,12 @@ window.onload = function () {
         let files = event.target.files;
         console.log(files);
         for (i = 0; i < files.length; i++) {
-            if (files[i].lastModified > 1370000000000){
+            // if (files[i].lastModified > 1370000000000){
                 audio_label.push(files[i].name.split('_').slice(0, 2).slice(0, 1).join("_"));
-            }
-            else {
-                audio_label.push(files[i].name.split('_').slice(0, 2).join("_"));
-            }
+            // }
+            // else {
+            //     audio_label.push(files[i].name.split('_').slice(0, 2).join("_"));
+            // }
             // audio_label.push(files[i].name);
             fileContent.push(URL.createObjectURL(files[i]));
             fakeDataforfirstplot.push([0]);
@@ -285,12 +286,13 @@ function all_worker_process() {
         select_feature: feature_selection,
         control: 'normal'
     })
-    // if (Isrecord != true) {
+
         draw_ssm_worker.onmessage = function (e) {
             console.log("draw_ssm is ready");
             var msg = e.data;
             switch (msg.message) {
                 case 'READY':
+                    console.log(msg.data);
                     store_image_in_canvas.push(draw_matrix(msg.data));
                     break;
                 default:
@@ -332,7 +334,6 @@ function all_worker_process() {
 
     tsne_worker.onmessage = function (e) {
         var msg = e.data;
-
         switch (msg.message) {
             case 'BUSY':
                 // console.log('Iam busy');
@@ -352,7 +353,7 @@ function all_worker_process() {
                     })
                 }
 
-                if (fileContent.length == msg.index || (store_process_tsne_data.length == parseInt($('#recordingsample').val(), 10) && Isrecord == true)) {
+                if (fileContent.length == msg.index || (store_process_tsne_data.length == parseInt($('#recordingsample').val(), 10) && Isrecord == true )) {
                     tsne_worker.postMessage({
                         message: 'Done'
                     })
@@ -368,11 +369,6 @@ function all_worker_process() {
                     .domain(d3.extent(msg.value.flat()))
                     .range([0, contentHeight]);
 
-                // if (Isrecord == true) {
-                //     scatterplot.selectAll(".compute").data(store_process_tsne_data)
-                //         .attr("x", d => (xScale(d.x)))
-                //         .attr("y", d => (yScale(d.y)));
-                // } else {
                     scatterplot.selectAll(".texte").data(store_process_tsne_data.slice(0, msg.value.length))
                         .text(function (d) {
                             return d.label;
@@ -433,8 +429,16 @@ function all_worker_process() {
                 }
                     firstdraw = false;
 
-                if (count_done == 2 || Isrecord == false) {
+                if (count_done == 2 || (Isrecord == false && store_image_in_canvas.length == store_process_tsne_data.length)) {
+                    console.log(store_image_in_canvas);
                     drawscatterplot(msg.value);
+                    console.log(msg.value);
+                    console.log('draw' + ' final');
+                }
+                else {
+                    tsne_worker.postMessage({
+                        message: 'Done'
+                    })
                 }
                 console.log('draw' + ' here');
 
@@ -471,10 +475,9 @@ function mfcc_extract(features) {
     var rms = features[featureType2];
     // var spectrum = features['amplitudeSpectrum'];
     //mfcc data contains all the mfcc feature extracted from sound in time series
-    // if (rms > 0) {
+    if (rms > 0 && mfcc != invalid_mfcc) {
         mfcc_data.push(mfcc)
-
-    // }
+    }
     if (Isrecord == true & mfcc_data.length % parseInt($('#samplelength').val(), 10) == 0 & mfcc_data.length > 0) {
         all_worker_process()
     }
@@ -580,6 +583,19 @@ function createMicSrcFrom(audioCtx) {
         /* only audio */
         let constraints = {audio: true, video: false}
         Isrecord = true;
+        tsne_worker.terminate();
+        tsne_worker = new Worker('new_tsne_worker.js');
+        store_process_tsne_data = [];
+        audio_label = [];
+        fileContent = [];
+        store_image_in_canvas = [];
+        fakeDataforfirstplot = [];
+        mfcc_data_all = [];
+        firstRun = true;
+        firstdraw = true;
+        count_done = 1;
+        d3.selectAll("text").remove();
+        d3.selectAll("image").remove();
         for (var i = 0; i < parseInt($('#recordlength').val(), 10); i++) {
             fileContent.push([0]);
             fakeDataforfirstplot.push([0]);

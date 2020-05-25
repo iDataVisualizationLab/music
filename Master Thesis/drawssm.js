@@ -18,15 +18,11 @@ function isReady () {
     });
 }
 
-
-
 //function inside onmessage will be called when worker receives data or message
 self.onmessage = function (e) {
     var total_self_similarity_data = [];
     var datadraw=e.data;
     total_self_similarity_data = predata(datadraw.data);
-    // total_self_similarity_data.push(predata(datadraw.data));
-
     postMessage({
         data:  total_self_similarity_data,
         message: 'READY'
@@ -36,7 +32,6 @@ self.onmessage = function (e) {
 
 //function to process the origin_data to self_similarity data by comparing euclidean distance of every pair of data point
 function predata(origin_data) {
-        // console.log('pre')
         // data normalization
         var normalized_data = [];
         for (var i = 0; i < origin_data.length; i++) {
@@ -57,7 +52,6 @@ function predata(origin_data) {
             }
             self_similarity_data.push(data2);
         }
-
         return self_similarity_data;
 }
 

@@ -4,15 +4,11 @@ importScripts('./assets/js/tsne_new.js');
 //assign control variable called firstRun
 //define first instance of tsne
 let tsne;
-let tsne_feature;
-// var isUpdate = false;
 let store_tsne_solution;
 let index;
 let cost;
 let stop = false;
 let stopCondition =1e-4;
-let store_tsne_stage_solution;
-let count_step;
 let firstRun = true;
 
 
@@ -57,7 +53,6 @@ self.onmessage = function (e) {
                     {
                         tsne.step();
                         tsne.getSolution();
-
                     }
                     //get the current solution of tsne of the first run
                     store_tsne_solution = tsne.getSolution();
@@ -67,6 +62,7 @@ self.onmessage = function (e) {
                 }
         case 'DataReady':
                 index = store_tsne_solution.length;
+                // console.log(store_tsne_solution);
                 postMessage({
                     message: 'Update',
                     value: store_tsne_solution,
@@ -79,26 +75,13 @@ self.onmessage = function (e) {
         case'UpdateData':
             //if there are more than 2 samples, we update the data only, does not re-generate random position in low dimension
             tsne.updateData(msg.value);
-            // for (let i = 0; i < 400; i++)
-            // {
-            //     tsne.step();
-            //     step_tsne = tsne.getSolution();
-            //     if (i%20 == 0) {
-            //         console.log(i);
-            //         postMessage({
-            //             message: 'DrawUpdate',
-            //             value: step_tsne
-            //         });
-            //     }
-            //
-            // }
             stop = false;
             for (let i = 0; i < 100 && (!stop); i++) {
                 const cost_old = tsne.step();
                 stop = ((cost_old - cost) < stopCondition) && (cost_old - cost) > 0;
                 cost = cost_old;
                 step_tsne = tsne.getSolution();
-                console.log(stop);
+                // console.log(stop);
                 postMessage({
                                 message: 'DrawUpdate',
                                 value: step_tsne
