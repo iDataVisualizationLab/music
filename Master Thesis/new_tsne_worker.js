@@ -58,7 +58,6 @@ self.onmessage = function (e) {
                     store_tsne_solution = tsne.getSolution();
                     firstRun = false;
                     console.log('Run tsne')
-
                 }
         case 'DataReady':
                 index = store_tsne_solution.length;
@@ -114,7 +113,7 @@ self.onmessage = function (e) {
         case 'features':
             // tsne_feature = new tsnejs.tSNE(msg.value);
             tsne.initDataRaw(msg.data);
-            for (let i = 0; i < 700; i++)
+            for (let i = 0; i < 500; i++)
             {
                 tsne.step();
                 step_tsne = tsne.getSolution();

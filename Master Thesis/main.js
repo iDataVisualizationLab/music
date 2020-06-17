@@ -87,20 +87,41 @@ Audio.prototype.stop = function () {
     // Reset the playback time marker
     this.currentTime = 0;
 };
-let width = window.innerWidth / 3, height = window.innerHeight / 3.5,
+let width = window.innerWidth / 2.5, height = window.innerHeight / 2,
     margin = {left: 50, top: 50, right: 50, bottom: 50},
-    contentWidth = width - margin.left - margin.right,
-    contentHeight = height - margin.top - margin.bottom;
+    contentWidth = (width - margin.left - margin.right)/1.5,
+    contentHeight = (height - margin.top - margin.bottom)/2;
 
 
 function setup() {
 
     canvas_width = windowWidth / 2.5, canvas_height = windowHeight / 4.5;
-    BOX_WIDTH = canvas_width / 120;
+    BOX_WIDTH = canvas_width / 140;
     BOX_HEIGHT = canvas_height / 28;
+    // create svg element
+
     var live_canvas = createCanvas(canvas_width, canvas_height);
     live_canvas.parent('live_canvas');
     background(0)
+    var svg = d3.select("#live_canvas")
+        .append("svg")
+        .attr('class','yaxis')
+        .attr("width", BOX_WIDTH*8)
+        .attr("height", canvas_height+20);
+
+// Create the scale
+    var scale = d3.scaleLinear()
+        .domain([1, 13])         // This is what is written on the Axis: from 0 to 100
+        .range([0, canvas_height-25]);       // This is where the axis is placed: from 100px to 800px
+
+    var y_axis = d3.axisLeft()
+        .scale(scale);
+
+    svg.append("g")
+        .attr("transform", "translate(25, 12)")
+
+        .call(y_axis);
+
 
     //Create worker to draw self-similarity-matrix in canvas whenever it has data
     draw_ssm_worker = new Worker('drawssm.js');
@@ -152,6 +173,7 @@ function setup() {
         // .attr("height", height)
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "0 0 600 400")
+        .attr("xmln","http://www.w3.org/2000/svg")
         .classed("svg-content", true);
 
     scatterplot = svg_scatterplot
@@ -325,7 +347,7 @@ function all_worker_process() {
                 if (store_process_tsne_data.length == 2) {
                     tsne_worker.postMessage({message: 'initTSNE', value: tsne_config.opt});
                 }
-                if (store_process_tsne_data.length > 2) {
+                if (store_process_tsne_data.length > 3) {
                     tsne_worker.postMessage({
                         message: 'DataReady',
                     });
@@ -370,7 +392,16 @@ function all_worker_process() {
                 }
                 break;
             case 'DrawUpdate':
-                UpdateDataTSNE(msg.value);
+                if(store_process_tsne_data.length <= msg.value.length) {
+                    try {
+                        UpdateDataTSNE(msg.value);
+                    } catch (err) {
+                        setTimeout(() => {
+                            console.log("Waiting for data");
+                            ;
+                        }, 100);
+                    }
+                }
                 // console.log("drawing" + "" + msg.value.length);
                 xScale = d3.scaleLinear()
                     .domain(d3.extent(msg.value.flat()))
@@ -388,38 +419,7 @@ function all_worker_process() {
                 // }
                 break;
             case 'DrawUpdateFeature':
-                svg_scatterplot.selectAll("image").style("opacity", 1);
-                scatterplot.selectAll("path").remove()
-                UpdateDataTSNE(msg.value);
-                // console.log("drawing" + "" + msg.value.length);
-                xScale = d3.scaleLinear()
-                    .domain(d3.extent(msg.value.flat()))
-                    .range([0, contentWidth]);
-                yScale = d3.scaleLinear()
-                    .domain(d3.extent(msg.value.flat()))
-                    .range([0, contentHeight]);
-                scatterplot.selectAll("text").data(store_process_tsne_data)
-                    .attr("x", d => (xScale(d.x)))
-                    .attr("y", d => (yScale(d.y)));
-                scatterplot.selectAll(".imagee").data(store_process_tsne_data)
-                    .attr("x", d => (xScale(d.x)))
-                    .attr("y", d => (yScale(d.y)));
-                store_process_tsne_data.forEach(d => {
-                    var store_distance = [];
-                    var store_label = [];
-                    var id_array = [];
-                    store_process_tsne_data.forEach(dataarray => {
-                        if (d.id != dataarray.id) {
-                            store_distance.push(euclideanDistance(dataarray, d))
-                            store_label.push(dataarray.label);
-                            id_array.push(dataarray.id);
-                        }
-                    })
-                    d.distance_array = store_distance;
-                    d.label_array = store_label;
-                    d.id_array = id_array;
-                });
-
+                draw_feature(msg.value);
                 break;
             case 'Done':
                 // draw_ssm_worker.terminate();
@@ -477,7 +477,39 @@ function all_worker_process() {
     mfcc_data = [];
 }
 
-
+function draw_feature(datar){
+    svg_scatterplot.selectAll("image").style("opacity", 1);
+    scatterplot.selectAll("path").remove()
+    UpdateDataTSNE(datar);
+    // console.log("drawing" + "" + msg.value.length);
+    xScale = d3.scaleLinear()
+        .domain(d3.extent(datar.flat()))
+        .range([0, contentWidth]);
+    yScale = d3.scaleLinear()
+        .domain(d3.extent(datar.flat()))
+        .range([0, contentHeight]);
+    scatterplot.selectAll("text").data(store_process_tsne_data)
+        .attr("x", d => (xScale(d.x)))
+        .attr("y", d => (yScale(d.y)));
+    scatterplot.selectAll(".imagee").data(store_process_tsne_data)
+        .attr("x", d => (xScale(d.x)))
+        .attr("y", d => (yScale(d.y)));
+    store_process_tsne_data.forEach(d => {
+        var store_distance = [];
+        var store_label = [];
+        var id_array = [];
+        store_process_tsne_data.forEach(dataarray => {
+            if (d.id != dataarray.id) {
+                store_distance.push(euclideanDistance(dataarray, d))
+                store_label.push(dataarray.label);
+                id_array.push(dataarray.id);
+            }
+        })
+        d.distance_array = store_distance;
+        d.label_array = store_label;
+        d.id_array = id_array;
+    });
+}
 //function callback of Meyda Analyzer 1 which calculate mfcc coefficient
 function mfcc_extract(features) {
     var mfcc = features[featureType];
@@ -551,7 +583,15 @@ function draw_matrix(self_similarity_data) {
 function draw() {
     clear();
     background(220, 220, 220);
+    // plott = new GPlot(this);
+    // plott.setPos(0, -30);
+    // plott.setOuterDim(canvas_width+100, canvas_height+80);
+    // plott.getXAxis().setAxisLabelText("time");
+    // plott.getYAxis().setAxisLabelText("MFCCs");
+    // plott.getYAxis().getTicks('12')
+    // plott.defaultDraw();
     plot(mfcc_data);
+
 }
 
 function plot(data) {
@@ -567,11 +607,20 @@ function plot(data) {
                 fill(209)
             // noStroke();
             //drawing the rectangle
-            rect(i * BOX_WIDTH * 2, j * BOX_HEIGHT * 2, BOX_WIDTH * 2, BOX_HEIGHT * 2)
+            rect(i * BOX_WIDTH * 2+40, j * BOX_HEIGHT * 2+10, BOX_WIDTH * 2, BOX_HEIGHT * 2)
         }
     }
+    // draw_line()
 }
 
+// function draw_line(){
+//     var lines = '1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13';
+//     textSize(10);
+//     textLeading(14); // Set leading to 10
+//     text(lines, 16, 10);
+//     textStyle(BOLD);
+//     line(30,0,30,canvas_height);
+// }
 function fakeDataforFirstScatterplot() {
 
     fakeDataforfirstplot.forEach(function (d, i) {
@@ -871,13 +920,19 @@ function draw_euclidean_line_chart(dataset) {
     var layout = {
         // width: windowWidth / 2.2,
         height: windowHeight / 3.5,
-        autosize: true
-        // yaxis: {
+        autosize: true,
+        // xaxis: {
         //     showgrid: true,
         //     zeroline: true,
         //     showline: true,
         //     showticklabels: true
         // },
+        // yaxis: {
+        //     showgrid: true,
+        //     zeroline: true,
+        //     showline: true,
+        //     showticklabels: true
+        // }
         // margin: {
         //     l: 0,
         // }
@@ -926,7 +981,7 @@ function draw_radar_chart_comparision(dataset) {
         },
         showlegend: true,
         margin: {
-            l: 0,
+            l: 20,
             t: 0
         },
         legend: {
@@ -983,4 +1038,17 @@ function reset_variable() {
     count_done = 1;
     d3.selectAll("text").remove();
     d3.selectAll("image").remove();
+}
+function pca_calculation(){
+  const { PCA } = ml.decomposition;
+  const pca = new PCA();
+  var process_data = [];
+  pca.fit(store_process_tsne_data);
+  var component = pca.components;
+  for (var i=0; i < store_process_tsne_data.length; i++){
+      process_data.push([math.dot(store_process_tsne_data[i],component[0]),math.dot(store_process_tsne_data[i],component[1])])
+  }
+  // var process_data = _.unzip(component);
+  // var reduce_dimensional = _.unzip([process_data[0], process_data[1]]);
+  draw_feature(process_data);
 }

@@ -212,9 +212,12 @@ function Update_Tsne_node(data) {
                             fill(209)
                         // noStroke();
                         //drawing the rectangle
-                        rect(i * BOX_WIDTH * 2, j * BOX_HEIGHT * 2, BOX_WIDTH * 2, BOX_HEIGHT * 2)
+                        rect(i * BOX_WIDTH * 2+40, j * BOX_HEIGHT * 2+10, BOX_WIDTH * 2, BOX_HEIGHT * 2)
+
                     }
+
                 }
+
                 PlayAudio(this, d);
                 d3.select(this)
                     .attr("width", 20)
@@ -233,6 +236,7 @@ function Update_Tsne_node(data) {
 
                 draw_euclidean_line_chart(d);
                 draw_radar_chart_comparision(d);
+
 
             })
              .on("click", function (d){
@@ -331,12 +335,17 @@ function Update_Tsne_node(data) {
 // Update the data with the given t-SNE result
 function UpdateDataTSNE(data) {
     data.forEach(function(d, i) {
+        try {
             store_process_tsne_data[i].x = d[0];  // Add the t-SNE x result to the dataset
             store_process_tsne_data[i].y = d[1];  // Add the t-SNE y result to the dataset
             store_process_tsne_data[i].image_canvas = store_image_in_canvas[i];
             store_process_tsne_data[i].url = fileContent[i];
             store_process_tsne_data[i].id = i;
             store_process_tsne_data[i].label = audio_label[i];
+        }
+        catch(err){
+            console.log("Fail Updating t-SNE output");
+        }
     });
 }
 
