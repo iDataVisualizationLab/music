@@ -118,7 +118,7 @@ function createTableTooltip(wsTooltipDiv, info) {
 function PlayAudio(thisElement, d) {
     // Play audio on click
     let audioElement;
-    if (thisElement.getElementsByTagName("audio").length === 0) {
+    // if (thisElement.getElementsByTagName("audio").length === 0) {
 
         // Create audio object from source url
         audioElement = new Audio(d.url);
@@ -128,19 +128,19 @@ function PlayAudio(thisElement, d) {
         thisElement.appendChild(audioElement);
         // Play the audio
         audioElement.play();
-    }
-    else {
-
-        // Get saved audio element
-        audioElement = thisElement.getElementsByTagName("audio")[0];
-        if (audioElement.isPlaying()) {
-            // Pause if it is playing
-            audioElement.stop();
-        } else {
-            // Play if not already playing
-            audioElement.play();
-        }
-    }
+    // }
+    // else {
+    //
+    //     // Get saved audio element
+    //     audioElement = thisElement.getElementsByTagName("audio")[0];
+    //     if (audioElement.isPlaying()) {
+    //         // Pause if it is playing
+    //         audioElement.stop();
+    //     } else {
+    //         // Play if not already playing
+    //         audioElement.play();
+    //     }
+    // }
 }
 
 function drawscatterplot(data){
@@ -196,7 +196,7 @@ function Update_Tsne_node(data) {
             .attr('y', function (d) {
                 return (yScale(d.y));
             })
-            .attr("class", "imagee")
+            .attr("class", (d) =>"imagee" + d.id)
             .attr('width', 6)
             .attr('height', 6)
             .on('mouseover', function (d) {

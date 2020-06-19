@@ -25,15 +25,7 @@ let store_image_in_canvas = [];
 let firstdraw = true;
 var Isrecord = false;
 let audioChunks = [];
-let tsne_config = {
-    opt: {
-        epsilon: 10, // epsilon is learning rate (10 = default)
-        perplexity: parseInt($('#myRange1').val(), 10) || 5, // roughly how many neighbors each point influences (30 = default)
-        // tsne_iteration: parseInt($('#myRange2').val(), 10) || 100,
-        dim: 2 // dimensionality of the embedding (2 = default)
 
-    }
-};
 //Machine Learning
 let model;
 let state = 'collection';
@@ -94,7 +86,6 @@ let width = window.innerWidth / 2.5, height = window.innerHeight / 2,
 
 
 function setup() {
-
     canvas_width = windowWidth / 2.5, canvas_height = windowHeight / 4.5;
     BOX_WIDTH = canvas_width / 140;
     BOX_HEIGHT = canvas_height / 28;
@@ -295,6 +286,15 @@ function selectfeature(value) {
 }
 
 function all_worker_process() {
+    tsne_config = {
+        opt: {
+            epsilon: 10, // epsilon is learning rate (10 = default)
+            perplexity: parseInt($('#myRange1').val(), 10), // roughly how many neighbors each point influences (30 = default)
+            // tsne_iteration: parseInt($('#myRange2').val(), 10) || 100,
+            dim: 2 // dimensionality of the embedding (2 = default)
+
+        }
+    };
     console.log('iam here');
     var store_each_sound_mfcc = [];
     //mfcc_data is generated from function show1 of Meyda Analyzer 1 of each sound samples
@@ -346,8 +346,9 @@ function all_worker_process() {
                 // console.log("process" + "" + store_process_tsne_data.length);
                 if (store_process_tsne_data.length == 2) {
                     tsne_worker.postMessage({message: 'initTSNE', value: tsne_config.opt});
+                    tsne_worker.postMessage({message: 'initTSNE', value: tsne_config.opt});
                 }
-                if (store_process_tsne_data.length > 3) {
+                if (store_process_tsne_data.length > 2) {
                     tsne_worker.postMessage({
                         message: 'DataReady',
                     });
@@ -583,13 +584,6 @@ function draw_matrix(self_similarity_data) {
 function draw() {
     clear();
     background(220, 220, 220);
-    // plott = new GPlot(this);
-    // plott.setPos(0, -30);
-    // plott.setOuterDim(canvas_width+100, canvas_height+80);
-    // plott.getXAxis().setAxisLabelText("time");
-    // plott.getYAxis().setAxisLabelText("MFCCs");
-    // plott.getYAxis().getTicks('12')
-    // plott.defaultDraw();
     plot(mfcc_data);
 
 }
@@ -613,14 +607,6 @@ function plot(data) {
     // draw_line()
 }
 
-// function draw_line(){
-//     var lines = '1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13';
-//     textSize(10);
-//     textLeading(14); // Set leading to 10
-//     text(lines, 16, 10);
-//     textStyle(BOLD);
-//     line(30,0,30,canvas_height);
-// }
 function fakeDataforFirstScatterplot() {
 
     fakeDataforfirstplot.forEach(function (d, i) {
@@ -753,7 +739,8 @@ function euclideanDistance(a, b) {
     return sum
 }
 
-function draw_tree() {
+function draw_tree(modeselect) {
+    svg_scatterplot.selectAll("path").remove();
     let graph1 = {};
     graph1.nodes = [];
     graph1.links = [];
@@ -761,18 +748,51 @@ function draw_tree() {
         graph1.nodes.push({"id": i, "links": []})
     }
     var link2 = [];
+    switch (modeselect) {
+        case "tsne":
+            for (i = 0; i < store_process_tsne_data.length - 1; i++) {
+                var link1 = [];
+                for (j = i + 1; j < store_process_tsne_data.length; j++) {
+                    link1.push({
+                        "source": i,
+                        "target": j,
+                        "weight": euclideanDistance([store_process_tsne_data[i].x,store_process_tsne_data[i].y] , [store_process_tsne_data[j].x,store_process_tsne_data[j].y]),
+                        "connection": store_process_tsne_data[i].label + " : " + store_process_tsne_data[j].label
+                    })
+                }
+                link2.push(link1)
+            }
+            break;
+        case "raw":
+            for (i = 0; i < store_process_tsne_data.length - 1; i++) {
+                var link1 = [];
+                for (j = i + 1; j < store_process_tsne_data.length; j++) {
+                    link1.push({
+                        "source": i,
+                        "target": j,
+                        "weight": euclideanDistance(store_process_tsne_data[i] , store_process_tsne_data[j]),
+                        "connection": store_process_tsne_data[i].label + " : " + store_process_tsne_data[j].label
+                    })
+                }
+                link2.push(link1)
+            }
+        break;
+        default:
+            break;
+    }
     for (i = 0; i < store_process_tsne_data.length - 1; i++) {
         var link1 = [];
         for (j = i + 1; j < store_process_tsne_data.length; j++) {
             link1.push({
                 "source": i,
                 "target": j,
-                "weight": euclideanDistance(store_process_tsne_data[i], store_process_tsne_data[j]),
+                "weight": euclideanDistance([store_process_tsne_data[i].x,store_process_tsne_data[i].y] , [store_process_tsne_data[j].x,store_process_tsne_data[j].y]),
                 "connection": store_process_tsne_data[i].label + " : " + store_process_tsne_data[j].label
             })
         }
         link2.push(link1)
     }
+
     graph1.links = d3.merge(link2)
 
     //create minimumSpanningTree
@@ -899,6 +919,7 @@ function draw_path(store_nodes, time_play) {
 
 //Euclidean Distance Comparision
 function draw_euclidean_line_chart(dataset) {
+    var myPlot = document.getElementById('Euclidean_distance');
     var trace1 = {
         x: dataset.id_array,
         y: dataset.distance_array,
@@ -941,6 +962,19 @@ function draw_euclidean_line_chart(dataset) {
     var data = trace1;
     var config = {responsive: true};
     Plotly.newPlot('Euclidean_distance', [data], layout, config);
+    myPlot.on('plotly_hover', function(data){
+       console.log(data);
+       var pointId = data.points[0].x;
+        scatterplot.select(".text"+ pointId).style("font-size", "20px").style("opacity",1);
+        scatterplot.select(".imagee"+ pointId).attr("width", 20)
+            .attr("height", 20);
+    });
+    myPlot.on('plotly_unhover', function(data){
+        var pointId = data.points[0].x;
+        scatterplot.select(".text"+ pointId).style("font-size", "6px").style("opacity",1);
+        scatterplot.select(".imagee"+ pointId).attr("width", 6)
+            .attr("height", 6);
+    });
 }
 
 function draw_radar_chart_comparision(dataset) {
@@ -1036,8 +1070,9 @@ function reset_variable() {
     firstRun = true;
     firstdraw = true;
     count_done = 1;
-    d3.selectAll("text").remove();
-    d3.selectAll("image").remove();
+    svg_scatterplot.selectAll("text").remove();
+    svg_scatterplot.selectAll("image").remove();
+    svg_scatterplot.selectAll("path").remove();
 }
 function pca_calculation(){
   const { PCA } = ml.decomposition;
