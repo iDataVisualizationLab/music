@@ -30,7 +30,7 @@ let audioChunks = [];
 let model;
 let state = 'collection';
 let predict_array = [];
-
+var count_click = 2;
 var heatmap_max_length = 27;
 
 //get file directory
@@ -1064,6 +1064,7 @@ function reset_variable() {
     store_process_tsne_data = [];
     audio_label = [];
     fileContent = [];
+    predict_array = [];
     store_image_in_canvas = [];
     fakeDataforfirstplot = [];
     mfcc_data_all = [];
@@ -1086,4 +1087,38 @@ function pca_calculation(){
   // var process_data = _.unzip(component);
   // var reduce_dimensional = _.unzip([process_data[0], process_data[1]]);
   draw_feature(process_data);
+}
+
+function apply_label_after_predict(){
+
+    if(count_click % 2 == 0){
+        store_process_tsne_data.forEach((d,i)=> d.label = predict_array[i]);
+        selection.exit().remove();
+        scatterplot.selectAll('text').remove();
+        selection.enter().append("text")
+            .text(function (d) {
+                return d.label;
+            })
+            .attr("class", (d) => "text" + d.id)
+            .attr("x", function (d) {return xScale(d.x) })
+            .attr("y", function (d) {return yScale(d.y) })
+            .style("text-anchor", "middle")
+            .style("font-size", "6px");
+    }
+    else{
+        store_process_tsne_data.forEach((d,i)=> d.label = audio_label[i]);
+        selection.exit().remove();
+        scatterplot.selectAll('text').remove();
+        selection.enter().append("text")
+            .text(function (d) {
+                return d.label;
+            })
+            .attr("class", (d) => "text" + d.id)
+            .attr("x", function (d) {return xScale(d.x) })
+            .attr("y", function (d) {return yScale(d.y) })
+            .style("text-anchor", "middle")
+            .style("font-size", "6px");
+    }
+    ++count_click;
+    console.log(count_click);
 }
