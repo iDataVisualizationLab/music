@@ -98,9 +98,20 @@
 <!--                </button>-->
             </div>
             <div class="col">
-                <button type="button" class="btn btn-outline-secondary btn-block" onclick=pca_calculation()><i
+                <button class="btn btn-outline-secondary btn-block" id="menu2" type="button" data-toggle="dropdown">Add-Ons
+                    <span class="caret"></span></button>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="menu2">
+                    <li role="presentation">
+                        <button type="button" class="btn btn-outline-secondary btn-block" onclick="pca_calculation()">
+                            PCA visualization
+                        </button></li>
+                    <li role="presentation">
+                        <button type="button" class="btn btn-outline-secondary btn-block" onclick=" apply_label_after_predict()">
+                            Applying Classified Labels
+                        </button></li>
+                </ul>
+<!--                    <i class="fa fa-refresh fa-lg" aria-hidden="true"></i>-->
 
-                        class="fa fa-refresh fa-lg" aria-hidden="true"></i></button>
             </div>
             <!--                        onclick=location.reload(true)><i-->
         </div>
@@ -347,8 +358,8 @@
             </div>
             <div class="col-5 border bg-light">
                 <div class="card bg-light mb-3" style="max-width: 140rem;">
-                    <div class="card-header" style="font-family:Arial;text-align:center">Euclidean Distance
-                        Comparision
+                    <div class="card-header" style="font-family:Arial;text-align:center">Pairwise Distance
+                        Comparision Using 39 Features Vector
                     </div>
                     <div id="Euclidean_distance"></div>
                 </div>
