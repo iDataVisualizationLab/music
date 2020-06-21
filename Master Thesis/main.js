@@ -492,7 +492,7 @@ function draw_feature(datar){
     scatterplot.selectAll("text").data(store_process_tsne_data)
         .attr("x", d => (xScale(d.x)))
         .attr("y", d => (yScale(d.y)));
-    scatterplot.selectAll(".imagee").data(store_process_tsne_data)
+    scatterplot.selectAll("image").data(store_process_tsne_data)
         .attr("x", d => (xScale(d.x)))
         .attr("y", d => (yScale(d.y)));
     store_process_tsne_data.forEach(d => {
@@ -968,6 +968,22 @@ function draw_euclidean_line_chart(dataset) {
         scatterplot.select(".text"+ pointId).style("font-size", "20px").style("opacity",1);
         scatterplot.select(".imagee"+ pointId).attr("width", 20)
             .attr("height", 20);
+        clear();
+        for(let i = 0; i < mfcc_data_all[pointId].length; i++ ) {
+            for (let j = 0; j < mfcc_data_all[pointId][i].length; j++) {
+                let color_strength = quantile_heatmap(mfcc_data_all[pointId][i][j]).replace("rgb","").replace("(","").replace(")","").split(',')
+                // setting color
+                if (mfcc_data_all[pointId] [i] [j] >= 0)
+                    fill(parseInt(color_strength[0]),parseInt(color_strength[1]),parseInt(color_strength[2]))
+                else
+                    fill(209)
+                // noStroke();
+                //drawing the rectangle
+                rect(i * BOX_WIDTH * 2+40, j * BOX_HEIGHT * 2+10, BOX_WIDTH * 2, BOX_HEIGHT * 2)
+
+            }
+
+        }
     });
     myPlot.on('plotly_unhover', function(data){
         var pointId = data.points[0].x;

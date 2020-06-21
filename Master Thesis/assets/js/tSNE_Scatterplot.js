@@ -200,8 +200,10 @@ function Update_Tsne_node(data) {
             .attr('width', 6)
             .attr('height', 6)
             .on('mouseover', function (d) {
+                PlayAudio(this, d);
                 active_value = d.id;
                 noLoop();
+                clear();
                 for(let i = 0; i < mfcc_data_all[d.id].length; i++ ) {
                     for (let j = 0; j < mfcc_data_all[d.id][i].length; j++) {
                         let color_strength = quantile_heatmap(mfcc_data_all[d.id][i][j]).replace("rgb","").replace("(","").replace(")","").split(',')
@@ -218,7 +220,7 @@ function Update_Tsne_node(data) {
 
                 }
 
-                PlayAudio(this, d);
+
                 d3.select(this)
                     .attr("width", 20)
                     .attr("height", 20);
