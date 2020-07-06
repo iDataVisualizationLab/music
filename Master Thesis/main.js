@@ -469,7 +469,7 @@ function all_worker_process() {
                         d.id_array = id_array;
                     }
                 )
-
+            break;
             default:
                 break;
 
